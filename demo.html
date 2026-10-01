@@ -568,10 +568,10 @@
 
   <!-- ============ 5/6. SUNDAY RECEIPT + SHARE ============ -->
   <section class="screen tabbed" id="receipt">
-    <div class="bar"><span class="label">Sunday · Week 39</span></div>
+    <div class="bar"><span class="label">Sample · Sunday 27 September 2026</span></div>
     <h1>Your receipt</h1>
-    <div class="receipt" id="week-receipt" aria-label="Weekly receipt: 15 hours 50 minutes scrolled, £11 donated">
-      <div class="head"><b>RECEIPTS</b><span>WEEK 39 · 22–28 SEP</span></div>
+    <div class="receipt" id="week-receipt" aria-label="Sample weekly receipt, Week 39, 21–27 September 2026: 15 hours 50 minutes scrolled, £11 donated. Illustrative data.">
+      <div class="head"><b>RECEIPTS</b><span>SAMPLE RECEIPT · WEEK 39<br>21–27 SEP 2026</span></div>
       <hr>
       <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
       <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
@@ -590,30 +590,30 @@
     </div>
     <div class="receipt-actions">
       <button class="btn" id="share-w" disabled>Preparing image…</button>
-      <a class="btn ghost" id="download-w" download="receipts-week-39.png" hidden>Download receipt image</a>
+      <a class="btn ghost" id="download-w" download="receipts-sample-2026-week-39.png" hidden>Download receipt image</a>
       <p class="fineprint" id="share-status-w" role="status" aria-live="polite">Preparing your receipt image.</p>
     </div>
   </section>
 
   <!-- ============ STATS ============ -->
   <section class="screen tabbed" id="stats">
-    <div class="bar"><span class="label">Stats · since you started</span></div>
+    <div class="bar"><span class="label">Sample stats · 2026</span></div>
     <h1 style="margin-bottom:16px">Your time, charted</h1>
     <div class="tiles" style="margin-top:0">
-      <div class="card tile"><p class="label">Avg / day</p><p class="big">2h 16m</p><p class="s">Week 39 · limit 2h</p></div>
+      <div class="card tile"><p class="label">Avg / day</p><p class="big">2h 16m</p><p class="s">Week 39 · 2026 · limit 2h</p></div>
       <div class="card tile"><p class="label">vs week 38</p><p class="big red">↑ 7%</p><p class="s">+1h 00m. A slip.</p></div>
       <div class="card tile"><p class="label">Donated</p><p class="big">£122</p><p class="s">Across 8 weeks</p></div>
       <div class="card tile"><p class="label">Worst day</p><p class="big">Fri</p><p class="s">2h 52m · 52m over</p></div>
     </div>
     <div class="card chart-card" style="margin-top:12px">
       <h3>Hours per week</h3>
-      <p class="s">Weeks 32–39 · tap a bar</p>
+      <p class="s">Sample weeks 32–39 · 2026 · tap a bar</p>
       <svg class="chart" id="chart-limit-weeks" role="img"></svg>
       <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>14h weekly limit</span></div>
     </div>
     <div class="card chart-card">
       <h3>Week 39, day by day</h3>
-      <p class="s">TikTok + Instagram · tap a bar</p>
+      <p class="s">21–27 Sep 2026 · TikTok + Instagram · tap a bar</p>
       <svg class="chart" id="chart-days" role="img"></svg>
       <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>2h daily limit</span></div>
     </div>
@@ -1377,7 +1377,9 @@
       g.fillText(value, x, baseline);
     }
     text(receipt.querySelector('.head b').textContent, 360, 116, 42, true, ink, 'center');
-    text(receipt.querySelector('.head span').textContent, 360, 156, 23, false, muted, 'center');
+    var headingLines = receipt.querySelector('.head span').innerText.split('\n');
+    headingLines.forEach(function (line, i) { text(line, 360, 156 + i * 32, 23, false, muted, 'center'); });
+    y += (headingLines.length - 1) * 32;
     Array.from(receipt.children).forEach(function (row) {
       if (row.tagName === 'HR') {
         g.strokeStyle = ink; g.lineWidth = 2; g.setLineDash([7, 6]);
@@ -1481,7 +1483,7 @@
   var revealShare = makeSharer({ receipt: 'the-receipt', share: 'share', download: 'download-receipt', status: 'share-status',
     name: function () { return 'receipts-week-' + week() + '.png'; }, title: function () { return 'My Receipts, week ' + week(); } });
   var weekShare = makeSharer({ receipt: 'week-receipt', share: 'share-w', download: 'download-w', status: 'share-status-w',
-    name: function () { return 'receipts-week-39.png'; }, title: function () { return 'My Receipts, week 39'; } });
+    name: function () { return 'receipts-sample-2026-week-39.png'; }, title: function () { return 'Receipts sample — Week 39, 21–27 September 2026'; } });
 
   // ---------- Daily limits (first prototype): Limits, Today, weekly receipt, Stats ----------
   // Its own fake state: per-app daily limits, £1 per 10 min over to charity, capped daily.
@@ -1669,18 +1671,18 @@
   function renderStats() {
     limitBars($('chart-limit-weeks'), WEEKS, 840, 1200, 240, function (d) {
       var o = d.total - 840;
-      return '<b>Week ' + d.label.slice(1) + '</b> · ' + fmt(d.total) + '<br>' + (o > 0 ? fmt(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
+      return '<b>Sample week ' + d.label.slice(1) + ' · 2026</b> · ' + fmt(d.total) + '<br>' + (o > 0 ? fmt(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
     });
-    $('chart-limit-weeks').setAttribute('aria-label', 'Hours scrolled per week, weeks 32 to 39: ' + WEEKS.map(function (w) { return w.label + ' ' + fmt(w.total); }).join(', '));
+    $('chart-limit-weeks').setAttribute('aria-label', 'Sample hours scrolled per week, weeks 32 to 39 of 2026: ' + WEEKS.map(function (w) { return w.label + ' ' + fmt(w.total); }).join(', '));
     limitBars($('chart-days'), DAYS, 120, 180, 60, function (d) {
       var o = d.total - 120;
       return '<b>' + d.day + '</b> · ' + fmt(d.total) + (o > 0 ? ' · <span style="color:#FF8A85">' + o + 'm over</span>' : '') + '<br>TikTok ' + fmt(d.tt) + ' · Insta ' + fmt(d.ig);
     });
-    $('chart-days').setAttribute('aria-label', 'Week 39 by day: ' + DAYS.map(function (d) { return d.day + ' ' + fmt(d.total); }).join(', '));
+    $('chart-days').setAttribute('aria-label', 'Sample Week 39 by day, 21–27 September 2026: ' + DAYS.map(function (d) { return d.day + ' ' + fmt(d.total); }).join(', '));
 
     var svg = $('chart-charity'), W = 320, rowH = 30, H = GIVEN.length * rowH, L = 108, max = GIVEN[0][1];
     svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    svg.setAttribute('aria-label', 'Donations by charity: ' + GIVEN.map(function (g) { return g[0] + ' £' + g[1]; }).join(', '));
+    svg.setAttribute('aria-label', 'Sample donations by charity: ' + GIVEN.map(function (g) { return g[0] + ' £' + g[1]; }).join(', '));
     GIVEN.forEach(function (g, i) {
       var yy = i * rowH + 6, w = (W - L - 40) * g[1] / max;
       el('text', { x: 0, y: yy + 12, style: 'fill:var(--ink);font-size:11px' }, svg).textContent = g[0];
