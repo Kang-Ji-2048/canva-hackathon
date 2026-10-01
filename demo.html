@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <!--
-  Receipts: clickable app demo (hackathon prototype).
-  ALL DATA ON THIS PAGE IS FAKE AND CLIENT-SIDE. Nothing is tracked or stored:
-  screen-time numbers, donations, friend handles and the pot are hard-coded demo values.
-  Only an explicit receipt share or download exports the sample receipt image.
-  Secret "over limit" trigger: tap the Receipts logo on the Today screen 3 times, or long-press it.
+  Receipts: clickable app demo (hackathon proof of concept).
+  ALL DATA ON THIS PAGE IS FAKE AND CLIENT-SIDE. Nothing is tracked or stored and no money moves:
+  screen-time numbers, friends, the pot and the payouts are hard-coded demo values.
+  Only an explicit receipt share or download exports the receipt image.
+  Secret triggers on the Competition logo: tap it 3 times to skip to Sunday 6pm,
+  or long-press it to add 30 minutes of scrolling to your week.
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Receipts</title>
@@ -36,9 +37,11 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
   html, body { height: 100%; }
   body { margin: 0; background: var(--paper-2); color: var(--ink); font-family: var(--sans); line-height: 1.45; -webkit-font-smoothing: antialiased; overscroll-behavior: none; -webkit-user-select: none; user-select: none; }
   h1, h2, h3, p { margin: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
   button { font: inherit; color: inherit; cursor: pointer; }
   .label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
   .red { color: var(--red); }
@@ -47,11 +50,14 @@
   #app { position: relative; max-width: 430px; height: 100vh; height: 100dvh; margin: 0 auto; background: var(--paper); overflow: hidden; }
   .screen { position: absolute; inset: 0; display: none; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: calc(var(--top) + 8px) 20px calc(var(--bottom) + 16px); }
   .screen.active { display: flex; }
+  .screen > * { flex-shrink: 0; }
   .screen.tabbed { padding-bottom: calc(var(--bottom) + 84px); }
   .bar { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-bottom: 12px; }
   .back, .icon-btn { background: none; border: 0; padding: 8px 4px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 4px; }
   .icon-btn svg { width: 24px; height: 24px; }
   h1 { font-size: 34px; line-height: 1; letter-spacing: -.03em; }
+  h2.sec { font-size: 24px; letter-spacing: -.02em; margin: 30px 0 12px; }
+  h3 { font-size: 18px; }
   .muted { color: var(--ink-soft); }
 
   .logo { font: 700 20px var(--mono); letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 8px 0; -webkit-touch-callout: none; touch-action: manipulation; }
@@ -59,13 +65,37 @@
 
   .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 0; border-radius: 999px; background: var(--red); color: #fff; font: 700 17px/1 var(--sans); padding: 18px 24px; box-shadow: 0 3px 0 var(--ink); transition: transform .12s, box-shadow .12s; }
   .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
   .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); box-shadow: none; }
   .btn.dark { background: var(--ink); box-shadow: none; }
+  .btn.small { width: auto; padding: 0 18px; font-size: 15px; flex: none; }
 
   .card { background: #fff; border: 2px solid var(--ink); border-radius: 20px; padding: 18px; }
   .card + .card { margin-top: 12px; }
   .stack { display: flex; flex-direction: column; gap: 12px; }
+  .stack .card + .card { margin-top: 0; }
   .spacer { flex: 1; min-height: 20px; }
+  .fineprint { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 8px; }
+  .hint { text-align: center; font: 400 11px var(--mono); color: #A9A69D; margin-top: 16px; }
+  .row-between { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+
+  /* ===== Inputs, chips, segmented control ===== */
+  .field { display: block; width: 100%; margin-top: 8px; border: 2px solid var(--ink); border-radius: 14px; background: var(--paper); padding: 12px 14px; font: 400 16px var(--mono); color: var(--ink); -webkit-user-select: text; user-select: text; outline: none; }
+  .field:focus { border-color: var(--red); }
+  .add-row { display: flex; gap: 8px; margin-top: 10px; }
+  .add-row .field { margin-top: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip { font: 700 14px var(--mono); border: 2px solid var(--ink); border-radius: 999px; padding: 10px 14px; background: #fff; display: inline-flex; align-items: center; gap: 6px; }
+  .chip[aria-pressed=true] { background: var(--ink); color: var(--paper); }
+  .seg-ctl { display: flex; border: 2px solid var(--ink); border-radius: 999px; padding: 3px; background: #fff; }
+  .seg-ctl button { flex: 1; border: 0; background: none; border-radius: 999px; padding: 10px; font: 700 15px var(--sans); }
+  .seg-ctl button[aria-pressed=true] { background: var(--ink); color: var(--paper); }
+  .option { display: block; width: 100%; text-align: left; background: #fff; border: 2px solid var(--ink); border-radius: 16px; padding: 12px 14px; }
+  .option + .option { margin-top: 8px; }
+  .option .n { font-weight: 700; font-size: 16px; display: block; }
+  .option .d { font: 400 12px var(--mono); color: var(--ink-soft); }
+  .option[aria-pressed=true] { background: var(--ink); color: var(--paper); }
+  .option[aria-pressed=true] .d { color: #A9A69D; }
 
   /* ===== 1. Onboarding ===== */
   #onboarding { justify-content: space-between; }
@@ -73,46 +103,96 @@
   .ob-hero h1 { font-size: 54px; line-height: .95; letter-spacing: -.04em; }
   .ob-hero h1 em { font-style: normal; color: var(--red); }
   .mini-receipt { font: 400 13px var(--mono); background: #fff; padding: 14px 16px; max-width: 260px; transform: rotate(-3deg); box-shadow: 0 14px 24px rgba(0,0,0,.1); }
-  .ob-foot p { text-align: center; font: 400 11px var(--mono); color: var(--ink-soft); margin-top: 12px; }
+  .ob-foot { display: flex; flex-direction: column; gap: 10px; }
+  .ob-foot p { text-align: center; font: 400 11px var(--mono); color: var(--ink-soft); margin-top: 2px; }
 
-  /* ===== 2. Limits ===== */
-  .slider-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-  .slider-row b { font-size: 18px; }
-  .slider-row output { font: 700 18px var(--mono); }
-  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 99px; background: linear-gradient(var(--ink), var(--ink)) 0 0 / var(--p, 33%) 100% no-repeat, var(--paper-2); outline: none; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--red); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink); }
-  input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: var(--red); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink); }
-  .toggle-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-  .switch { position: relative; width: 54px; height: 32px; flex: none; border-radius: 99px; background: #CFCBC0; border: 0; transition: background .2s; }
-  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
-  .switch[aria-checked=true] { background: var(--red); }
-  .switch[aria-checked=true]::after { transform: translateX(22px); }
-  .fineprint { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 8px; }
-  .causes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .cause { font: 700 14px var(--mono); border: 2px solid var(--ink); border-radius: 999px; padding: 10px 14px; background: #fff; }
-  .cause[aria-pressed=true] { background: var(--ink); color: var(--paper); }
+  /* ===== People rows (members, ladder, leaderboard) ===== */
+  .person { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px dashed rgba(26,26,26,.3); }
+  .person:first-child { border-top: 0; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 14px var(--mono); flex: none; border: 2px solid var(--ink); background: #fff; }
+  .avatar.unknown { background: var(--paper-2); color: var(--ink-soft); border-style: dashed; }
+  .person .h { font: 700 14px var(--mono); }
+  .person .s { font-size: 13px; color: var(--ink-soft); }
+  .person .r { margin-left: auto; font: 700 16px var(--mono); text-align: right; white-space: nowrap; }
+  .person .r small { display: block; font: 400 12px var(--mono); color: var(--ink-soft); }
+  .person .x { margin-left: auto; background: none; border: 0; font: 700 20px var(--mono); color: var(--ink-soft); padding: 4px 8px; }
+  .pl { font: 700 15px var(--mono); width: 34px; flex: none; }
+  .person.me { background: var(--paper-2); margin: 0 -10px; padding-left: 10px; padding-right: 10px; border-radius: 12px; border-top-color: transparent; }
+  .person.me + .person { border-top-color: transparent; }
+  .redact { display: inline-block; width: 64px; height: 14px; border-radius: 4px; background: repeating-linear-gradient(-45deg, var(--ink) 0 6px, #3a3a3a 6px 12px); vertical-align: middle; }
+  .tag { display: inline-block; font: 700 10px var(--mono); letter-spacing: .1em; color: #fff; background: var(--red); border-radius: 4px; padding: 2px 5px; margin-left: 4px; vertical-align: 2px; }
 
-  /* ===== 3/4. Today ===== */
+  /* ===== Competition ===== */
+  .pot-card { position: relative; background: var(--ink); color: var(--paper); border-color: var(--ink); overflow: hidden; }
+  .pot-card .label { color: #A9A69D; }
+  .pot-card .amt { font: 700 64px/1 var(--sans); letter-spacing: -.04em; margin: 8px 0 6px; }
+  .pot-card .sub { font: 400 12px var(--mono); color: #A9A69D; }
+  .cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .cd div { background: var(--paper-2); border-radius: 12px; text-align: center; padding: 10px 0 8px; }
+  .cd b { display: block; font: 700 30px/1.1 var(--mono); letter-spacing: -.02em; }
+  .cd span { font: 400 10px var(--mono); letter-spacing: .14em; color: var(--ink-soft); }
+  .results-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; background: var(--red); color: #fff; border-color: var(--ink); box-shadow: 0 3px 0 var(--ink); }
+  .results-card .label { color: rgba(255,255,255,.8); }
+  .results-card b { font-size: 22px; letter-spacing: -.02em; }
+  .results-card .chev { font: 700 24px var(--mono); }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .tiles .card { margin: 0; padding: 14px; }
+  .tile .big { font: 700 28px/1.1 var(--sans); letter-spacing: -.02em; margin-top: 6px; }
+  .tile .s { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 2px; }
+
+  /* ===== Group ===== */
+  .set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; background: none; border: 0; border-top: 1px dashed rgba(26,26,26,.3); padding: 12px 0; text-align: left; font-size: 16px; }
+  .set-row:first-of-type { border-top: 0; }
+  .set-row span:last-child { font: 700 14px var(--mono); white-space: nowrap; }
+  .pending { font: 700 12px var(--mono); color: var(--red); margin-top: 6px; }
+  .rules li { position: relative; padding-left: 22px; font-size: 14px; }
+  .rules li + li { margin-top: 10px; }
+  .rules li::before { content: "✓"; position: absolute; left: 0; font: 700 14px var(--mono); color: var(--red); }
+
+  /* ===== Apps ===== */
   .app-row { display: flex; align-items: center; gap: 12px; }
-  .app-ico { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; color: #fff; font: 700 16px var(--mono); flex: none; }
+  .app-row + .app-row { margin-top: 14px; }
+  .app-ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; color: #fff; font: 700 15px var(--mono); flex: none; }
   .app-ico.tt { background: var(--ink); }
   .app-ico.ig { background: linear-gradient(135deg, #8a3ab9, #e95950 60%, #fccc63); }
-  .app-row .name { font-weight: 700; font-size: 17px; }
-  .app-row .time { margin-left: auto; font: 700 16px var(--mono); text-align: right; white-space: nowrap; }
-  .app-row .time small { font-weight: 400; color: var(--ink-soft); }
-  .track { height: 12px; border-radius: 99px; background: var(--paper-2); margin-top: 14px; overflow: hidden; }
-  .fill { height: 100%; border-radius: 99px; background: var(--ink); width: 0; transition: width .6s ease, background .3s; }
-  .over .fill { background: var(--red); }
-  .over .time { color: var(--red); }
-  .status { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 8px; }
-  .over .status { color: var(--red); font-weight: 700; }
-  .stakes-card { position: relative; background: var(--ink); color: var(--paper); border-color: var(--ink); overflow: hidden; }
-  .stakes-card .label { color: #A9A69D; }
-  .stakes-card .amt { font: 700 48px/1 var(--sans); letter-spacing: -.03em; margin: 8px 0 4px; }
-  .stakes-card .sub { font: 400 12px var(--mono); color: #A9A69D; }
-  .stakes-card .stamp { right: 18px; bottom: auto; top: 54px; mix-blend-mode: normal; background: transparent; display: none; }
-  .stakes-card.paid .stamp { display: block; }
-  .hint { text-align: center; font: 400 11px var(--mono); color: #A9A69D; margin-top: 16px; }
+  .app-ico.rd { background: #FF4500; }
+  .app-ico.yt { background: #FF0000; }
+  .app-ico.sc { background: #FFFC00; color: var(--ink); border: 1.5px solid var(--ink); }
+  .app-row .grow1 { flex: 1; min-width: 0; }
+  .app-row .name { font-weight: 700; font-size: 16px; display: flex; justify-content: space-between; gap: 8px; }
+  .app-row .name span:last-child { font: 700 14px var(--mono); }
+  .track { height: 8px; border-radius: 99px; background: var(--paper-2); margin-top: 6px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 99px; background: var(--ink); width: 0; transition: width .6s ease; }
+
+  /* ===== Charts ===== */
+  .chart-card .s { font: 400 12px var(--mono); color: var(--ink-soft); margin: 2px 0 10px; }
+  .chart { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart text { font-family: var(--mono); font-size: 10px; fill: var(--ink-soft); }
+  .chart .hit { fill: transparent; cursor: pointer; }
+  .chart .grp:hover .seg, .chart .grp.on .seg { opacity: .8; }
+  .chart .medal text { font: 700 9px var(--mono); fill: var(--ink); }
+  .chart .medal.gold text { fill: #fff; }
+  .chart text.goal { font-weight: 700; fill: var(--red); }
+  .chart text.pb-tag { font: 700 9px var(--mono); fill: #fff; }
+  .streak { font: 700 12px var(--mono); color: #fff; background: var(--red); border: 2px solid var(--ink); border-radius: 999px; padding: 4px 10px; white-space: nowrap; box-shadow: 0 2px 0 var(--ink); }
+  .streak.cold { background: var(--paper-2); color: var(--ink-soft); box-shadow: none; }
+  .tip { position: absolute; z-index: 25; pointer-events: none; background: var(--ink); color: var(--paper); font: 400 12px/1.4 var(--mono); padding: 8px 10px; border-radius: 10px; white-space: nowrap; transform: translate(-50%, calc(-100% - 8px)); display: none; }
+  .tip b { color: #fff; }
+  .tip.show { display: block; }
+
+  /* ===== Reveal ===== */
+  #reveal { background: var(--paper); }
+  .rv-apps { margin-top: 14px; font: 400 13px var(--mono); }
+  .rv-saved { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 14px; padding-top: 12px; border-top: 1.5px dashed #5A5852; }
+  .rv-saved b { font: 700 28px/1 var(--sans); letter-spacing: -.02em; color: var(--red); }
+  .rv-saved span:last-child { flex-basis: 100%; font: 400 12px var(--mono); color: #A9A69D; }
+  .pot-card .li .dots { color: #5A5852; }
+  .lb-pay { margin-left: auto; text-align: right; white-space: nowrap; }
+  .lb-pay b { display: block; font: 700 18px var(--mono); }
+  .lb-pay span { font: 400 12px var(--mono); color: var(--ink-soft); }
+  .lb-pay .up { color: #1F7A3A; }
+  .person.first .lb-pay b { color: var(--red); }
+  .person.wait { opacity: 0; transform: translateY(10px); }
 
   /* ===== Receipt component (copied from index.html) ===== */
   .receipt { position: relative; background: #fff; font-family: var(--mono); font-size: 14px; padding: 26px 22px 30px; width: 100%; max-width: 360px; margin: 24px auto 0; filter: drop-shadow(0 18px 30px rgba(0,0,0,.12)); }
@@ -134,65 +214,46 @@
   .stamp small { display: block; font-size: 11px; letter-spacing: .14em; }
   .receipt-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
   .receipt-actions a { text-decoration: none; }
-  .receipt-actions [hidden] { display: none; }
   .receipt-actions button:disabled { opacity: .6; cursor: wait; }
   .receipt-actions .fineprint { margin-top: 0; text-align: center; }
 
-  /* ===== 7. Friend pot ===== */
-  .pot-total { text-align: center; padding: 26px 18px; }
-  .pot-total .amt { font: 700 64px/1 var(--sans); letter-spacing: -.04em; color: var(--red); margin: 8px 0; }
-  .friend { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px dashed rgba(26,26,26,.3); }
-  .friend:first-child { border-top: 0; }
-  .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 14px var(--mono); flex: none; border: 2px solid var(--ink); }
-  .friend .h { font: 700 14px var(--mono); }
-  .friend .s { font-size: 13px; color: var(--ink-soft); }
-  .friend .p { margin-left: auto; font: 700 16px var(--mono); }
-
-  .friend-btn { width: 100%; background: none; border: 0; border-top: 1px dashed rgba(26,26,26,.3); text-align: left; padding: 12px 0; }
-  .friend-btn:first-child { border-top: 0; }
-  .friend-btn:active { background: var(--paper-2); }
-  .friend .chev { font: 700 18px var(--mono); color: var(--ink-soft); margin-left: 4px; }
-  .nudge-row { display: flex; gap: 10px; margin-top: 28px; }
-
-  /* ===== Home ===== */
-  .ring-card { display: flex; align-items: center; gap: 18px; }
-  .ring { width: 116px; height: 116px; flex: none; }
-  .ring .bg { stroke: var(--paper-2); }
-  .ring .fg { stroke: var(--ink); transition: stroke-dashoffset .6s ease; }
-  .ring.over .fg { stroke: var(--red); }
-  .ring-card .big { font: 700 30px/1 var(--sans); letter-spacing: -.03em; margin: 6px 0 4px; }
-  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-  .tiles .card { margin: 0; padding: 14px; }
-  .tile-btn { text-align: left; font: inherit; }
-  .tile .big { font: 700 26px/1.1 var(--sans); letter-spacing: -.02em; margin-top: 6px; }
-  .tile .s { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 2px; }
+  /* ===== Daily limits: Limits, Today, Stats (from the first prototype) ===== */
+  .slider-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .slider-row b { font-size: 18px; }
+  .slider-row output { font: 700 18px var(--mono); }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 99px; background: linear-gradient(var(--ink), var(--ink)) 0 0 / var(--p, 33%) 100% no-repeat, var(--paper-2); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--red); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink); }
+  input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: var(--red); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink); }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .switch { position: relative; width: 54px; height: 32px; flex: none; border-radius: 99px; background: #CFCBC0; border: 0; transition: background .2s; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+  .switch[aria-checked=true] { background: var(--red); }
+  .switch[aria-checked=true]::after { transform: translateX(22px); }
+  .causes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .cause { font: 700 14px var(--mono); border: 2px solid var(--ink); border-radius: 999px; padding: 10px 14px; background: #fff; }
+  .cause[aria-pressed=true] { background: var(--ink); color: var(--paper); }
   .row-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; margin-top: 12px; }
   .row-link .chev { font: 700 20px var(--mono); }
-
-  /* ===== Stats charts ===== */
-  .chart-card h3 { font-size: 18px; }
-  .chart-card .s { font: 400 12px var(--mono); color: var(--ink-soft); margin: 2px 0 10px; }
-  .chart { width: 100%; height: auto; display: block; overflow: visible; }
-  .chart text { font-family: var(--mono); font-size: 10px; fill: var(--ink-soft); }
+  #today .app-ico { width: 40px; height: 40px; border-radius: 11px; font-size: 16px; }
+  #today .app-row .name { font-size: 17px; }
+  #today .app-row .time { margin-left: auto; font: 700 16px var(--mono); text-align: right; white-space: nowrap; }
+  #today .app-row .time small { font-weight: 400; color: var(--ink-soft); }
+  #today .track { height: 12px; margin-top: 14px; }
+  .over .fill { background: var(--red); }
+  .over .time { color: var(--red); }
+  .status { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 8px; }
+  .over .status { color: var(--red); font-weight: 700; }
+  .stakes-card { position: relative; background: var(--ink); color: var(--paper); border-color: var(--ink); overflow: hidden; }
+  .stakes-card .label { color: #A9A69D; }
+  .stakes-card .amt { font: 700 48px/1 var(--sans); letter-spacing: -.03em; margin: 8px 0 4px; }
+  .stakes-card .sub { font: 400 12px var(--mono); color: #A9A69D; }
+  .stakes-card .stamp { right: 18px; bottom: auto; top: 54px; mix-blend-mode: normal; background: transparent; display: none; }
+  .stakes-card.paid .stamp { display: block; }
   .chart .val { fill: var(--ink); font-weight: 700; font-size: 11px; }
-  .chart .hit { fill: transparent; cursor: pointer; }
-  .chart .grp:hover .seg, .chart .grp.on .seg { opacity: .8; }
   .legend { display: flex; flex-wrap: wrap; gap: 14px; font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 10px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
   .legend i.line { height: 0; border-top: 2px dashed var(--ink-soft); border-radius: 0; width: 14px; }
-  .tip { position: absolute; z-index: 25; pointer-events: none; background: var(--ink); color: var(--paper); font: 400 12px/1.4 var(--mono); padding: 8px 10px; border-radius: 10px; white-space: nowrap; transform: translate(-50%, calc(-100% - 8px)); display: none; }
-  .tip b { color: #fff; }
-  .tip.show { display: block; }
-
-  /* ===== Charity sheet ===== */
-  .scrim { position: absolute; inset: 0; z-index: 30; background: rgba(26,26,26,.45); opacity: 0; visibility: hidden; }
-  .scrim.show { opacity: 1; visibility: visible; }
-  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 31; max-height: 88%; overflow-y: auto; background: var(--paper); border-top: 2px solid var(--ink); border-radius: 24px 24px 0 0; padding: 10px 20px var(--bottom); transform: translateY(100%); visibility: hidden; }
-  .sheet.show { transform: none; visibility: visible; }
-  .grabber { width: 40px; height: 5px; border-radius: 99px; background: #CFCBC0; margin: 0 auto 14px; }
-  .sheet h2 { font-size: 24px; letter-spacing: -.02em; line-height: 1.1; }
-  .sheet .group { margin: 16px 0 8px; }
   .charity { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: #fff; border: 2px solid var(--ink); border-radius: 16px; padding: 12px 14px; }
   .charity + .charity { margin-top: 8px; }
   .charity .n { font-weight: 700; font-size: 16px; display: block; }
@@ -201,10 +262,19 @@
   .charity[aria-pressed=true] { background: var(--ink); color: var(--paper); }
   .charity[aria-pressed=true] .d { color: #A9A69D; }
 
+  /* ===== Bottom sheet ===== */
+  .scrim { position: absolute; inset: 0; z-index: 30; background: rgba(26,26,26,.45); opacity: 0; visibility: hidden; }
+  .scrim.show { opacity: 1; visibility: visible; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 31; max-height: 88%; overflow-y: auto; background: var(--paper); border-top: 2px solid var(--ink); border-radius: 24px 24px 0 0; padding: 10px 20px var(--bottom); transform: translateY(100%); visibility: hidden; }
+  .sheet.show { transform: none; visibility: visible; }
+  .grabber { width: 40px; height: 5px; border-radius: 99px; background: #CFCBC0; margin: 0 auto 14px; }
+  .sheet h2 { font-size: 24px; letter-spacing: -.02em; line-height: 1.1; margin-top: 6px; }
+  .sheet .group { margin: 18px 0 8px; }
+
   /* ===== Tab bar ===== */
   .tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; display: none; background: rgba(247,245,239,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px dashed rgba(26,26,26,.3); padding: 8px 12px var(--bottom); }
   .tabs.show { display: flex; }
-  .tabs button { flex: 1; background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font: 700 11px var(--mono); color: var(--ink-soft); padding: 6px 0; }
+  .tabs button { flex: 1; min-width: 0; background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font: 700 10px var(--mono); color: var(--ink-soft); padding: 6px 0; }
   .tabs button svg { width: 24px; height: 24px; }
   .tabs button[aria-current=page] { color: var(--red); }
 
@@ -219,7 +289,7 @@
   .banner .msg { font-size: 14.5px; line-height: 1.3; font-family: -apple-system, system-ui, var(--sans); }
   .banner > div:last-child { flex: 1; min-width: 0; }
 
-  .toast { position: absolute; z-index: 20; left: 50%; bottom: calc(var(--bottom) + 96px); transform: translate(-50%, 20px); background: var(--ink); color: var(--paper); font: 700 15px var(--mono); padding: 12px 20px; border-radius: 999px; opacity: 0; pointer-events: none; white-space: nowrap; }
+  .toast { position: absolute; z-index: 40; left: 50%; bottom: calc(var(--bottom) + 96px); transform: translate(-50%, 20px); background: var(--ink); color: var(--paper); font: 700 15px var(--mono); padding: 12px 20px; border-radius: 999px; opacity: 0; pointer-events: none; white-space: nowrap; }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   /* ===== Motion (all of it lives here, so reduced-motion users get none) ===== */
@@ -237,11 +307,16 @@
     .sheet.show { transition: transform .35s cubic-bezier(.2,.9,.3,1), visibility 0s; }
     .grow { transform-box: fill-box; transform-origin: bottom; animation: grow .5s cubic-bezier(.2,.8,.2,1) both; }
     @keyframes grow { from { transform: scaleY(0); } }
-    .grow-x { transform-box: fill-box; transform-origin: left; animation: grow-x .5s cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes grow-x { from { transform: scaleX(0); } }
+    .pop { transform-box: fill-box; transform-origin: center; animation: pop .4s cubic-bezier(.2,1.6,.4,1) both; }
+    @keyframes pop { from { transform: scale(0); } }
+    .chart .ghost { animation: ghost 1.6s ease-in-out infinite; }
+    @keyframes ghost { 50% { opacity: .35; } }
+    .person { transition: opacity .45s ease, transform .45s cubic-bezier(.2,1.4,.4,1); }
     .printing { animation: feed 1.9s steps(14, end) .3s both; }
     .printing .stamp { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) 2.4s both; }
     .stakes-card.paid .stamp.land { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) .35s both; }
+    .grow-x { transform-box: fill-box; transform-origin: left; animation: grow-x .5s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes grow-x { from { transform: scaleX(0); } }
     .bump { animation: bump .4s ease; }
     @keyframes feed { from { clip-path: inset(-12px 0 100% 0); } to { clip-path: inset(-12px 0 -12px 0); } }
     @keyframes stamp { from { opacity: 0; transform: rotate(-12deg) scale(2.4); } to { opacity: .92; transform: rotate(-12deg) scale(1); } }
@@ -268,19 +343,166 @@
     <div class="bar"><span class="logo"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</span></div>
     <div class="ob-hero">
       <div class="mini-receipt" aria-hidden="true">
-        <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
-        <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
-        <div class="li" style="font-weight:700"><span>DONATED</span><span class="dots"></span><span class="red">£11.00</span></div>
+        <div class="li"><span>1st Charles</span><span class="dots"></span><span>3h 12m</span></div>
+        <div class="li"><span>2nd You</span><span class="dots"></span><span>4h 01m</span></div>
+        <div class="li" style="font-weight:700"><span>YOU WON</span><span class="dots"></span><span class="red">£15.49</span></div>
       </div>
-      <h1>Your scrolling, <em>itemised.</em></h1>
-      <p class="muted" style="font-size:17px">Set a limit. Go over, and £1 per 10 minutes goes to a charity you choose. Every Sunday, get the receipt.</p>
+      <h1>Scroll less. <em>Win the pot.</em></h1>
+      <p class="muted" style="font-size:17px">Put money in with your friends. The less you scroll this week, the bigger your share. Results drop Sunday at 6pm.</p>
     </div>
     <div class="ob-foot">
-      <button class="btn" data-go="limits">Get started</button>
-      <p>Demo build · all data is pretend</p>
+      <button class="btn" data-setup="create">Create a group</button>
+      <button class="btn ghost" data-setup="join">Join a group</button>
+      <p>Demo build · all data is pretend · no real money moves</p>
     </div>
   </section>
 
+  <!-- ============ 2. CREATE / JOIN A GROUP ============ -->
+  <section class="screen" id="setup">
+    <div class="bar"><button class="back" data-back>‹ Back</button><span></span></div>
+    <div class="seg-ctl" id="mode">
+      <button data-mode="create" aria-pressed="true">Create a group</button>
+      <button data-mode="join" aria-pressed="false">Join one</button>
+    </div>
+
+    <div class="stack" id="create-pane" style="margin-top:18px">
+      <h1>New group</h1>
+      <div class="card">
+        <label class="label" for="g-name">Group name</label>
+        <input class="field" id="g-name" value="Flat 4B" maxlength="20" autocomplete="off">
+      </div>
+      <div class="card">
+        <div class="row-between"><b style="font-size:18px">Friends</b><span class="fineprint" id="m-count" style="margin:0"></span></div>
+        <div id="m-list"></div>
+        <form class="add-row" id="add-form">
+          <input class="field" id="add-user" placeholder="Add by username" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Friend's username">
+          <button class="btn dark small" type="submit">Add</button>
+        </form>
+      </div>
+      <div class="card">
+        <b style="font-size:18px">Weekly pledge</b>
+        <p class="fineprint" style="margin-top:2px">Everyone puts in the same. It all goes in the pot.</p>
+        <div class="chips" id="pledge-chips"></div>
+      </div>
+      <div class="card">
+        <b style="font-size:18px">Apps that count</b>
+        <div class="chips" id="app-chips"></div>
+        <p class="fineprint">Never counted: WhatsApp, iMessage, Messages</p>
+      </div>
+      <button class="btn" id="start" style="margin-top:6px">Start</button>
+    </div>
+
+    <div class="stack" id="join-pane" style="margin-top:18px" hidden>
+      <h1>Join a group</h1>
+      <p class="muted">Ask a friend for their username, or open their invite link.</p>
+      <div class="card">
+        <label class="label" for="join-user">Friend's username</label>
+        <input class="field" id="join-user" value="@charles.k" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="card">
+        <p class="label">Found</p>
+        <b style="font-size:22px">Flat 4B</b>
+        <p class="fineprint" style="margin-top:2px">Charles, Priya, Dan, Sam · £10 a week · 5 apps · reveal Sunday 6pm</p>
+      </div>
+      <button class="btn" id="join-btn">Join Flat 4B · pledge £10</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. COMPETITION (main screen) ============ -->
+  <section class="screen tabbed" id="compete">
+    <div class="bar">
+      <button class="logo" id="secret" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
+      <span class="label" id="c-week">Week</span>
+    </div>
+    <div class="card pot-card">
+      <p class="label" id="c-pot-label">Prize pot</p>
+      <p class="amt" id="c-pot">£50</p>
+      <p class="sub" id="c-pot-sub"></p>
+    </div>
+    <div class="card" id="cd-card">
+      <div class="row-between"><span class="label">Reveal in</span><span class="label">Sun · 6pm</span></div>
+      <div class="cd" aria-live="off">
+        <div><b id="cd-d">0</b><span>DAYS</span></div>
+        <div><b id="cd-h">00</b><span>HRS</span></div>
+        <div><b id="cd-m">00</b><span>MIN</span></div>
+        <div><b id="cd-s">00</b><span>SEC</span></div>
+      </div>
+      <p class="fineprint">Everyone's time stays hidden until then.</p>
+    </div>
+    <button class="card results-card" id="results-card" data-go="reveal" hidden>
+      <span><span class="label">Sunday · 6pm</span><br><b id="results-title">The results are in</b></span><span class="chev">›</span>
+    </button>
+    <div class="tiles">
+      <div class="card tile"><p class="label">You so far</p><p class="big" id="c-mine">0m</p><p class="s" id="c-mine-s"></p></div>
+      <div class="card tile"><p class="label">Position</p><p class="big" id="c-pos">–</p><p class="s" id="c-pos-s"></p></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <p class="label">Where you stand</p>
+      <div id="ladder" style="margin-top:4px"></div>
+    </div>
+    <p class="hint">Demo · tap the logo 3× to skip to Sunday 6pm · hold it to scroll 30 min</p>
+  </section>
+
+  <!-- ============ 4. GROUP ============ -->
+  <section class="screen tabbed" id="group">
+    <div class="bar">
+      <span class="label" id="g-kicker">Group</span>
+      <button class="icon-btn" id="g-settings-btn" aria-label="Group settings"><svg viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
+    </div>
+    <h1 id="g-title">Flat 4B</h1>
+    <p class="muted" id="g-sub" style="margin:8px 0 16px"></p>
+    <div class="card">
+      <p class="label">Your position</p>
+      <p style="font:700 30px/1.1 var(--sans);letter-spacing:-.03em;margin:6px 0 4px" id="g-pos">–</p>
+      <p class="fineprint" style="margin:0" id="g-pos-s">You can see your place. Nobody sees anyone's time until Sunday 6pm.</p>
+    </div>
+    <div class="card" id="g-members" style="padding-top:6px;padding-bottom:6px"></div>
+    <button class="btn ghost" id="invite-btn" style="margin-top:12px">+ Invite a friend</button>
+    <div class="card" style="margin-top:12px">
+      <p class="label" style="margin-bottom:4px">Settings</p>
+      <div id="g-set"></div>
+      <p class="pending" id="g-pending" hidden></p>
+    </div>
+    <div class="card">
+      <p class="label" style="margin-bottom:12px">Fair play</p>
+      <ul class="rules">
+        <li>Time comes straight from your phone's Screen Time data. Nobody types it in.</li>
+        <li>Turn off the permission or stop syncing for 24h and you finish last that week.</li>
+        <li>Delete the app mid-week and your pledge stays in the pot.</li>
+        <li>Link every device you scroll on. Browser visits to a counted app's site count too.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 5. PROFILE ============ -->
+  <section class="screen tabbed" id="profile">
+    <div class="bar"><span class="label" id="p-kicker">Profile</span></div>
+    <h1 style="margin-bottom:16px">Your record</h1>
+    <div class="tiles" style="margin-top:0">
+      <div class="card tile"><p class="label">This week</p><p class="big" id="p-week">0m</p><p class="s" id="p-week-s"></p></div>
+      <div class="card tile"><p class="label">Position</p><p class="big" id="p-pos">–</p><p class="s" id="p-pos-s"></p></div>
+      <div class="card tile"><p class="label">Last week</p><p class="big" id="p-last">0m</p><p class="s" id="p-last-s"></p></div>
+      <div class="card tile"><p class="label">Won to date</p><p class="big" id="p-won">£0</p><p class="s" id="p-won-s"></p></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>By app</h3>
+      <p class="fineprint" style="margin:2px 0 14px" id="p-apps-s">This week so far</p>
+      <div id="p-apps"></div>
+      <p class="fineprint" style="margin-top:14px">Not counted: WhatsApp, iMessage, Messages</p>
+    </div>
+    <div class="card chart-card">
+      <div class="row-between" style="align-items:center"><h3>Hours per week</h3><span class="streak" id="p-streak"></span></div>
+      <p class="s" id="p-chart-s">Tap a bar</p>
+      <svg class="chart" id="chart-weeks" role="img"></svg>
+    </div>
+    <div class="card" style="padding-top:12px;padding-bottom:6px">
+      <h3 style="margin-bottom:4px">Past competitions</h3>
+      <div id="p-history"></div>
+    </div>
+    <p class="hint">Demo data · winnings are simulated</p>
+  </section>
+
+  <!-- ============ DAILY LIMITS, TODAY, WEEKLY RECEIPT, STATS (first prototype) ============ -->
   <!-- ============ 2. SET LIMITS ============ -->
   <section class="screen" id="limits">
     <div class="bar"><button class="back" data-back>‹ Back</button><span></span></div>
@@ -315,13 +537,13 @@
       </div>
     </div>
     <div class="spacer"></div>
-    <button class="btn" data-go="home">Start tracking</button>
+    <button class="btn" data-back>Save limits</button>
   </section>
 
   <!-- ============ 3/4. TODAY ============ -->
   <section class="screen tabbed" id="today">
     <div class="bar">
-      <button class="logo" id="secret" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
+      <button class="logo" id="secret-today" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
       <button class="icon-btn" data-go="limits" aria-label="Edit limits"><svg viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
     </div>
     <p class="label" id="today-date">Today</p>
@@ -348,7 +570,7 @@
   <section class="screen tabbed" id="receipt">
     <div class="bar"><span class="label">Sunday · Week 39</span></div>
     <h1>Your receipt</h1>
-    <div class="receipt" id="the-receipt" aria-label="Weekly receipt: 15 hours 50 minutes scrolled, £11 donated">
+    <div class="receipt" id="week-receipt" aria-label="Weekly receipt: 15 hours 50 minutes scrolled, £11 donated">
       <div class="head"><b>RECEIPTS</b><span>WEEK 39 · 22–28 SEP</span></div>
       <hr>
       <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
@@ -367,63 +589,10 @@
       <div class="stamp" aria-hidden="true">£11<small>DONATED</small></div>
     </div>
     <div class="receipt-actions">
-      <button class="btn" id="share" disabled>Preparing image…</button>
-      <a class="btn ghost" id="download-receipt" download="receipts-week-39.png" hidden>Download receipt image</a>
-      <p class="fineprint" id="share-status" role="status" aria-live="polite">Preparing your receipt image.</p>
+      <button class="btn" id="share-w" disabled>Preparing image…</button>
+      <a class="btn ghost" id="download-w" download="receipts-week-39.png" hidden>Download receipt image</a>
+      <p class="fineprint" id="share-status-w" role="status" aria-live="polite">Preparing your receipt image.</p>
     </div>
-  </section>
-
-  <!-- ============ 7. FRIEND POT ============ -->
-  <section class="screen tabbed" id="pot">
-    <div class="bar"><span class="label">Friend pot · Pro</span></div>
-    <h1>Flat 4B pot</h1>
-    <p class="muted" style="margin:8px 0 16px">Shared limits. Every slip goes in the pot.</p>
-    <div class="card pot-total">
-      <p class="label">This week</p>
-      <p class="amt">£14.00</p>
-      <p class="fineprint">Goes to <b>Climate</b> on Sunday · 100% donated</p>
-    </div>
-    <div class="card" id="friends" style="padding-top:6px;padding-bottom:6px"></div>
-    <p class="hint">Tap anyone to see their receipt · fake handles, demo data</p>
-  </section>
-
-  <!-- ============ 7b. FRIEND RECEIPT ============ -->
-  <section class="screen" id="friend">
-    <div class="bar"><button class="back" data-back>‹ Pot</button><span class="label">Flat 4B · Week 40</span></div>
-    <h1 id="friend-title">Their receipt</h1>
-    <div id="friend-receipt"></div>
-    <div class="nudge-row">
-      <button class="btn ghost" id="nudge">👀 Nudge</button>
-      <button class="btn dark" id="cheer">👏 Cheer</button>
-    </div>
-  </section>
-
-  <!-- ============ HOME ============ -->
-  <section class="screen tabbed" id="home">
-    <div class="bar">
-      <button class="logo secret" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
-      <button class="icon-btn" data-go="limits" aria-label="Edit limits"><svg viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
-    </div>
-    <p class="label" id="home-date">Today</p>
-    <h1 style="margin:6px 0 18px" id="home-hi">Hey, you.</h1>
-    <button class="card ring-card tile-btn" data-tab-go="today">
-      <svg class="ring" id="ring" viewBox="0 0 120 120" aria-hidden="true">
-        <circle class="bg" cx="60" cy="60" r="50" fill="none" stroke-width="14"/>
-        <circle class="fg" id="ring-fg" cx="60" cy="60" r="50" fill="none" stroke-width="14" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
-      </svg>
-      <div>
-        <p class="label">Scrolled today</p>
-        <p class="big" id="home-used">1h 32m</p>
-        <p class="fineprint" style="margin:0" id="home-left">of 2h · 28m left</p>
-      </div>
-    </button>
-    <div class="tiles">
-      <button class="card tile tile-btn" data-tab-go="today"><p class="label">Today's stakes</p><p class="big" id="home-owed">£0.00</p><p class="s" id="home-owed-s">Nothing owed. Keep it up.</p></button>
-      <button class="card tile tile-btn" data-tab-go="pot"><p class="label">Flat 4B pot</p><p class="big">£14</p><p class="s">You're #1 (least over)</p></button>
-      <button class="card tile tile-btn" data-tab-go="stats"><p class="label">8-week trend</p><svg id="spark" viewBox="0 0 120 34" style="width:100%;height:34px;margin-top:8px" aria-label="Weekly scrolling, trending down"></svg><p class="s">↓ 14% since week 32</p></button>
-      <button class="card tile tile-btn" id="home-charity"><p class="label">Your £ goes to</p><p class="big charity-name" style="font-size:20px">Mind</p><p class="s">Tap to change</p></button>
-    </div>
-    <button class="card row-link" data-tab-go="receipt"><span><span class="label">Sunday</span><br><b style="font-size:18px">Week 39 receipt is ready</b></span><span class="chev">›</span></button>
   </section>
 
   <!-- ============ STATS ============ -->
@@ -439,7 +608,7 @@
     <div class="card chart-card" style="margin-top:12px">
       <h3>Hours per week</h3>
       <p class="s">Weeks 32–39 · tap a bar</p>
-      <svg class="chart" id="chart-weeks" role="img"></svg>
+      <svg class="chart" id="chart-limit-weeks" role="img"></svg>
       <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>14h weekly limit</span></div>
     </div>
     <div class="card chart-card">
@@ -456,14 +625,60 @@
     <p class="hint">Demo data · example charities, not partners</p>
   </section>
 
+  <!-- ============ 6. SUNDAY 6PM REVEAL ============ -->
+  <section class="screen" id="reveal">
+    <div class="bar"><button class="back" data-back>‹ Back</button><span class="label" id="rv-kicker"></span></div>
+    <h1 style="margin-bottom:16px">Time's up.</h1>
+    <div class="card pot-card">
+      <p class="label">Your week</p>
+      <p class="amt" id="rv-time">0m</p>
+      <p class="sub" id="rv-vs"></p>
+      <div class="rv-apps" id="rv-apps"></div>
+      <div class="rv-saved"><span class="label">Time saved</span><b id="rv-saved">0m</b><span id="rv-saved-s"></span></div>
+    </div>
+    <button class="btn" id="rv-go" style="margin-top:16px">Reveal the leaderboard</button>
+
+    <div id="rv-board" hidden>
+      <h2 class="sec">Leaderboard</h2>
+      <div class="card" id="lb" style="padding-top:6px;padding-bottom:6px"></div>
+      <p class="fineprint" id="lb-rule"></p>
+    </div>
+
+    <div id="rv-receipt" hidden>
+      <h2 class="sec" style="text-align:center">Your receipt</h2>
+      <div class="receipt" id="the-receipt"></div>
+      <div class="receipt-actions">
+        <button class="btn" id="share" disabled>Preparing image…</button>
+        <a class="btn ghost" id="download-receipt" download="receipts.png" hidden>Download receipt image</a>
+        <p class="fineprint" id="share-status" role="status" aria-live="polite">Preparing your receipt image.</p>
+      </div>
+      <div class="card" style="margin-top:28px">
+        <p class="label" id="next-kicker">Next week</p>
+        <h3 style="margin-top:4px">Go again?</h3>
+        <p class="fineprint" style="margin-top:2px" id="next-sub">Same group. Pick next week's pledge.</p>
+        <div class="chips" id="next-pledge"></div>
+        <button class="btn" id="again" style="margin-top:16px">Start next week</button>
+      </div>
+    </div>
+  </section>
+
   <div class="tip" id="tip" role="status"></div>
 
-  <!-- ============ CHARITY SHEET ============ -->
+  <!-- ============ BOTTOM SHEET (settings, invite) ============ -->
   <div class="scrim" id="scrim"></div>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
     <div class="grabber"></div>
-    <p class="label" id="sheet-kicker">10 min over on TikTok</p>
-    <h2 id="sheet-title" style="margin-top:6px">Where should this £1 go?</h2>
+    <p class="label" id="sheet-kicker"></p>
+    <h2 id="sheet-title"></h2>
+    <div id="sheet-body"></div>
+  </div>
+
+  <!-- ============ CHARITY SHEET ============ -->
+  <div class="scrim" id="cscrim"></div>
+  <div class="sheet" id="csheet" role="dialog" aria-modal="true" aria-labelledby="csheet-title">
+    <div class="grabber"></div>
+    <p class="label" id="csheet-kicker">10 min over on TikTok</p>
+    <h2 id="csheet-title" style="margin-top:6px">Where should this £1 go?</h2>
     <div id="charity-list"></div>
     <button class="btn ghost" id="sheet-default" style="margin-top:16px">Send to my default</button>
     <p class="fineprint" style="text-align:center;margin:12px 0 4px">Example charities, not partners (yet) · 100% passed on</p>
@@ -473,37 +688,135 @@
   <nav class="tabs" id="tabs">
     <button data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
     <button data-tab="receipt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 2h14v20l-2.3-1.4-2.4 1.4-2.3-1.4-2.4 1.4-2.3-1.4L5 22z"/><path d="M9 8h6M9 12h6M9 16h4" stroke-linecap="round"/></svg>Receipt</button>
-    <button data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 11 12 3l9 8"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Home</button>
+    <button data-tab="compete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 21l1-4h4l1 4"/></svg>Compete</button>
     <button data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M6 17v-5M11 17V7M16 17v-8M21 17V4" /></svg>Stats</button>
-    <button data-tab="pot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg>Pot</button>
+    <button data-tab="group"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg>Group</button>
+    <button data-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Profile</button>
   </nav>
 </div>
 
 <script>
 (function () {
-  // Everything below is fake demo state. Only an explicit share/download exports a receipt image.
+  // Everything below is fake demo state. No money moves; only an explicit share/download exports a receipt image.
   var $ = function (id) { return document.getElementById(id); };
-  var state = { limTT: 60, limIG: 60, stakes: true, cause: 'Mental health', charity: 'Mind', ask: true, given: {}, ttSecs: 0, overMin: 0, owed: 0 };
-  var CAP = 5;
-  // Example charities only: not partners. Grouped by the three causes on the Limits screen.
-  var CHARITIES = [
-    { n: 'Mind', d: 'Mental health support', c: 'Mental health' },
-    { n: 'YoungMinds', d: 'Young people\'s mental health', c: 'Mental health' },
-    { n: 'Samaritans', d: '24/7 listening line', c: 'Mental health' },
-    { n: 'BookTrust', d: 'Getting kids reading', c: 'Education' },
-    { n: 'Teach First', d: 'Teachers where they\'re needed', c: 'Education' },
-    { n: 'Woodland Trust', d: 'Planting UK woods', c: 'Climate' },
-    { n: 'ClientEarth', d: 'Climate law', c: 'Climate' }
-  ];
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  var APPS = [
+    { k: 'ig', n: 'Instagram', g: '◎' },
+    { k: 'tt', n: 'TikTok', g: '♪' },
+    { k: 'rd', n: 'Reddit', g: 'r' },
+    { k: 'yt', n: 'YouTube', g: '▶' },
+    { k: 'sc', n: 'Snapchat', g: 'S' }
+  ];
+  var PLEDGES = [5, 10, 20];
+  var RULES = {
+    prop: { n: 'Proportional', d: 'Your slice grows the further you finish below the group\'s highest total. Last place gets £0.' },
+    podium: { n: 'Podium', d: '50% / 30% / 20% to the top three. Everyone else gets £0.' }
+  };
+
+  // Each person's minutes per app for the whole week. Defaults total: Charles 3h 12m, you 4h 01m,
+  // Priya 5h 20m, Dan 7h 45m, Sam 9h 30m, which splits a £50 pot £17.80 / £15.49 / £11.77 / £4.94 / £0.
+  var ME = { n: 'You', h: 'you', i: 'ME', me: true, bg: 'var(--ink);color:var(--paper)', a: { ig: 88, tt: 72, rd: 15, yt: 46, sc: 20 } };
+  var FRIENDS = [
+    { n: 'Charles', h: '@charles.k', i: 'CK', bg: '#FDE2E1', a: { ig: 60, tt: 30, rd: 22, yt: 70, sc: 10 } },
+    { n: 'Priya', h: '@priya_r', i: 'PR', bg: '#FFF3C4', a: { ig: 120, tt: 95, rd: 0, yt: 60, sc: 45 } },
+    { n: 'Dan', h: '@dan.demo', i: 'DN', bg: '#E7E4DA', a: { ig: 70, tt: 210, rd: 95, yt: 90, sc: 0 } },
+    { n: 'Sam', h: '@sam_s', i: 'SS', bg: '#fff', a: { ig: 150, tt: 180, rd: 40, yt: 120, sc: 80 } }
+  ];
+
+  var state = {
+    group: 'Flat 4B', pledge: 10, rule: 'prop', apps: { ig: 1, tt: 1, rd: 1, yt: 1, sc: 1 },
+    members: [ME].concat(FRIENDS), invited: [], pending: null,
+    extra: 0, offset: 0, revealed: false, seen: false, history: []
+  };
+  var draft = FRIENDS.slice(); // friends list while creating a group
+
   function fmt(min) { var h = Math.floor(min / 60), m = min % 60; return h ? h + 'h ' + String(m).padStart(2, '0') + 'm' : m + 'm'; }
-  function fmtShort(min) { return min % 60 ? fmt(min) : (min / 60) + 'h'; }
+  function money(x) { return '£' + x.toFixed(2); }
+  function pounds(x) { return x % 1 ? money(x) : '£' + x; }
+  function signed(x) { return (x >= 0 ? '+' : '−') + money(Math.abs(x)); }
+  function ordinal(n) { var s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function add(a, b) { return a + b; }
+  function on() { return APPS.filter(function (a) { return state.apps[a.k]; }); }
+  function appIco(a) { return '<span class="app-ico ' + a.k + '" aria-hidden="true">' + a.g + '</span>'; }
+  function avatar(p) { return '<span class="avatar" style="background:' + p.bg + '">' + esc(p.i) + '</span>'; }
+
+  // ---------- Week clock: the reveal is every Sunday at 6pm, local time ----------
+  // Fixed at load, so a page left open over Sunday 6pm counts down to zero and reveals.
+  var firstReveal = (function () {
+    var now = new Date(), t = new Date(now);
+    t.setHours(18, 0, 0, 0);
+    t.setDate(t.getDate() + (7 - t.getDay()) % 7);
+    if (t <= now) t.setDate(t.getDate() + 7);
+    return t;
+  })();
+  function revealAt() { var t = new Date(firstReveal); t.setDate(t.getDate() + 7 * state.offset); return t; }
+  function weekStart() { var s = revealAt(); s.setDate(s.getDate() - 6); s.setHours(0, 0, 0, 0); return s; }
+  function isoWeek(d) {
+    var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+    return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7);
+  }
+  function week() { return isoWeek(revealAt()); }
+  function range() {
+    var o = { day: 'numeric', month: 'short' };
+    return (weekStart().toLocaleDateString('en-GB', o) + '–' + revealAt().toLocaleDateString('en-GB', o)).toUpperCase();
+  }
+  // Share of the week gone, used to scale everyone's totals "so far". A future week hasn't started.
+  function progress() {
+    if (state.revealed) return 1;
+    var s = weekStart(), e = revealAt(), k = (Date.now() - s) / (e - s);
+    return Math.max(state.offset ? 0 : .05, Math.min(1, k));
+  }
+
+  // ---------- Totals, ranking and payouts ----------
+  function finalMins(p) { return on().map(function (a) { return p.a[a.k]; }).reduce(add, 0) + (p.me ? state.extra : 0); }
+  function nowMins(p) {
+    if (state.revealed) return finalMins(p);
+    return Math.round(on().map(function (a) { return p.a[a.k]; }).reduce(add, 0) * progress()) + (p.me ? state.extra : 0);
+  }
+  function myAppMins(final) {
+    var k = final ? 1 : progress(), list = on(), extraOn = state.apps.tt ? 'tt' : list[0].k;
+    return list.map(function (a) { return { a: a, m: Math.round(ME.a[a.k] * k) + (a.k === extraOn ? state.extra : 0) }; });
+  }
+  function myPosition() {
+    var mine = nowMins(ME), all = state.members.map(nowMins);
+    if (all.every(function (m) { return m === 0; })) return 0; // nobody has scrolled yet
+    return all.filter(function (m) { return m < mine; }).length + 1;
+  }
+  function results() {
+    var list = state.members.map(function (p) { return { p: p, mins: finalMins(p) }; });
+    list.sort(function (a, b) { return a.mins - b.mins || (a.p.me ? 1 : 0) - (b.p.me ? 1 : 0); });
+    // Ties share a place (joint 1st), and under the podium rule they split the slots they cover.
+    list.forEach(function (r) { r.place = list.filter(function (x) { return x.mins < r.mins; }).length + 1; });
+    var pot = state.pledge * list.length * 100, w;
+    if (state.rule === 'podium') w = list.map(function (r) {
+      var tied = list.filter(function (x) { return x.mins === r.mins; }).length, sum = 0;
+      for (var i = r.place - 1; i < r.place - 1 + tied; i++) sum += [50, 30, 20][i] || 0;
+      return sum / tied;
+    });
+    else { var max = list[list.length - 1].mins; w = list.map(function (r) { return max - r.mins; }); }
+    var sum = w.reduce(add, 0);
+    if (!sum) { w = list.map(function () { return 1; }); sum = list.length; } // everyone tied
+    // Split in pennies; leftover pennies go to the largest remainders so the pot adds up exactly.
+    var raw = w.map(function (x) { return pot * x / sum; });
+    var p = raw.map(function (x) { return Math.floor(x); }), left = pot - p.reduce(add, 0);
+    raw.map(function (x, i) { return [x - Math.floor(x), i]; }).sort(function (a, b) { return b[0] - a[0]; })
+      .slice(0, left).forEach(function (r) { p[r[1]]++; });
+    list.forEach(function (r, i) { r.won = p[i] / 100; r.net = r.won - state.pledge; });
+    return list;
+  }
+
+  // Previous six weeks for the Profile history: minutes, place (of 5), winnings. £10 pledge each week.
+  [[512, 4, 2.10], [470, 4, 3.40], [455, 3, 8.20], [390, 3, 9.90], [340, 2, 13.60], [278, 2, 14.75]].forEach(function (h, i) {
+    state.history.push({ wk: week() - 6 + i, mins: h[0], place: h[1], of: 5, won: h[2], pledge: 10 });
+  });
 
   // ---------- Routing: in-memory stack. Browser history is mirrored only where it works
   // (it throws in sandboxed iframes / data: URLs, e.g. some previews and Canva embeds). ----------
-  var tabScreens = ['today', 'receipt', 'home', 'stats', 'pot'];
-  var order = ['onboarding', 'limits', 'today', 'receipt', 'home', 'stats', 'pot', 'friend'];
+  var tabScreens = ['today', 'receipt', 'compete', 'stats', 'group', 'profile'];
+  var order = ['onboarding', 'setup', 'limits', 'today', 'receipt', 'compete', 'stats', 'group', 'profile', 'reveal'];
   var current = null, stack = ['onboarding'], useHistory = true;
   try { history.replaceState({ s: 'onboarding' }, ''); } catch (e) { useHistory = false; }
 
@@ -539,18 +852,21 @@
     document.querySelectorAll('[data-tab]').forEach(function (b) {
       if (b.dataset.tab === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
     });
+    if (name === 'compete') renderCompete();
+    if (name === 'group') renderGroup();
+    if (name === 'profile') renderProfile();
+    if (name === 'reveal') renderReveal();
+    if (name === 'setup') renderSetup();
     if (name === 'today') renderToday();
-    if (name === 'receipt') printReceipt();
-    if (name === 'home') renderHome();
+    if (name === 'receipt') weekShare.print();
     if (name === 'stats') renderStats();
     hideTip();
   }
   document.addEventListener('click', function (e) {
-    var g = e.target.closest('[data-go]'), b = e.target.closest('[data-back]');
-    var t = e.target.closest('[data-tab]') || e.target.closest('[data-tab-go]');
+    var g = e.target.closest('[data-go]'), b = e.target.closest('[data-back]'), t = e.target.closest('[data-tab]');
     if (g) go(g.dataset.go);
     if (b) back();
-    if (t) { var to = t.dataset.tab || t.dataset.tabGo; if (to !== current) swap(to); }
+    if (t && t.dataset.tab !== current) swap(t.dataset.tab);
   });
 
   // Edge-swipe back, only when installed (in a browser the OS already does this).
@@ -564,170 +880,18 @@
     sx = null;
   }, { passive: true });
 
-  // ---------- 2. Limits ----------
-  function bindSlider(id, out, key) {
-    var input = $(id);
-    function update() {
-      state[key] = +input.value;
-      $(out).textContent = fmt(state[key]);
-      input.style.setProperty('--p', ((input.value - input.min) / (input.max - input.min) * 100) + '%');
-      if (key === 'limTT' && !state.overMin) state.ttSecs = state.limTT * 60 - 108; // starts 1m48s under, i.e. 58m 12s of 1h
-    }
-    input.addEventListener('input', update); update();
+  // ---------- Shared bits: chips, toast, banner ----------
+  function chips(box, items, isOn, label, tap) {
+    box.innerHTML = items.map(function (it, i) {
+      return '<button class="chip" data-i="' + i + '" aria-pressed="' + !!isOn(it) + '">' + label(it) + '</button>';
+    }).join('');
+    box.onclick = function (e) { var c = e.target.closest('[data-i]'); if (c) tap(items[+c.dataset.i]); };
   }
-  bindSlider('lim-tt', 'out-tt', 'limTT');
-  bindSlider('lim-ig', 'out-ig', 'limIG');
-
-  $('stakes').addEventListener('click', function () {
-    state.stakes = !state.stakes;
-    this.setAttribute('aria-checked', state.stakes);
-  });
-  $('causes').addEventListener('click', function (e) {
-    var b = e.target.closest('.cause'); if (!b) return;
-    this.querySelectorAll('.cause').forEach(function (c) { c.setAttribute('aria-pressed', c === b); });
-    state.cause = b.textContent;
-    document.querySelectorAll('.cause-name').forEach(function (n) { n.textContent = state.cause; });
-    setCharity(CHARITIES.filter(function (c) { return c.c === state.cause; })[0].n);
-  });
-  $('ask').addEventListener('click', function () {
-    state.ask = !state.ask;
-    this.setAttribute('aria-checked', state.ask);
-  });
-  function setCharity(name) {
-    state.charity = name;
-    document.querySelectorAll('.charity-name').forEach(function (n) { n.textContent = name; });
-    $('sheet-default').textContent = 'Send to ' + name + ' (default)';
+  var toastTimer;
+  function toast(text) {
+    var t = $('toast'); t.textContent = text; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2000);
   }
-
-  // ---------- Charity sheet: pick a default, or pick where one overage £1 goes ----------
-  var sheetMode = null;
-  function openSheet(mode) {
-    sheetMode = mode;
-    var over = mode === 'over';
-    $('sheet-kicker').textContent = over ? state.overMin + ' min over on TikTok · £1 due' : 'Default charity';
-    $('sheet-title').textContent = over ? 'Where should this £1 go?' : 'Where should your £1s go?';
-    $('sheet-default').style.display = over ? '' : 'none';
-    var html = '', last = null;
-    CHARITIES.forEach(function (c) {
-      if (c.c !== last) { html += '<p class="label group">' + c.c + '</p>'; last = c.c; }
-      html += '<button class="charity" data-charity="' + c.n + '" aria-pressed="' + (c.n === state.charity) + '">' +
-        '<span><span class="n">' + c.n + '</span><span class="d">' + c.d + '</span></span>' +
-        '<span class="go">' + (over ? 'Send £1 →' : (c.n === state.charity ? '✓' : '')) + '</span></button>';
-    });
-    $('charity-list').innerHTML = html;
-    $('scrim').classList.add('show'); $('sheet').classList.add('show');
-  }
-  function closeSheet() {
-    if (sheetMode === 'over') pay(state.charity); // the £1 is owed either way; dismissing sends it to the default
-    sheetMode = null;
-    $('scrim').classList.remove('show'); $('sheet').classList.remove('show');
-  }
-  $('charity-list').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-charity]'); if (!b) return;
-    if (sheetMode === 'over') { pay(b.dataset.charity); sheetMode = null; }
-    else { setCharity(b.dataset.charity); toast('Default: ' + b.dataset.charity); }
-    closeSheet();
-  });
-  $('sheet-default').addEventListener('click', closeSheet);
-  $('scrim').addEventListener('click', closeSheet);
-  $('pick-default').addEventListener('click', function () { openSheet('default'); });
-  $('home-charity').addEventListener('click', function () { openSheet('default'); });
-
-  // ---------- 3. Today: ticking counter ----------
-  $('today-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-
-  function renderToday() {
-    var limS = state.limTT * 60;
-    var used = state.overMin ? (state.limTT + state.overMin) * 60 : state.ttSecs;
-    var m = Math.floor(used / 60), s = used % 60;
-    $('tt-used').textContent = state.overMin ? fmt(m) : fmt(m) + ' ' + String(s).padStart(2, '0') + 's';
-    $('tt-lim').textContent = fmtShort(state.limTT);
-    $('tt-fill').style.width = Math.min(used / limS, 1) * 100 + '%';
-    $('row-tt').classList.toggle('over', !!state.overMin);
-    $('tt-status').textContent = state.overMin ? state.overMin + ' min over limit' : fmt(Math.ceil((limS - used) / 60)) + ' left today';
-
-    $('ig-lim').textContent = fmtShort(state.limIG);
-    $('ig-used').textContent = fmt(Math.min(34, state.limIG - 1));
-    $('ig-fill').style.width = Math.min(34, state.limIG - 1) / state.limIG * 100 + '%';
-    $('row-ig').querySelector('.status').textContent = fmt(state.limIG - Math.min(34, state.limIG - 1)) + ' left today';
-
-    $('stakes-amt').textContent = '£' + state.owed.toFixed(2);
-    $('stakes-card').classList.toggle('paid', state.owed > 0);
-    var given = Object.keys(state.given).map(function (k) { return k + ' £' + state.given[k]; }).join(' · ');
-    $('stakes-sub').textContent = !state.stakes ? 'Stakes off · just tracking'
-      : given ? '→ ' + given : '£1 per 10 min over · capped at £' + CAP + '/day';
-  }
-
-  // ---------- Home: today at a glance ----------
-  var hello = new Date().getHours();
-  $('home-hi').textContent = hello < 12 ? 'Morning.' : hello < 18 ? 'Afternoon.' : 'Evening.';
-  function renderHome() {
-    var ttMin = state.overMin ? state.limTT + state.overMin : Math.floor(state.ttSecs / 60);
-    var used = ttMin + Math.min(34, state.limIG - 1), lim = state.limTT + state.limIG;
-    var over = state.overMin;
-    $('home-used').textContent = fmt(used);
-    $('home-left').textContent = 'of ' + fmtShort(lim) + ' · ' + (over ? over + 'm over on TikTok' : fmt(lim - used) + ' left');
-    $('ring').classList.toggle('over', !!over);
-    $('ring-fg').style.strokeDashoffset = 314.16 * (1 - Math.min(used / lim, 1));
-    $('home-owed').textContent = '£' + state.owed.toFixed(2);
-    $('home-owed').classList.toggle('red', state.owed > 0);
-    $('home-owed-s').textContent = state.owed ? '→ ' + Object.keys(state.given).join(', ') : 'Nothing owed. Keep it up.';
-  }
-
-  setInterval(function () {
-    if (state.overMin) return;
-    if (state.ttSecs < state.limTT * 60 - 1) state.ttSecs++; // holds at 59:59 until the secret trigger
-    if (current === 'today') renderToday();
-    if (current === 'home') renderHome();
-  }, 1000);
-
-  // ---------- 4. Over limit: SECRET trigger (triple-tap or long-press the logo) ----------
-  // Works on the logo on both Today and Home.
-  var taps = 0, tapTimer, pressTimer, longPressed = false;
-  document.querySelectorAll('#secret, .secret').forEach(function (logo) {
-    logo.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    logo.addEventListener('pointerdown', function () {
-      longPressed = false;
-      pressTimer = setTimeout(function () { longPressed = true; taps = 0; goOver(); }, 600);
-    });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { logo.addEventListener(ev, function () { clearTimeout(pressTimer); }); });
-    logo.addEventListener('click', function () {
-      if (longPressed) return;
-      taps++; clearTimeout(tapTimer);
-      if (taps >= 3) { taps = 0; goOver(); return; }
-      tapTimer = setTimeout(function () { taps = 0; }, 700);
-    });
-  });
-
-  function rerender() { if (current === 'today') renderToday(); if (current === 'home') renderHome(); }
-
-  function goOver() {
-    if (sheetMode) return; // already asking about the last £1
-    state.overMin += 10;
-    var charged = state.stakes && state.owed < CAP;
-    rerender();
-    if (navigator.vibrate) navigator.vibrate(30);
-    if (!charged) {
-      notify(!state.stakes ? '10 min over on TikTok. Stakes are off, so this one\'s free.'
-        : '10 min over on TikTok. You\'ve hit today\'s £' + CAP + ' cap. Go to bed x');
-      return;
-    }
-    if (state.ask) openSheet('over'); else pay(state.charity);
-  }
-
-  function pay(charity) {
-    state.owed += 1;
-    state.given[charity] = (state.given[charity] || 0) + 1;
-    rerender();
-    notify('10 min over on TikTok. £1 → ' + charity);
-    if (current !== 'today') return;
-    var stamp = $('paid-stamp'), amt = $('stakes-amt');
-    $('stakes-card').classList.add('paid');
-    stamp.classList.remove('land'); amt.classList.remove('bump');
-    void stamp.offsetWidth; // restart animations
-    stamp.classList.add('land'); amt.classList.add('bump');
-  }
-
   var bannerTimer;
   function notify(text) {
     var b = $('banner');
@@ -738,26 +902,462 @@
   }
   $('banner').addEventListener('click', function () { this.classList.remove('show'); });
 
-  // ---------- 5. Sunday receipt prints every time you open it ----------
-  function printReceipt() {
+  // ---------- 2. Create or join a group ----------
+  var mode = 'create';
+  document.querySelectorAll('[data-setup]').forEach(function (b) {
+    b.addEventListener('click', function () { mode = b.dataset.setup; go('setup'); });
+  });
+  $('mode').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-mode]'); if (!b) return;
+    mode = b.dataset.mode; renderSetup();
+  });
+
+  function personFor(handle) { // a made-up week for anyone added by username, seeded from the name
+    var s = 7;
+    for (var i = 0; i < handle.length; i++) s = (s * 31 + handle.charCodeAt(i)) % 2147483646 + 1;
+    var rnd = function () { s = s * 16807 % 2147483647; return s / 2147483647; };
+    var a = {}; APPS.forEach(function (x) { a[x.k] = Math.round(20 + rnd() * 110); });
+    var bare = handle.replace(/^@/, '');
+    return { n: bare.split(/[._-]/)[0].replace(/^./, function (c) { return c.toUpperCase(); }), h: handle, i: bare.slice(0, 2).toUpperCase(), bg: ['#FDE2E1', '#FFF3C4', '#E7E4DA', '#fff'][Math.floor(rnd() * 4)], a: a };
+  }
+  function cleanHandle(v) { v = v.trim().replace(/\s+/g, '').replace(/^@*/, ''); return v ? '@' + v : ''; }
+
+  function renderSetup() {
+    document.querySelectorAll('#mode [data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mode === mode); });
+    $('create-pane').hidden = mode !== 'create';
+    $('join-pane').hidden = mode !== 'join';
+    $('m-list').innerHTML = '<div class="person">' + avatar(ME) + '<div><p class="h">You</p><p class="s">Organiser</p></div></div>' +
+      draft.map(function (p, i) {
+        return '<div class="person">' + avatar(p) + '<div><p class="h">' + esc(p.h) + '</p><p class="s">Invite sent</p></div>' +
+          '<button class="x" data-rm="' + i + '" aria-label="Remove ' + esc(p.h) + '">×</button></div>';
+      }).join('');
+    var n = draft.length + 1, ok = n >= 3;
+    $('m-count').textContent = n + ' people · minimum 3';
+    $('m-count').classList.toggle('red', !ok);
+    chips($('pledge-chips'), PLEDGES, function (p) { return p === state.pledge; }, function (p) { return '£' + p + '/wk'; }, function (p) { state.pledge = p; renderSetup(); });
+    chips($('app-chips'), APPS, function (a) { return state.apps[a.k]; }, function (a) { return a.n; }, function (a) {
+      if (state.apps[a.k] && on().length === 1) return toast('Keep at least one app');
+      state.apps[a.k] = state.apps[a.k] ? 0 : 1; renderSetup();
+    });
+    var start = $('start');
+    start.disabled = !ok;
+    start.textContent = ok ? 'Start week ' + week() + ' · ' + pounds(state.pledge * n) + ' pot' : 'Add ' + (3 - n) + ' more to start';
+  }
+  $('m-list').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-rm]'); if (!b) return;
+    draft.splice(+b.dataset.rm, 1); renderSetup();
+  });
+  $('add-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var h = cleanHandle($('add-user').value);
+    if (!h) return;
+    if (draft.some(function (p) { return p.h.toLowerCase() === h.toLowerCase(); })) return toast(h + ' is already in');
+    if (draft.length >= 9) return toast('Groups max out at 10');
+    draft.push(personFor(h)); $('add-user').value = ''; renderSetup();
+  });
+  $('start').addEventListener('click', function () {
+    state.group = $('g-name').value.trim() || 'My group';
+    state.members = [ME].concat(draft);
+    startCompeting('Week ' + week() + ' is on. ' + pounds(state.pledge * state.members.length) + ' in the pot.');
+  });
+  $('join-btn').addEventListener('click', function () {
+    state.group = 'Flat 4B'; state.pledge = 10; state.members = [ME].concat(FRIENDS);
+    APPS.forEach(function (a) { state.apps[a.k] = 1; });
+    startCompeting('You\'re in Flat 4B. Pledged £10.');
+  });
+  function startCompeting(msg) {
+    stack = ['compete']; show('compete');
+    if (useHistory) try { history.replaceState({ s: 'compete' }, ''); } catch (e) {}
+    toast(msg);
+  }
+
+  // ---------- 3. Competition ----------
+  function renderCompete() {
+    var n = state.members.length, pos = myPosition();
+    $('c-week').textContent = 'Week ' + week() + ' · ' + range();
+    $('c-pot-label').textContent = state.group + ' prize pot';
+    $('c-pot').textContent = pounds(state.pledge * n);
+    $('c-pot-sub').textContent = n + ' × ' + pounds(state.pledge) + ' · ' + RULES[state.rule].n.toLowerCase() + ' split';
+    $('cd-card').hidden = state.revealed;
+    $('results-card').hidden = !state.revealed;
+    if (state.revealed) {
+      var me = results().filter(function (r) { return r.p.me; })[0];
+      $('results-title').textContent = state.seen ? 'You finished ' + ordinal(me.place) + ' · won ' + money(me.won) : 'The results are in';
+    }
+    var mine = nowMins(ME);
+    $('c-mine').textContent = fmt(mine);
+    $('c-mine-s').textContent = state.revealed ? 'Final total' : on().length + ' apps · this week';
+    $('c-pos').textContent = pos ? ordinal(pos) : '–';
+    $('c-pos-s').textContent = pos ? 'of ' + n + (state.revealed ? ' · final' : ' · others hidden') : 'Starts Monday';
+    renderLadder();
+    tick();
+  }
+  function renderLadder() {
+    var pos = myPosition(), n = state.members.length, html = '';
+    if (state.revealed) {
+      html = results().map(function (r) {
+        return '<div class="person' + (r.p.me ? ' me' : '') + '"><span class="pl">' + ordinal(r.place) + '</span>' + avatar(r.p) +
+          '<div><p class="h">' + esc(r.p.me ? 'You' : r.p.n) + '</p></div><span class="r">' + fmt(r.mins) + '</span></div>';
+      }).join('');
+    } else {
+      for (var i = 1; i <= n; i++) {
+        html += i === pos
+          ? '<div class="person me"><span class="pl">' + ordinal(i) + '</span>' + avatar(ME) + '<div><p class="h">You</p><p class="s">' + fmt(nowMins(ME)) + '</p></div><span class="r">' + pounds(state.pledge) + '<small>pledged</small></span></div>'
+          : '<div class="person"><span class="pl">' + ordinal(i) + '</span><span class="avatar unknown">?</span><div><p class="h">Hidden</p><p class="s">Until Sunday 6pm</p></div><span class="r"><span class="redact" aria-label="hidden"></span></span></div>';
+      }
+    }
+    $('ladder').innerHTML = html;
+  }
+
+  function tick() {
+    if (state.revealed) return;
+    var ms = revealAt() - Date.now();
+    if (ms <= 0 && !state.offset) { state.revealed = true; notify('It\'s 6pm. ' + state.group + '\'s results are in.'); return rerender(); }
+    var s = Math.max(0, Math.floor(ms / 1000));
+    $('cd-d').textContent = Math.floor(s / 86400);
+    $('cd-h').textContent = String(Math.floor(s / 3600) % 24).padStart(2, '0');
+    $('cd-m').textContent = String(Math.floor(s / 60) % 60).padStart(2, '0');
+    $('cd-s').textContent = String(s % 60).padStart(2, '0');
+  }
+  setInterval(function () { if (current === 'compete') tick(); }, 1000);
+  function rerender() { if (current === 'compete') renderCompete(); if (current === 'group') renderGroup(); if (current === 'profile') renderProfile(); }
+
+  // ---------- SECRET triggers on the Competition logo: triple-tap = skip to 6pm, long-press = scroll 30 min ----------
+  var taps = 0, tapTimer, pressTimer, longPressed = false, logo = $('secret');
+  logo.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  logo.addEventListener('pointerdown', function () {
+    longPressed = false;
+    pressTimer = setTimeout(function () { longPressed = true; taps = 0; scrollMore(); }, 600);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { logo.addEventListener(ev, function () { clearTimeout(pressTimer); }); });
+  logo.addEventListener('click', function () {
+    if (longPressed) return;
+    taps++; clearTimeout(tapTimer);
+    if (taps >= 3) { taps = 0; skipToReveal(); return; }
+    tapTimer = setTimeout(function () { taps = 0; }, 700);
+  });
+
+  function scrollMore() {
+    if (state.revealed) return toast('This week is over');
+    var before = myPosition();
+    state.extra += 30;
+    var after = myPosition(), app = state.apps.tt ? 'TikTok' : on()[0].n;
+    if (navigator.vibrate) navigator.vibrate(30);
+    notify(after > before ? '30 more minutes on ' + app + '. You\'ve dropped to ' + ordinal(after) + ' in ' + state.group + '.'
+      : '30 more minutes on ' + app + '. Still ' + ordinal(after) + '. For now.');
+    rerender();
+    var big = $('c-mine'); big.classList.remove('bump'); void big.offsetWidth; big.classList.add('bump');
+  }
+  function skipToReveal() {
+    if (!state.revealed) { state.revealed = true; state.seen = false; }
+    go('reveal');
+  }
+
+  // ---------- 4. Group ----------
+  function renderGroup() {
+    var n = state.members.length, pos = myPosition();
+    $('g-kicker').textContent = 'Group · week ' + week();
+    $('g-title').textContent = state.group;
+    $('g-sub').textContent = n + ' members · ' + pounds(state.pledge) + ' each · ' + pounds(state.pledge * n) + ' pot';
+    $('g-pos').textContent = pos ? ordinal(pos) + ' of ' + n : 'Week starts Monday';
+    $('g-pos-s').textContent = state.revealed ? 'Final standings are in. Times are public now.' : 'You can see your place. Nobody sees anyone\'s time until Sunday 6pm.';
+    $('g-members').innerHTML = state.members.map(function (p) {
+      var right = p.me || state.revealed ? fmt(nowMins(p)) : '<span class="redact" aria-label="hidden until Sunday"></span>';
+      return '<div class="person' + (p.me ? ' me' : '') + '">' + avatar(p) + '<div><p class="h">' + esc(p.me ? 'You' : p.h) + '</p><p class="s">Pledged ' + pounds(state.pledge) + ' ✓</p></div>' +
+        '<span class="r">' + right + '</span></div>';
+    }).concat(state.invited.map(function (p) {
+      return '<div class="person">' + avatar(p) + '<div><p class="h">' + esc(p.h) + '</p><p class="s">Invited · joins week ' + (week() + 1) + '</p></div><span class="r">–</span></div>';
+    })).join('');
+    $('g-set').innerHTML =
+      setRow('Weekly pledge', pounds(state.pledge)) +
+      setRow('Payout rule', RULES[state.rule].n) +
+      setRow('Apps counted', on().length === APPS.length ? 'All ' + APPS.length : on().length + ' of ' + APPS.length) +
+      '<div class="set-row"><span>Reveal</span><span>Sun · 6pm</span></div>';
+    var p = state.pending, notes = [];
+    if (p) {
+      if (p.pledge !== state.pledge) notes.push(pounds(p.pledge) + ' pledge');
+      if (p.rule !== state.rule) notes.push(RULES[p.rule].n.toLowerCase() + ' split');
+      if (APPS.some(function (a) { return !!p.apps[a.k] !== !!state.apps[a.k]; })) notes.push(APPS.filter(function (a) { return p.apps[a.k]; }).length + ' apps');
+    }
+    $('g-pending').hidden = !notes.length;
+    $('g-pending').textContent = 'From week ' + (week() + 1) + ': ' + notes.join(', ');
+  }
+  function setRow(k, v) { return '<button class="set-row" data-settings><span>' + k + '</span><span>' + esc(v) + ' ›</span></button>'; }
+  $('g-set').addEventListener('click', function (e) { if (e.target.closest('[data-settings]')) openSettings(); });
+  $('g-settings-btn').addEventListener('click', openSettings);
+  $('invite-btn').addEventListener('click', openInvite);
+
+  // ---------- Bottom sheet ----------
+  function openSheet(kicker, title, html) {
+    $('sheet-kicker').textContent = kicker; $('sheet-title').textContent = title; $('sheet-body').innerHTML = html;
+    $('scrim').classList.add('show'); $('sheet').classList.add('show');
+  }
+  function closeSheet() { $('scrim').classList.remove('show'); $('sheet').classList.remove('show'); }
+  $('scrim').addEventListener('click', closeSheet);
+
+  // Settings changes never touch a running week: they apply from next Monday.
+  function openSettings() {
+    var src = state.pending || state, d = { pledge: src.pledge, rule: src.rule, apps: {} };
+    APPS.forEach(function (a) { d.apps[a.k] = src.apps[a.k]; });
+    openSheet('Group settings', 'Changes start next week', '<p class="label group">Weekly pledge</p><div class="chips" id="s-pledge"></div>' +
+      '<p class="label group">Payout rule</p><div id="s-rule"></div>' +
+      '<p class="label group">Apps that count</p><div class="chips" id="s-apps"></div>' +
+      '<p class="fineprint">Never counted: WhatsApp, iMessage, Messages</p>' +
+      '<button class="btn" id="s-save" style="margin-top:18px">Save for week ' + (week() + 1) + '</button>' +
+      '<p class="fineprint" style="text-align:center;margin:12px 0 4px">This week\'s pot and rules are locked in.</p>');
+    function draw() {
+      chips($('s-pledge'), PLEDGES, function (p) { return p === d.pledge; }, function (p) { return '£' + p; }, function (p) { d.pledge = p; draw(); });
+      chips($('s-apps'), APPS, function (a) { return d.apps[a.k]; }, function (a) { return a.n; }, function (a) {
+        var count = APPS.filter(function (x) { return d.apps[x.k]; }).length;
+        if (d.apps[a.k] && count === 1) return toast('Keep at least one app');
+        d.apps[a.k] = d.apps[a.k] ? 0 : 1; draw();
+      });
+      $('s-rule').innerHTML = Object.keys(RULES).map(function (k) {
+        return '<button class="option" data-rule="' + k + '" aria-pressed="' + (d.rule === k) + '"><span class="n">' + RULES[k].n + '</span><span class="d">' + RULES[k].d + '</span></button>';
+      }).join('');
+    }
+    draw();
+    $('s-rule').onclick = function (e) { var b = e.target.closest('[data-rule]'); if (b) { d.rule = b.dataset.rule; draw(); } };
+    $('s-save').onclick = function () { state.pending = d; closeSheet(); renderGroup(); toast('Saved for week ' + (week() + 1)); };
+  }
+
+  function openInvite() {
+    openSheet('Invite', 'Who else is in?', '<form class="add-row" id="i-form" style="margin-top:16px"><input class="field" id="i-user" placeholder="@username" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Friend\'s username"><button class="btn small" type="submit">Invite</button></form>' +
+      '<p class="fineprint">They join from week ' + (week() + 1) + ', so this week\'s pot doesn\'t change.</p>' +
+      '<button class="btn ghost" id="i-link" style="margin-top:16px">Copy invite link</button><div style="height:12px"></div>');
+    $('i-form').onsubmit = function (e) {
+      e.preventDefault();
+      var h = cleanHandle($('i-user').value); if (!h) return;
+      var taken = state.members.concat(state.invited).some(function (p) { return p.h.toLowerCase() === h.toLowerCase(); });
+      if (taken) return toast(h + ' is already in');
+      state.invited.push(personFor(h)); closeSheet(); renderGroup(); toast('Invite sent to ' + h);
+    };
+    $('i-link').onclick = function () { toast('Link copied (demo)'); };
+    setTimeout(function () { try { $('i-user').focus(); } catch (e) {} }, 350);
+  }
+
+  // ---------- 5. Profile ----------
+  function renderProfile() {
+    var mine = nowMins(ME), pos = myPosition(), last = state.history[state.history.length - 1];
+    var won = state.history.map(function (h) { return h.won; }).reduce(add, 0), paid = state.history.map(function (h) { return h.pledge; }).reduce(add, 0);
+    $('p-kicker').textContent = 'Profile · ' + state.group;
+    $('p-week').textContent = fmt(mine);
+    $('p-week-s').textContent = state.revealed ? 'Final · week ' + week() : 'So far · week ' + week();
+    $('p-pos').textContent = pos ? ordinal(pos) : '–';
+    $('p-pos-s').textContent = pos ? 'of ' + state.members.length : 'Starts Monday';
+    $('p-last').textContent = fmt(last.mins);
+    $('p-last-s').textContent = ordinal(last.place) + ' · won ' + money(last.won);
+    $('p-won').textContent = pounds(Math.round(won * 100) / 100);
+    $('p-won-s').textContent = 'Net ' + signed(won - paid) + ' · ' + state.history.length + ' wks';
+
+    var apps = myAppMins(state.revealed), max = Math.max.apply(null, apps.map(function (x) { return x.m; }).concat(1));
+    $('p-apps-s').textContent = state.revealed ? 'Week ' + week() + ', final' : 'Week ' + week() + ' so far';
+    $('p-apps').innerHTML = apps.sort(function (a, b) { return b.m - a.m; }).map(function (x) {
+      return '<div class="app-row">' + appIco(x.a) + '<div class="grow1"><p class="name"><span>' + x.a.n + '</span><span>' + fmt(x.m) + '</span></p>' +
+        '<div class="track"><div class="fill" style="width:' + (x.m / max * 100) + '%"></div></div></div></div>';
+    }).join('');
+
+    var past = state.history.slice(-6), pb = Math.min.apply(null, past.map(function (h) { return h.mins; }));
+    var data = past.map(function (h) { return { label: 'W' + h.wk, mins: h.mins, place: h.place, pb: h.mins === pb, tip: '<b>Week ' + h.wk + '</b> · ' + fmt(h.mins) + (h.mins === pb ? ' · ★ PB' : '') + '<br>' + ordinal(h.place) + ' of ' + h.of + ' · won ' + money(h.won) }; });
+    var gap = pb - mine, toBeat = gap > 0 ? fmt(gap) + ' left before you hit your PB' : 'over your PB by ' + fmt(-gap);
+    if (state.revealed && gap > 0) toBeat = 'new PB by ' + fmt(gap) + '!';
+    data.push({ label: 'W' + week(), mins: mine, now: true, tip: '<b>Week ' + week() + '</b> · ' + fmt(mine) + (state.revealed ? '' : ' so far') + '<br>' + toBeat });
+    weekBars($('chart-weeks'), data, pb, state.revealed);
+    $('p-chart-s').textContent = 'Lower wins · get under the PB line · tap a bar';
+
+    // Streak: consecutive weeks each shorter than the one before (this week counts once it's final)
+    var weeks = state.history.map(function (h) { return h.mins; }).concat(state.revealed ? [mine] : []), streak = 0;
+    for (var i = weeks.length - 1; i > 0 && weeks[i] < weeks[i - 1]; i--) streak++;
+    $('p-streak').textContent = streak ? '🔥 ' + streak + '-week streak' : 'No streak yet';
+    $('p-streak').className = 'streak' + (streak ? '' : ' cold');
+
+    $('p-history').innerHTML = state.history.slice().reverse().map(function (h) {
+      return '<div class="person"><span class="pl" style="width:auto;min-width:46px">W' + h.wk + '</span><div><p class="h">' + ordinal(h.place) + ' of ' + h.of + '</p><p class="s">' + fmt(h.mins) + ' scrolled</p></div>' +
+        '<span class="r">' + money(h.won) + '<small>' + signed(h.won - h.pledge) + ' net</small></span></div>';
+    }).join('');
+  }
+
+  // ---------- Profile chart: hours per week (ink = past weeks, red = this week) ----------
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function topRounded(x, y, w, h, r) { // flat at the baseline, rounded at the data end
+    r = Math.min(r, h, w / 2);
+    return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z';
+  }
+  // Gamified: placement medals on past weeks, a dashed personal-best line to beat, and this week's bar
+  // racing a pulsing ghost of that PB with the minutes left above it.
+  function weekBars(svg, data, pb, final) {
+    var W = 320, H = 200, L = 30, B = 20, T = 34, ih = H - B - T, iw = W - L;
+    var max = Math.max(540, Math.ceil(Math.max.apply(null, data.map(function (d) { return d.mins; })) / 120) * 120), step = max > 600 ? 240 : 120;
+    svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('aria-label', 'Hours scrolled per week, personal best ' + fmt(pb) + ': ' + data.map(function (d) { return d.label + ' ' + fmt(d.mins); }).join(', '));
+    var y = function (v) { return T + ih - v / max * ih; };
+    for (var g = 0; g <= max; g += step) { // recessive grid; drop a label the PB tag would sit on
+      el('line', { x1: L, x2: W, y1: y(g), y2: y(g), stroke: '#E4E1D8', 'stroke-width': 1 }, svg);
+      if (Math.abs(y(g) - y(pb)) > 11) el('text', { x: L - 6, y: y(g) + 3, 'text-anchor': 'end' }, svg).textContent = g / 60 + 'h';
+    }
+    var slot = iw / data.length, bw = Math.min(26, slot * .58);
+    data.forEach(function (d, i) {
+      var x = L + slot * i + (slot - bw) / 2, h = Math.max(y(0) - y(d.mins), 1), cx = x + bw / 2, top = y(0) - h;
+      var grp = el('g', { class: 'grp', tabindex: 0, role: 'button', 'aria-label': d.tip.replace(/<[^>]+>/g, ' ') }, svg);
+      if (d.now && !final && d.mins < pb) // the bar to beat
+        el('path', { class: 'ghost', d: topRounded(x, y(pb), bw, y(0) - y(pb), 4), fill: 'none', stroke: 'var(--red)', 'stroke-width': 1.5, 'stroke-dasharray': '3 2' }, grp);
+      el('path', { class: 'seg' + (reduced ? '' : ' grow'), style: reduced ? '' : 'animation-delay:' + i * 40 + 'ms', d: topRounded(x, top, bw, h, 4), fill: d.now ? 'var(--red)' : 'var(--ink)' }, grp);
+      el('text', { x: cx, y: H - 6, 'text-anchor': 'middle' }, svg).textContent = d.label;
+      var pop = reduced ? '' : 'animation-delay:' + (300 + i * 60) + 'ms';
+      if (d.place) { // placement medal; 1st is red
+        var m = el('g', { class: 'medal' + (d.place === 1 ? ' gold' : '') + (reduced ? '' : ' pop'), style: pop }, grp);
+        el('rect', { x: cx - 13, y: top - 21, width: 26, height: 15, rx: 7.5, fill: d.place === 1 ? 'var(--red)' : '#fff', stroke: 'var(--ink)', 'stroke-width': 1.5 }, m);
+        el('text', { x: cx, y: top - 10.5, 'text-anchor': 'middle' }, m).textContent = (d.place === 1 ? '★' : '') + ordinal(d.place);
+      } else if (d.now) { // live race against the PB: countdown inside the ghost bar, else above
+        var gap = pb - d.mins, room = top - y(pb) > 34;
+        var lines = gap > 0 ? (final ? ['NEW', 'PB!'] : [fmt(gap), 'to go']) : ['+' + fmt(-gap), 'over'];
+        lines.forEach(function (t, k) {
+          el('text', { class: 'goal' + (reduced ? '' : ' pop'), style: pop, x: cx, y: (room ? y(pb) + 14 : Math.min(top, y(pb)) - 18) + k * 11, 'text-anchor': 'middle' }, grp).textContent = t;
+        });
+      }
+      el('rect', { class: 'hit', x: L + slot * i, y: T, width: slot, height: ih }, grp);
+      el('rect', { class: 'hit', x: L + slot * i, y: T, width: slot, height: ih }, grp);
+      var showIt = function () { svg.querySelectorAll('.grp').forEach(function (n) { n.classList.remove('on'); }); grp.classList.add('on'); showTip(d.tip, svg, x + bw / 2, y(0) - h); };
+      grp.addEventListener('pointerenter', showIt); grp.addEventListener('click', showIt); grp.addEventListener('focus', showIt);
+      grp.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { grp.classList.remove('on'); hideTip(); } });
+    });
+    var pbLine = el('g', { 'pointer-events': 'none' }, svg); // personal best: the line to get under
+    el('line', { x1: L, x2: W, y1: y(pb), y2: y(pb), stroke: 'var(--red)', 'stroke-width': 1.5, 'stroke-dasharray': '4 3' }, pbLine);
+    el('rect', { x: 2, y: y(pb) - 7, width: 24, height: 14, rx: 7, fill: 'var(--red)' }, pbLine);
+    el('text', { class: 'pb-tag', x: 14, y: y(pb) + 3, 'text-anchor': 'middle' }, pbLine).textContent = 'PB';
+  }
+  function showTip(html, svg, vx, vy) {
+    var r = svg.getBoundingClientRect(), a = $('app').getBoundingClientRect(), s = r.width / 320;
+    var t = $('tip'); t.innerHTML = html; t.classList.add('show');
+    var left = r.left - a.left + vx * s, half = t.offsetWidth / 2;
+    t.style.left = Math.max(half + 8, Math.min(a.width - half - 8, left)) + 'px';
+    t.style.top = (r.top - a.top + vy * s) + 'px';
+  }
+  function hideTip() { $('tip').classList.remove('show'); }
+  $('profile').addEventListener('scroll', hideTip);
+
+  // ---------- 6. Sunday 6pm reveal: your time → leaderboard (last to first) → receipt ----------
+  var revealRun = 0;
+  function renderReveal() {
+    var run = ++revealRun, res = results(), me = res.filter(function (r) { return r.p.me; })[0];
+    var last = state.history[state.history.length - 1], diff = me.mins - last.mins;
+    $('rv-kicker').textContent = state.group + ' · week ' + week();
+    $('rv-vs').textContent = (diff <= 0 ? '↓ ' : '↑ ') + fmt(Math.abs(diff)) + ' vs week ' + last.wk + ' · ' + on().length + ' apps counted';
+    $('rv-apps').innerHTML = myAppMins(true).map(function (x) { return li(x.a.n, fmt(x.m)); }).join('');
+    var saved = timeSaved(me.mins);
+    $('rv-saved').textContent = fmt(Math.max(0, saved.week));
+    $('rv-saved-s').textContent = (saved.week >= 0 ? 'vs week ' + last.wk : fmt(-saved.week) + ' more than week ' + last.wk) +
+      (saved.total > 0 ? ' · ' + fmt(saved.total) + ' since week ' + state.history[0].wk : '');
+    $('lb').innerHTML = res.map(function (r) {
+      return '<div class="person' + (r.p.me ? ' me' : '') + (r.place === 1 ? ' first' : '') + (state.seen || reduced ? '' : ' wait') + '"><span class="pl">' + ordinal(r.place) + '</span>' + avatar(r.p) +
+        '<div><p class="h">' + esc(r.p.me ? 'You' : r.p.n) + (r.place === 1 ? '<span class="tag">WINNER</span>' : '') + '</p><p class="s">' + fmt(r.mins) + '</p></div>' +
+        '<div class="lb-pay"><b>' + money(r.won) + '</b><span class="' + (r.net > 0 ? 'up' : '') + '">' + signed(r.net) + '</span></div></div>';
+    }).join('');
+    $('lb-rule').textContent = pounds(state.pledge * res.length) + ' pot · ' + RULES[state.rule].n + ': ' + RULES[state.rule].d + ' Payouts are simulated in this demo.';
+    buildReceipt(me, res.length);
+    var nextWk = week() + 1, nextN = state.members.length + state.invited.length;
+    var nextPledge = (state.pending || state).pledge;
+    $('next-kicker').textContent = 'Week ' + nextWk;
+    $('next-sub').textContent = 'Same group' + (state.invited.length ? ', plus ' + state.invited.length + ' new' : '') + '. Pick next week\'s pledge.';
+    chips($('next-pledge'), PLEDGES, function (p) { return p === nextPledge; }, function (p) { return '£' + p; }, function (p) {
+      state.pending = state.pending || { pledge: state.pledge, rule: state.rule, apps: JSON.parse(JSON.stringify(state.apps)) };
+      state.pending.pledge = p; renderReveal();
+    });
+    $('again').textContent = 'Start week ' + nextWk + ' · ' + pounds(nextPledge * nextN) + ' pot';
+
+    if (state.seen) { // replay: show everything at once
+      $('rv-time').textContent = fmt(me.mins); $('rv-go').hidden = true; $('rv-board').hidden = false; $('rv-receipt').hidden = false;
+      return;
+    }
+    $('rv-go').hidden = true; $('rv-board').hidden = true; $('rv-receipt').hidden = true;
+    countUp($('rv-time'), me.mins, function () { if (run === revealRun) $('rv-go').hidden = false; });
+  }
+  // Time saved: this week against last week, and every week so far against your first week.
+  function timeSaved(mins) {
+    var h = state.history, base = h[0].mins;
+    var total = h.slice(1).map(function (x) { return base - x.mins; }).concat(base - mins).reduce(add, 0);
+    return { week: h[h.length - 1].mins - mins, total: total };
+  }
+  function countUp(node, to, done) {
+    if (reduced) { node.textContent = fmt(to); return done(); }
+    var t0 = null;
+    function step(ts) {
+      t0 = t0 || ts;
+      var k = Math.min((ts - t0) / 1600, 1);
+      node.textContent = fmt(Math.round(to * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) requestAnimationFrame(step); else done();
+    }
+    requestAnimationFrame(step);
+  }
+  $('rv-go').addEventListener('click', function () {
+    var run = revealRun, rows = Array.prototype.slice.call($('lb').children).reverse(), gap = reduced ? 0 : 750;
+    $('rv-go').hidden = true; $('rv-board').hidden = false;
+    setTimeout(function () { $('rv-board').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }, 30);
+    rows.forEach(function (row, i) { // last place first, the winner last
+      setTimeout(function () { if (run === revealRun) row.classList.remove('wait'); }, 400 + i * gap);
+    });
+    setTimeout(function () {
+      if (run !== revealRun) return;
+      state.seen = true;
+      $('rv-receipt').hidden = false;
+      var r = $('the-receipt'); r.classList.remove('printing'); void r.offsetWidth; r.classList.add('printing');
+      revealShare.prepare();
+      setTimeout(function () { $('rv-receipt').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }, 300);
+    }, 400 + rows.length * gap + 600);
+  });
+
+  // Next week: pending settings and invited friends kick in, totals reset, and new (fake) weeks are drawn.
+  $('again').addEventListener('click', function () {
+    var me = results().filter(function (r) { return r.p.me; })[0];
+    state.history.push({ wk: week(), mins: me.mins, place: me.place, of: state.members.length, won: me.won, pledge: state.pledge });
+    if (state.pending) { state.pledge = state.pending.pledge; state.rule = state.pending.rule; state.apps = state.pending.apps; state.pending = null; }
+    state.members = state.members.concat(state.invited); state.invited = [];
+    var s = week() * 7919;
+    var rnd = function () { s = s * 16807 % 2147483647; return s / 2147483647; };
+    state.members.forEach(function (p) {
+      var k = p.me ? .82 + rnd() * .22 : .8 + rnd() * .4;
+      APPS.forEach(function (a) { p.a[a.k] = Math.round(p.a[a.k] * k); });
+    });
+    state.extra = 0; state.offset++; state.revealed = false; state.seen = false;
+    stack = ['compete']; show('compete');
+    if (useHistory) try { history.replaceState({ s: 'compete' }, ''); } catch (e) {}
+    toast('Week ' + week() + ' starts Monday · ' + pounds(state.pledge * state.members.length) + ' pot');
+  });
+
+  // ---------- Receipt: same component as before, now itemising the competition ----------
+  function li(a, b, cls, valCls) { return '<div class="li' + (cls ? ' ' + cls : '') + '"><span>' + a + '</span><span class="dots"></span><span' + (valCls ? ' class="' + valCls + '"' : '') + '>' + b + '</span></div>'; }
+  function buildReceipt(me, n) {
+    var last = state.history[state.history.length - 1], diff = me.mins - last.mins, total = me.mins;
+    var stamp = me.place === 1 ? '1ST<small>PLACE</small>' : me.won ? money(me.won) + '<small>WON</small>' : 'LAST<small>PLACE</small>';
     var r = $('the-receipt');
-    r.classList.remove('printing'); void r.offsetWidth; r.classList.add('printing');
-    prepareReceiptImage();
+    r.setAttribute('aria-label', 'Weekly receipt: ' + fmt(total) + ' scrolled, finished ' + ordinal(me.place) + ' of ' + n + ', won ' + money(me.won));
+    r.innerHTML = '<div class="head"><b>RECEIPTS</b><span>WEEK ' + week() + ' · ' + range() + '</span></div><hr>' +
+      myAppMins(true).map(function (x) { return li(x.a.n, fmt(x.m)); }).join('') + '<hr>' +
+      li('TOTAL', fmt(total), 'big') +
+      li('TIME SAVED', fmt(Math.max(0, -diff)), '', diff < 0 ? 'red' : '') +
+      li('Group', esc(state.group) + ' · ' + n, 'small') + '<hr>' +
+      li('That\'s', '= ' + Math.max(1, Math.floor(total / 360)) + ' essay' + (total >= 720 ? 's' : ''), 'small') +
+      li('Or', '= ' + Math.max(1, Math.floor(total / 100)) + ' gym session' + (total >= 200 ? 's' : ''), 'small') + '<hr>' +
+      li('PLACE', ordinal(me.place) + ' of ' + n, 'big') +
+      li('Pledged', money(state.pledge), 'small') +
+      li('WON', money(me.won), 'big', 'red') +
+      li('Net', signed(me.net), 'small') +
+      '<p class="thanks">→ <span class="to">' + esc(state.group) + '</span><br>THANK YOU FOR SCROLLING</p>' +
+      '<div class="stamp" aria-hidden="true">' + stamp + '</div>';
   }
 
-  // ---------- 6. Share ----------
-  var toastTimer;
-  function toast(text) {
-    var t = $('toast'); t.textContent = text; t.classList.add('show');
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 1800);
-  }
-  var receiptFile = null, receiptURL = null, receiptVersion = 0;
-  var shareButton = $('share'), downloadReceipt = $('download-receipt'), shareStatus = $('share-status');
+  // ---------- Share ----------
 
-  // Draw from the displayed receipt so copy, totals and the selected cause stay in sync.
+  // Draw from the displayed receipt so copy and totals stay in sync.
   // A canvas avoids a remote screenshot service or a new rendering dependency.
-  function drawReceiptImage() {
-    var receipt = $('the-receipt'), canvas = document.createElement('canvas');
+  function drawReceiptImage(receipt) {
+    var canvas = document.createElement('canvas');
     canvas.width = 720; canvas.height = 1080;
     var g = canvas.getContext('2d');
     if (!g) throw new Error('Canvas unavailable');
@@ -798,9 +1398,8 @@
         g.setLineDash([]); y += big ? 46 : 40;
       }
     });
-    // The thank-you text and stamp occupy separate rows to keep long cause names clear.
-    var thanks = receipt.querySelector('.thanks');
-    text('→ ' + thanks.querySelector('.cause-name').textContent, left, y + 20, 23, false, muted);
+    // The thank-you text and stamp occupy separate rows to keep long names clear.
+    text('→ ' + receipt.querySelector('.thanks span').textContent, left, y + 20, 23, false, muted);
     text('THANK YOU FOR SCROLLING', left, y + 56, 21, false, muted);
     var stamp = receipt.querySelector('.stamp'), stampLabel = stamp.querySelector('small');
     var stampAmount = stamp.firstChild.textContent.trim();
@@ -816,8 +1415,13 @@
     catch (err) { return false; }
   }
 
+  // One sharer per receipt (Sunday reveal, weekly limits receipt): same flow, separate buttons and state.
+  function makeSharer(o) {
+  var receiptFile = null, receiptURL = null, receiptVersion = 0;
+  var shareButton = $(o.share), downloadReceipt = $(o.download), shareStatus = $(o.status);
   function prepareReceiptImage() {
-    var version = ++receiptVersion;
+    var version = ++receiptVersion, name = o.name();
+    downloadReceipt.setAttribute('download', name);
     receiptFile = null; shareButton.hidden = false; shareButton.disabled = true;
     shareButton.textContent = 'Preparing image…'; downloadReceipt.hidden = true;
     shareStatus.textContent = 'Preparing your receipt image.';
@@ -832,12 +1436,12 @@
     // Prepare before the click: awaiting PNG generation inside the click can lose iOS user activation.
     Promise.resolve(document.fonts ? document.fonts.ready : null).then(function () {
       if (version !== receiptVersion) return;
-      drawReceiptImage().toBlob(function (blob) {
+      drawReceiptImage($(o.receipt)).toBlob(function (blob) {
         if (version !== receiptVersion) return;
         if (!blob) return failed();
         try {
           receiptURL = URL.createObjectURL(blob);
-          receiptFile = typeof File === 'function' ? new File([blob], 'receipts-week-39.png', { type: 'image/png' }) : null;
+          receiptFile = typeof File === 'function' ? new File([blob], name, { type: 'image/png' }) : null;
           downloadReceipt.href = receiptURL; downloadReceipt.hidden = false;
           var nativeShare = receiptFile && canShareReceipt(receiptFile);
           shareButton.hidden = !nativeShare; shareButton.disabled = false;
@@ -861,7 +1465,7 @@
       shareStatus.textContent = 'Couldn’t open sharing. Try again or download the image instead.';
     }
     try {
-      navigator.share({ files: [receiptFile], title: 'My Receipts, week 39' }).then(function () {
+      navigator.share({ files: [receiptFile], title: o.title() }).then(function () {
         if (version !== receiptVersion) return;
         shareButton.disabled = false;
         // Resolving only confirms hand-off to the share target, not a saved image or published story.
@@ -869,71 +1473,173 @@
       }).catch(failed);
     } catch (err) { failed(err); }
   });
-
-  // ---------- 7. Pot: tap a friend to see their receipt ----------
-  // Week 40 so far. Minutes. Over = total - 7 × daily limit; £1 per 10 min over.
-  var FRIENDS = [
-    { h: '@not_a_real_dan', i: 'NR', bg: '#FDE2E1', lim: 120, tt: 665, ig: 255, dodged: 3 },
-    { h: '@scrolltest_sam', i: 'ST', bg: '#E7E4DA', lim: 90, tt: 220, ig: 450, dodged: 5 },
-    { h: '@demo_user_3', i: 'D3', bg: '#fff', lim: 60, tt: 130, ig: 310, dodged: 2 },
-    { h: 'you', i: 'ME', bg: 'var(--ink);color:var(--paper)', lim: 120, tt: 412, ig: 288, dodged: 6 }
-  ];
-  FRIENDS.forEach(function (f) { f.over = Math.max(0, f.tt + f.ig - f.lim * 7); f.paid = Math.floor(f.over / 10); });
-
-  $('friends').innerHTML = FRIENDS.map(function (f, i) {
-    return '<button class="friend friend-btn" data-friend="' + i + '" aria-label="See ' + f.h + '\'s receipt">' +
-      '<span class="avatar" style="background:' + f.bg + '">' + f.i + '</span>' +
-      '<div><p class="h">' + f.h + '</p><p class="s">' + (f.over ? fmt(f.over) + ' over' : 'Under limit all week') + '</p></div>' +
-      '<span class="p' + (i === 0 ? ' red' : '') + '">£' + f.paid + '</span><span class="chev">›</span></button>';
-  }).join('');
-
-  function receiptHTML(f) {
-    var total = f.tt + f.ig;
-    var stamp = f.paid ? '£' + f.paid + '<small>DONATED</small>' : 'CLEAN<small>WEEK</small>';
-    return '<div class="receipt" aria-label="' + f.h + ': ' + fmt(total) + ' scrolled, £' + f.paid + ' donated">' +
-      '<div class="head"><b>RECEIPTS</b><span>' + f.h.toUpperCase() + ' · WEEK 40</span></div><hr>' +
-      li('TikTok', fmt(f.tt)) + li('Instagram', fmt(f.ig)) + '<hr>' +
-      li('TOTAL', fmt(total), 'big') + li('Daily limit', fmt(f.lim), 'small') + li('Over limit', f.over ? fmt(f.over) : '0m', 'small') + '<hr>' +
-      li('That\'s', '= ' + Math.max(1, Math.floor(total / 360)) + ' essay' + (total >= 720 ? 's' : ''), 'small') +
-      li('Or', '= ' + Math.floor(total / 100) + ' gym sessions', 'small') + '<hr>' +
-      li('DONATED', '<span class="red">£' + f.paid + '.00</span>', 'big') + li('Dodged (closed it)', '£' + f.dodged + '.00', 'small') +
-      '<p class="thanks">→ Climate · Flat 4B pot<br>THANK YOU FOR SCROLLING</p>' +
-      '<div class="stamp" aria-hidden="true">' + stamp + '</div></div>';
+  return {
+    prepare: prepareReceiptImage,
+    print: function () { var r = $(o.receipt); r.classList.remove('printing'); void r.offsetWidth; r.classList.add('printing'); prepareReceiptImage(); }
+  };
   }
-  function li(a, b, cls) { return '<div class="li' + (cls ? ' ' + cls : '') + '"><span>' + a + '</span><span class="dots"></span><span>' + b + '</span></div>'; }
+  var revealShare = makeSharer({ receipt: 'the-receipt', share: 'share', download: 'download-receipt', status: 'share-status',
+    name: function () { return 'receipts-week-' + week() + '.png'; }, title: function () { return 'My Receipts, week ' + week(); } });
+  var weekShare = makeSharer({ receipt: 'week-receipt', share: 'share-w', download: 'download-w', status: 'share-status-w',
+    name: function () { return 'receipts-week-39.png'; }, title: function () { return 'My Receipts, week 39'; } });
 
-  var friendNow = null;
-  $('friends').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-friend]'); if (!b) return;
-    friendNow = FRIENDS[+b.dataset.friend];
-    var me = friendNow.h === 'you';
-    $('friend-title').textContent = me ? 'Your receipt' : friendNow.h.slice(1);
-    $('friend-receipt').innerHTML = receiptHTML(friendNow);
-    $('friend-receipt').firstChild.classList.add('printing');
-    $('nudge').parentNode.style.display = me ? 'none' : '';
-    go('friend');
+  // ---------- Daily limits (first prototype): Limits, Today, weekly receipt, Stats ----------
+  // Its own fake state: per-app daily limits, £1 per 10 min over to charity, capped daily.
+  var day = { limTT: 60, limIG: 60, stakes: true, cause: 'Mental health', charity: 'Mind', ask: true, given: {}, ttSecs: 0, overMin: 0, owed: 0 };
+  var CAP = 5;
+  // Example charities only: not partners. Grouped by the three causes on the Limits screen.
+  var CHARITIES = [
+    { n: 'Mind', d: 'Mental health support', c: 'Mental health' },
+    { n: 'YoungMinds', d: 'Young people\'s mental health', c: 'Mental health' },
+    { n: 'Samaritans', d: '24/7 listening line', c: 'Mental health' },
+    { n: 'BookTrust', d: 'Getting kids reading', c: 'Education' },
+    { n: 'Teach First', d: 'Teachers where they\'re needed', c: 'Education' },
+    { n: 'Woodland Trust', d: 'Planting UK woods', c: 'Climate' },
+    { n: 'ClientEarth', d: 'Climate law', c: 'Climate' }
+  ];
+  function fmtShort(min) { return min % 60 ? fmt(min) : (min / 60) + 'h'; }
+
+  function bindSlider(id, out, key) {
+    var input = $(id);
+    function update() {
+      day[key] = +input.value;
+      $(out).textContent = fmt(day[key]);
+      input.style.setProperty('--p', ((input.value - input.min) / (input.max - input.min) * 100) + '%');
+      if (key === 'limTT' && !day.overMin) day.ttSecs = day.limTT * 60 - 108; // starts 1m48s under, i.e. 58m 12s of 1h
+    }
+    input.addEventListener('input', update); update();
+  }
+  bindSlider('lim-tt', 'out-tt', 'limTT');
+  bindSlider('lim-ig', 'out-ig', 'limIG');
+
+  $('stakes').addEventListener('click', function () {
+    day.stakes = !day.stakes;
+    this.setAttribute('aria-checked', day.stakes);
   });
-  $('nudge').addEventListener('click', function () { toast('Nudged ' + friendNow.h + ' 👀'); });
-  $('cheer').addEventListener('click', function () { toast('Cheered ' + friendNow.h + ' 👏'); });
+  $('causes').addEventListener('click', function (e) {
+    var b = e.target.closest('.cause'); if (!b) return;
+    this.querySelectorAll('.cause').forEach(function (c) { c.setAttribute('aria-pressed', c === b); });
+    day.cause = b.textContent;
+    document.querySelectorAll('.cause-name').forEach(function (n) { n.textContent = day.cause; });
+    setCharity(CHARITIES.filter(function (c) { return c.c === day.cause; })[0].n);
+  });
+  $('ask').addEventListener('click', function () {
+    day.ask = !day.ask;
+    this.setAttribute('aria-checked', day.ask);
+  });
+  function setCharity(name) {
+    day.charity = name;
+    document.querySelectorAll('.charity-name').forEach(function (n) { n.textContent = name; });
+    $('sheet-default').textContent = 'Send to ' + name + ' (default)';
+  }
 
-  // ---------- Stats: SVG charts (ink = within limit, red = over limit) ----------
-  var NS = 'http://www.w3.org/2000/svg';
+  // Charity sheet: pick a default, or pick where one overage £1 goes
+  var charityMode = null;
+  function openCharity(mode) {
+    charityMode = mode;
+    var over = mode === 'over';
+    $('csheet-kicker').textContent = over ? day.overMin + ' min over on TikTok · £1 due' : 'Default charity';
+    $('csheet-title').textContent = over ? 'Where should this £1 go?' : 'Where should your £1s go?';
+    $('sheet-default').style.display = over ? '' : 'none';
+    var html = '', last = null;
+    CHARITIES.forEach(function (c) {
+      if (c.c !== last) { html += '<p class="label group">' + c.c + '</p>'; last = c.c; }
+      html += '<button class="charity" data-charity="' + c.n + '" aria-pressed="' + (c.n === day.charity) + '">' +
+        '<span><span class="n">' + c.n + '</span><span class="d">' + c.d + '</span></span>' +
+        '<span class="go">' + (over ? 'Send £1 →' : (c.n === day.charity ? '✓' : '')) + '</span></button>';
+    });
+    $('charity-list').innerHTML = html;
+    $('cscrim').classList.add('show'); $('csheet').classList.add('show');
+  }
+  function closeCharity() {
+    if (charityMode === 'over') pay(day.charity); // the £1 is owed either way; dismissing sends it to the default
+    charityMode = null;
+    $('cscrim').classList.remove('show'); $('csheet').classList.remove('show');
+  }
+  $('charity-list').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-charity]'); if (!b) return;
+    if (charityMode === 'over') { pay(b.dataset.charity); charityMode = null; }
+    else { setCharity(b.dataset.charity); toast('Default: ' + b.dataset.charity); }
+    closeCharity();
+  });
+  $('sheet-default').addEventListener('click', closeCharity);
+  $('cscrim').addEventListener('click', closeCharity);
+  $('pick-default').addEventListener('click', function () { openCharity('default'); });
+
+  // Today: ticking counter
+  $('today-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  function renderToday() {
+    var limS = day.limTT * 60;
+    var used = day.overMin ? (day.limTT + day.overMin) * 60 : day.ttSecs;
+    var m = Math.floor(used / 60), s = used % 60;
+    $('tt-used').textContent = day.overMin ? fmt(m) : fmt(m) + ' ' + String(s).padStart(2, '0') + 's';
+    $('tt-lim').textContent = fmtShort(day.limTT);
+    $('tt-fill').style.width = Math.min(used / limS, 1) * 100 + '%';
+    $('row-tt').classList.toggle('over', !!day.overMin);
+    $('tt-status').textContent = day.overMin ? day.overMin + ' min over limit' : fmt(Math.ceil((limS - used) / 60)) + ' left today';
+
+    $('ig-lim').textContent = fmtShort(day.limIG);
+    $('ig-used').textContent = fmt(Math.min(34, day.limIG - 1));
+    $('ig-fill').style.width = Math.min(34, day.limIG - 1) / day.limIG * 100 + '%';
+    $('row-ig').querySelector('.status').textContent = fmt(day.limIG - Math.min(34, day.limIG - 1)) + ' left today';
+
+    $('stakes-amt').textContent = '£' + day.owed.toFixed(2);
+    $('stakes-card').classList.toggle('paid', day.owed > 0);
+    var given = Object.keys(day.given).map(function (k) { return k + ' £' + day.given[k]; }).join(' · ');
+    $('stakes-sub').textContent = !day.stakes ? 'Stakes off · just tracking'
+      : given ? '→ ' + given : '£1 per 10 min over · capped at £' + CAP + '/day';
+  }
+  setInterval(function () {
+    if (day.overMin) return;
+    if (day.ttSecs < day.limTT * 60 - 1) day.ttSecs++; // holds at 59:59 until the secret trigger
+    if (current === 'today') renderToday();
+  }, 1000);
+
+  // Over limit: SECRET trigger on the Today logo (triple-tap or long-press)
+  var dTaps = 0, dTapTimer, dPressTimer, dLongPressed = false, dLogo = $('secret-today');
+  dLogo.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  dLogo.addEventListener('pointerdown', function () {
+    dLongPressed = false;
+    dPressTimer = setTimeout(function () { dLongPressed = true; dTaps = 0; goOver(); }, 600);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { dLogo.addEventListener(ev, function () { clearTimeout(dPressTimer); }); });
+  dLogo.addEventListener('click', function () {
+    if (dLongPressed) return;
+    dTaps++; clearTimeout(dTapTimer);
+    if (dTaps >= 3) { dTaps = 0; goOver(); return; }
+    dTapTimer = setTimeout(function () { dTaps = 0; }, 700);
+  });
+  function goOver() {
+    if (charityMode) return; // already asking about the last £1
+    day.overMin += 10;
+    var charged = day.stakes && day.owed < CAP;
+    if (current === 'today') renderToday();
+    if (navigator.vibrate) navigator.vibrate(30);
+    if (!charged) {
+      notify(!day.stakes ? '10 min over on TikTok. Stakes are off, so this one\'s free.'
+        : '10 min over on TikTok. You\'ve hit today\'s £' + CAP + ' cap. Go to bed x');
+      return;
+    }
+    if (day.ask) openCharity('over'); else pay(day.charity);
+  }
+  function pay(charity) {
+    day.owed += 1;
+    day.given[charity] = (day.given[charity] || 0) + 1;
+    notify('10 min over on TikTok. £1 → ' + charity);
+    if (current !== 'today') return;
+    renderToday();
+    var stamp = $('paid-stamp'), amt = $('stakes-amt');
+    stamp.classList.remove('land'); amt.classList.remove('bump');
+    void stamp.offsetWidth; // restart animations
+    stamp.classList.add('land'); amt.classList.add('bump');
+  }
+
+  // Stats: SVG charts (ink = within limit, red = over limit)
   var WEEKS = [1105, 1060, 1010, 1045, 980, 915, 890, 950].map(function (t, i) { return { label: 'W' + (32 + i), total: t }; });
   var DAYS = [[70, 50], [85, 45], [65, 60], [95, 48], [105, 67], [72, 63], [60, 65]].map(function (d, i) {
     return { label: ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i], day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i], tt: d[0], ig: d[1], total: d[0] + d[1] };
   });
   var GIVEN = [['Mind', 58], ['YoungMinds', 31], ['Woodland Trust', 21], ['BookTrust', 12]];
-
-  function el(tag, attrs, parent) {
-    var e = document.createElementNS(NS, tag);
-    for (var k in attrs) e.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(e);
-    return e;
-  }
-  function topRounded(x, y, w, h, r) { // flat at the baseline, rounded at the data end
-    r = Math.min(r, h, w / 2);
-    return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z';
-  }
 
   function limitBars(svg, data, limit, max, step, tipFor) {
     var W = 320, H = 170, L = 30, B = 20, T = 8, ih = H - B - T, iw = W - L;
@@ -952,35 +1658,25 @@
       if (over > 0) el('path', { class: 'seg' + (reduced ? '' : ' grow'), style: delay, d: topRounded(x, y(d.total), bw, Math.max(y(under) - y(d.total) - 2, 1), 4), fill: 'var(--red)' }, grp); // 2px gap
       el('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle' }, svg).textContent = d.label;
       el('rect', { class: 'hit', x: L + slot * i, y: T, width: slot, height: ih }, grp);
-      var show = function () { svg.querySelectorAll('.grp').forEach(function (n) { n.classList.remove('on'); }); grp.classList.add('on'); showTip(tipFor(d), svg, x + bw / 2, y(d.total)); };
-      grp.addEventListener('pointerenter', show); grp.addEventListener('click', show); grp.addEventListener('focus', show);
+      var showIt = function () { svg.querySelectorAll('.grp').forEach(function (n) { n.classList.remove('on'); }); grp.classList.add('on'); showTip(tipFor(d), svg, x + bw / 2, y(d.total)); };
+      grp.addEventListener('pointerenter', showIt); grp.addEventListener('click', showIt); grp.addEventListener('focus', showIt);
       grp.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { grp.classList.remove('on'); hideTip(); } });
     });
     el('line', { x1: L, x2: W, y1: y(limit), y2: y(limit), stroke: 'var(--ink-soft)', 'stroke-width': 1.5, 'stroke-dasharray': '4 3', 'pointer-events': 'none' }, svg);
   }
-
-  function showTip(html, svg, vx, vy) {
-    var r = svg.getBoundingClientRect(), a = $('app').getBoundingClientRect(), s = r.width / 320;
-    var t = $('tip'); t.innerHTML = html; t.classList.add('show');
-    var left = r.left - a.left + vx * s, half = t.offsetWidth / 2;
-    t.style.left = Math.max(half + 8, Math.min(a.width - half - 8, left)) + 'px';
-    t.style.top = (r.top - a.top + vy * s) + 'px';
-  }
-  function hideTip() { $('tip').classList.remove('show'); }
   $('stats').addEventListener('scroll', hideTip);
 
-  function hm(min) { return fmt(min); }
   function renderStats() {
-    limitBars($('chart-weeks'), WEEKS, 840, 1200, 240, function (d) {
+    limitBars($('chart-limit-weeks'), WEEKS, 840, 1200, 240, function (d) {
       var o = d.total - 840;
-      return '<b>Week ' + d.label.slice(1) + '</b> · ' + hm(d.total) + '<br>' + (o > 0 ? hm(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
+      return '<b>Week ' + d.label.slice(1) + '</b> · ' + fmt(d.total) + '<br>' + (o > 0 ? fmt(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
     });
-    $('chart-weeks').setAttribute('aria-label', 'Hours scrolled per week, weeks 32 to 39: ' + WEEKS.map(function (w) { return w.label + ' ' + hm(w.total); }).join(', '));
+    $('chart-limit-weeks').setAttribute('aria-label', 'Hours scrolled per week, weeks 32 to 39: ' + WEEKS.map(function (w) { return w.label + ' ' + fmt(w.total); }).join(', '));
     limitBars($('chart-days'), DAYS, 120, 180, 60, function (d) {
       var o = d.total - 120;
-      return '<b>' + d.day + '</b> · ' + hm(d.total) + (o > 0 ? ' · <span style="color:#FF8A85">' + o + 'm over</span>' : '') + '<br>TikTok ' + hm(d.tt) + ' · Insta ' + hm(d.ig);
+      return '<b>' + d.day + '</b> · ' + fmt(d.total) + (o > 0 ? ' · <span style="color:#FF8A85">' + o + 'm over</span>' : '') + '<br>TikTok ' + fmt(d.tt) + ' · Insta ' + fmt(d.ig);
     });
-    $('chart-days').setAttribute('aria-label', 'Week 39 by day: ' + DAYS.map(function (d) { return d.day + ' ' + hm(d.total); }).join(', '));
+    $('chart-days').setAttribute('aria-label', 'Week 39 by day: ' + DAYS.map(function (d) { return d.day + ' ' + fmt(d.total); }).join(', '));
 
     var svg = $('chart-charity'), W = 320, rowH = 30, H = GIVEN.length * rowH, L = 108, max = GIVEN[0][1];
     svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -993,16 +1689,6 @@
       el('text', { x: L + w + 6, y: yy + 13, class: 'val' }, svg).textContent = '£' + g[1];
     });
   }
-
-  // 8-week sparkline on Home
-  (function () {
-    var s = $('spark'), max = 1200, min = 800;
-    var pts = WEEKS.map(function (w, i) { return [4 + i * 112 / 7, 30 - (w.total - min) / (max - min) * 26]; });
-    el('line', { x1: 0, x2: 120, y1: 30 - (840 - min) / (max - min) * 26, y2: 30 - (840 - min) / (max - min) * 26, stroke: 'var(--ink-soft)', 'stroke-dasharray': '3 3', 'stroke-width': 1 }, s);
-    el('polyline', { points: pts.join(' '), fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, s);
-    var p = pts[pts.length - 1];
-    el('circle', { cx: p[0], cy: p[1], r: 4, fill: 'var(--red)', stroke: '#fff', 'stroke-width': 2 }, s);
-  })();
 
   // ---------- Home-screen icon: iOS wants a PNG, so draw one ----------
   try {
