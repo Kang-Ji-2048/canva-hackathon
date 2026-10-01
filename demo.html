@@ -595,7 +595,7 @@
       <p class="status" id="tt-status">Under your limit. Nice.</p>
     </div>
     <div class="card" id="row-ig">
-      <div class="app-row"><img class="app-ico" src="assets/app-icons/instagram.jpg" width="40" height="40" alt="" aria-hidden="true"><span class="name">Instagram</span><span class="time"><span id="ig-used">34m</span> <small>/ <span id="ig-lim">1h</span></small></span></div>
+      <div class="app-row"><img class="app-ico" src="assets/app-icons/instagram.jpg" width="40" height="40" alt="" aria-hidden="true"><span class="name">Instagram</span><span class="time"><span id="ig-used">34m 00s</span> <small>/ <span id="ig-lim">1h</span></small></span></div>
       <div class="track"><div class="fill" id="ig-fill"></div></div>
       <p class="status">26m left today</p>
     </div>
@@ -1584,20 +1584,20 @@
   $('cscrim').addEventListener('click', closeCharity);
   $('pick-default').addEventListener('click', function () { openCharity('default'); });
 
-  // Today: ticking counter
+  // Today: fixed sample usage; only controls and the secret trigger change it
   $('today-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   function renderToday() {
     var limS = day.limTT * 60;
     var used = day.overMin ? (day.limTT + day.overMin) * 60 : day.ttSecs;
     var m = Math.floor(used / 60), s = used % 60;
-    $('tt-used').textContent = day.overMin ? fmt(m) : fmt(m) + ' ' + String(s).padStart(2, '0') + 's';
+    $('tt-used').textContent = m + 'm ' + String(s).padStart(2, '0') + 's';
     $('tt-lim').textContent = fmtShort(day.limTT);
     $('tt-fill').style.width = Math.min(used / limS, 1) * 100 + '%';
     $('row-tt').classList.toggle('over', !!day.overMin);
     $('tt-status').textContent = day.overMin ? day.overMin + ' min over limit' : fmt(Math.ceil((limS - used) / 60)) + ' left today';
 
     $('ig-lim').textContent = fmtShort(day.limIG);
-    $('ig-used').textContent = fmt(Math.min(34, day.limIG - 1));
+    $('ig-used').textContent = Math.min(34, day.limIG - 1) + 'm 00s';
     $('ig-fill').style.width = Math.min(34, day.limIG - 1) / day.limIG * 100 + '%';
     $('row-ig').querySelector('.status').textContent = fmt(day.limIG - Math.min(34, day.limIG - 1)) + ' left today';
 
@@ -1607,12 +1607,6 @@
     $('stakes-sub').textContent = !day.stakes ? 'Stakes off · just tracking'
       : given ? '→ ' + given : '£1 per 10 min over · capped at £' + CAP + '/day';
   }
-  setInterval(function () {
-    if (day.overMin) return;
-    if (day.ttSecs < day.limTT * 60 - 1) day.ttSecs++; // holds at 59:59 until the secret trigger
-    if (current === 'today') renderToday();
-  }, 1000);
-
   // Over limit: SECRET trigger on the Today logo (triple-tap or long-press)
   var dTaps = 0, dTapTimer, dPressTimer, dLongPressed = false, dLogo = $('secret-today');
   dLogo.addEventListener('contextmenu', function (e) { e.preventDefault(); });
