@@ -763,11 +763,11 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var APPS = [
-    { k: 'ig', n: 'Instagram', g: '◎' },
-    { k: 'tt', n: 'TikTok', g: '♪' },
-    { k: 'rd', n: 'Reddit', g: 'r' },
-    { k: 'yt', n: 'YouTube', g: '▶' },
-    { k: 'sc', n: 'Snapchat', g: 'S' }
+    { k: 'ig', n: 'Instagram', g: '◎', icon: 'assets/app-icons/instagram.jpg' },
+    { k: 'tt', n: 'TikTok', g: '♪', icon: 'assets/app-icons/tiktok.jpg' },
+    { k: 'rd', n: 'Reddit', g: 'r', icon: 'assets/app-icons/reddit.jpg' },
+    { k: 'yt', n: 'YouTube', g: '▶', icon: 'assets/app-icons/youtube.jpg' },
+    { k: 'sc', n: 'Snapchat', g: 'S', icon: 'assets/app-icons/snapchat.jpg' }
   ];
   var PLEDGES = [5, 10, 20];
 
@@ -797,7 +797,7 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function add(a, b) { return a + b; }
   function on() { return APPS.filter(function (a) { return state.apps[a.k]; }); }
-  function appIco(a) { return '<span class="app-ico ' + a.k + '" aria-hidden="true">' + a.g + '</span>'; }
+  function appIco(a) { return '<img class="app-ico" src="' + a.icon + '" width="36" height="36" alt="" aria-hidden="true">'; }
   function avatar(p) { return '<span class="avatar" style="background:' + p.bg + '">' + esc(p.i) + '</span>'; }
 
   // ---------- Week clock: the reveal is every Sunday at 6pm, local time ----------
