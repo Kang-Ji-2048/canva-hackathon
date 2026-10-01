@@ -346,10 +346,10 @@
 
   <!-- ============ 5/6. SUNDAY RECEIPT + SHARE ============ -->
   <section class="screen tabbed" id="receipt">
-    <div class="bar"><span class="label">Sunday · Week 39</span></div>
+    <div class="bar"><span class="label">Sample · Sunday 27 September 2026</span></div>
     <h1>Your receipt</h1>
-    <div class="receipt" id="the-receipt" aria-label="Weekly receipt: 15 hours 50 minutes scrolled, £11 donated">
-      <div class="head"><b>RECEIPTS</b><span>WEEK 39 · 22–28 SEP</span></div>
+    <div class="receipt" id="the-receipt" aria-label="Sample weekly receipt, Week 39, 21–27 September 2026: 15 hours 50 minutes scrolled, £11 donated. Illustrative data.">
+      <div class="head"><b>RECEIPTS</b><span>SAMPLE RECEIPT · WEEK 39<br>21–27 SEP 2026</span></div>
       <hr>
       <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
       <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
@@ -368,7 +368,7 @@
     </div>
     <div class="receipt-actions">
       <button class="btn" id="share" disabled>Preparing image…</button>
-      <a class="btn ghost" id="download-receipt" download="receipts-week-39.png" hidden>Download receipt image</a>
+      <a class="btn ghost" id="download-receipt" download="receipts-sample-2026-week-39.png" hidden>Download receipt image</a>
       <p class="fineprint" id="share-status" role="status" aria-live="polite">Preparing your receipt image.</p>
     </div>
   </section>
@@ -379,7 +379,7 @@
     <h1>Flat 4B pot</h1>
     <p class="muted" style="margin:8px 0 16px">Shared limits. Every slip goes in the pot.</p>
     <div class="card pot-total">
-      <p class="label">This week</p>
+      <p class="label">Sample Week 40 · 2026</p>
       <p class="amt">£14.00</p>
       <p class="fineprint">Goes to <b>Climate</b> on Sunday · 100% donated</p>
     </div>
@@ -389,7 +389,7 @@
 
   <!-- ============ 7b. FRIEND RECEIPT ============ -->
   <section class="screen" id="friend">
-    <div class="bar"><button class="back" data-back>‹ Pot</button><span class="label">Flat 4B · Week 40</span></div>
+    <div class="bar"><button class="back" data-back>‹ Pot</button><span class="label">Sample · Week 40 · 2026</span></div>
     <h1 id="friend-title">Their receipt</h1>
     <div id="friend-receipt"></div>
     <div class="nudge-row">
@@ -423,28 +423,28 @@
       <button class="card tile tile-btn" data-tab-go="stats"><p class="label">8-week trend</p><svg id="spark" viewBox="0 0 120 34" style="width:100%;height:34px;margin-top:8px" aria-label="Weekly scrolling, trending down"></svg><p class="s">↓ 14% since week 32</p></button>
       <button class="card tile tile-btn" id="home-charity"><p class="label">Your £ goes to</p><p class="big charity-name" style="font-size:20px">Mind</p><p class="s">Tap to change</p></button>
     </div>
-    <button class="card row-link" data-tab-go="receipt"><span><span class="label">Sunday</span><br><b style="font-size:18px">Week 39 receipt is ready</b></span><span class="chev">›</span></button>
+    <button class="card row-link" data-tab-go="receipt"><span><span class="label">Sample · 27 Sep 2026</span><br><b style="font-size:18px">Week 39 receipt</b></span><span class="chev">›</span></button>
   </section>
 
   <!-- ============ STATS ============ -->
   <section class="screen tabbed" id="stats">
-    <div class="bar"><span class="label">Stats · since you started</span></div>
+    <div class="bar"><span class="label">Sample stats · 2026</span></div>
     <h1 style="margin-bottom:16px">Your time, charted</h1>
     <div class="tiles" style="margin-top:0">
-      <div class="card tile"><p class="label">Avg / day</p><p class="big">2h 16m</p><p class="s">Week 39 · limit 2h</p></div>
+      <div class="card tile"><p class="label">Avg / day</p><p class="big">2h 16m</p><p class="s">Week 39 · 2026 · limit 2h</p></div>
       <div class="card tile"><p class="label">vs week 38</p><p class="big red">↑ 7%</p><p class="s">+1h 00m. A slip.</p></div>
       <div class="card tile"><p class="label">Donated</p><p class="big">£122</p><p class="s">Across 8 weeks</p></div>
       <div class="card tile"><p class="label">Worst day</p><p class="big">Fri</p><p class="s">2h 52m · 52m over</p></div>
     </div>
     <div class="card chart-card" style="margin-top:12px">
       <h3>Hours per week</h3>
-      <p class="s">Weeks 32–39 · tap a bar</p>
+      <p class="s">Sample weeks 32–39 · 2026 · tap a bar</p>
       <svg class="chart" id="chart-weeks" role="img"></svg>
       <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>14h weekly limit</span></div>
     </div>
     <div class="card chart-card">
       <h3>Week 39, day by day</h3>
-      <p class="s">TikTok + Instagram · tap a bar</p>
+      <p class="s">21–27 Sep 2026 · TikTok + Instagram · tap a bar</p>
       <svg class="chart" id="chart-days" role="img"></svg>
       <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>2h daily limit</span></div>
     </div>
@@ -777,7 +777,9 @@
       g.fillText(value, x, baseline);
     }
     text(receipt.querySelector('.head b').textContent, 360, 116, 42, true, ink, 'center');
-    text(receipt.querySelector('.head span').textContent, 360, 156, 23, false, muted, 'center');
+    var headingLines = receipt.querySelector('.head span').innerText.split('\n');
+    headingLines.forEach(function (line, i) { text(line, 360, 156 + i * 32, 23, false, muted, 'center'); });
+    y += (headingLines.length - 1) * 32;
     Array.from(receipt.children).forEach(function (row) {
       if (row.tagName === 'HR') {
         g.strokeStyle = ink; g.lineWidth = 2; g.setLineDash([7, 6]);
@@ -837,7 +839,7 @@
         if (!blob) return failed();
         try {
           receiptURL = URL.createObjectURL(blob);
-          receiptFile = typeof File === 'function' ? new File([blob], 'receipts-week-39.png', { type: 'image/png' }) : null;
+          receiptFile = typeof File === 'function' ? new File([blob], 'receipts-sample-2026-week-39.png', { type: 'image/png' }) : null;
           downloadReceipt.href = receiptURL; downloadReceipt.hidden = false;
           var nativeShare = receiptFile && canShareReceipt(receiptFile);
           shareButton.hidden = !nativeShare; shareButton.disabled = false;
@@ -861,7 +863,7 @@
       shareStatus.textContent = 'Couldn’t open sharing. Try again or download the image instead.';
     }
     try {
-      navigator.share({ files: [receiptFile], title: 'My Receipts, week 39' }).then(function () {
+      navigator.share({ files: [receiptFile], title: 'Receipts sample — Week 39, 21–27 September 2026' }).then(function () {
         if (version !== receiptVersion) return;
         shareButton.disabled = false;
         // Resolving only confirms hand-off to the share target, not a saved image or published story.
@@ -871,7 +873,7 @@
   });
 
   // ---------- 7. Pot: tap a friend to see their receipt ----------
-  // Week 40 so far. Minutes. Over = total - 7 × daily limit; £1 per 10 min over.
+  // Illustrative full Week 40, 28 Sep–4 Oct 2026. Minutes. Over = total - 7 × daily limit; £1 per 10 min over.
   var FRIENDS = [
     { h: '@not_a_real_dan', i: 'NR', bg: '#FDE2E1', lim: 120, tt: 665, ig: 255, dodged: 3 },
     { h: '@scrolltest_sam', i: 'ST', bg: '#E7E4DA', lim: 90, tt: 220, ig: 450, dodged: 5 },
@@ -890,8 +892,8 @@
   function receiptHTML(f) {
     var total = f.tt + f.ig;
     var stamp = f.paid ? '£' + f.paid + '<small>DONATED</small>' : 'CLEAN<small>WEEK</small>';
-    return '<div class="receipt" aria-label="' + f.h + ': ' + fmt(total) + ' scrolled, £' + f.paid + ' donated">' +
-      '<div class="head"><b>RECEIPTS</b><span>' + f.h.toUpperCase() + ' · WEEK 40</span></div><hr>' +
+    return '<div class="receipt" aria-label="Sample Week 40 receipt, 28 September–4 October 2026, ' + f.h + ': ' + fmt(total) + ' scrolled, £' + f.paid + ' donated. Illustrative data.">' +
+      '<div class="head"><b>RECEIPTS</b><span>SAMPLE RECEIPT · WEEK 40<br>28 SEP–4 OCT 2026<br>' + f.h.toUpperCase() + '</span></div><hr>' +
       li('TikTok', fmt(f.tt)) + li('Instagram', fmt(f.ig)) + '<hr>' +
       li('TOTAL', fmt(total), 'big') + li('Daily limit', fmt(f.lim), 'small') + li('Over limit', f.over ? fmt(f.over) : '0m', 'small') + '<hr>' +
       li('That\'s', '= ' + Math.max(1, Math.floor(total / 360)) + ' essay' + (total >= 720 ? 's' : ''), 'small') +
@@ -973,18 +975,18 @@
   function renderStats() {
     limitBars($('chart-weeks'), WEEKS, 840, 1200, 240, function (d) {
       var o = d.total - 840;
-      return '<b>Week ' + d.label.slice(1) + '</b> · ' + hm(d.total) + '<br>' + (o > 0 ? hm(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
+      return '<b>Sample week ' + d.label.slice(1) + ' · 2026</b> · ' + hm(d.total) + '<br>' + (o > 0 ? hm(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
     });
-    $('chart-weeks').setAttribute('aria-label', 'Hours scrolled per week, weeks 32 to 39: ' + WEEKS.map(function (w) { return w.label + ' ' + hm(w.total); }).join(', '));
+    $('chart-weeks').setAttribute('aria-label', 'Sample hours scrolled per week, weeks 32 to 39 of 2026: ' + WEEKS.map(function (w) { return w.label + ' ' + hm(w.total); }).join(', '));
     limitBars($('chart-days'), DAYS, 120, 180, 60, function (d) {
       var o = d.total - 120;
       return '<b>' + d.day + '</b> · ' + hm(d.total) + (o > 0 ? ' · <span style="color:#FF8A85">' + o + 'm over</span>' : '') + '<br>TikTok ' + hm(d.tt) + ' · Insta ' + hm(d.ig);
     });
-    $('chart-days').setAttribute('aria-label', 'Week 39 by day: ' + DAYS.map(function (d) { return d.day + ' ' + hm(d.total); }).join(', '));
+    $('chart-days').setAttribute('aria-label', 'Sample Week 39 by day, 21–27 September 2026: ' + DAYS.map(function (d) { return d.day + ' ' + hm(d.total); }).join(', '));
 
     var svg = $('chart-charity'), W = 320, rowH = 30, H = GIVEN.length * rowH, L = 108, max = GIVEN[0][1];
     svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    svg.setAttribute('aria-label', 'Donations by charity: ' + GIVEN.map(function (g) { return g[0] + ' £' + g[1]; }).join(', '));
+    svg.setAttribute('aria-label', 'Sample donations by charity: ' + GIVEN.map(function (g) { return g[0] + ' £' + g[1]; }).join(', '));
     GIVEN.forEach(function (g, i) {
       var yy = i * rowH + 6, w = (W - L - 40) * g[1] / max;
       el('text', { x: 0, y: yy + 12, style: 'fill:var(--ink);font-size:11px' }, svg).textContent = g[0];
