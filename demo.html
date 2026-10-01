@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<!--
+  Receipts: clickable app demo (hackathon prototype).
+  ALL DATA ON THIS PAGE IS FAKE AND CLIENT-SIDE. Nothing is tracked, stored or sent:
+  screen-time numbers, donations, friend handles and the pot are hard-coded demo values.
+  Secret "over limit" trigger: tap the Receipts logo on the Today screen 3 times, or long-press it.
+-->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Receipts</title>
+<meta name="theme-color" content="#F7F5EF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Receipts">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F5EF'/%3E%3Cpath d='M18 10h28v44l-4.7-2.8-4.6 2.8-4.7-2.8-4.6 2.8-4.7-2.8L18 54z' fill='%23fff' stroke='%231A1A1A' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cpath d='M25 23h14M25 31h14M25 39h9' stroke='%23E5322D' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" id="touch-icon" href="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== BRAND TOKENS (copied from index.html) ===== */
+  :root {
+    --paper: #F7F5EF;
+    --paper-2: #EEEBE2;
+    --ink: #1A1A1A;
+    --ink-soft: #5A5852;
+    --red: #E5322D;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --top: max(env(safe-area-inset-top), 12px);
+    --bottom: max(env(safe-area-inset-bottom), 12px);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--paper-2); color: var(--ink); font-family: var(--sans); line-height: 1.45; -webkit-font-smoothing: antialiased; overscroll-behavior: none; -webkit-user-select: none; user-select: none; }
+  h1, h2, h3, p { margin: 0; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+  .red { color: var(--red); }
+
+  /* ===== App shell: one phone-width column, screens stacked ===== */
+  #app { position: relative; max-width: 430px; height: 100vh; height: 100dvh; margin: 0 auto; background: var(--paper); overflow: hidden; }
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: calc(var(--top) + 8px) 20px calc(var(--bottom) + 16px); }
+  .screen.active { display: flex; }
+  .screen.tabbed { padding-bottom: calc(var(--bottom) + 84px); }
+  .bar { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-bottom: 12px; }
+  .back, .icon-btn { background: none; border: 0; padding: 8px 4px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 4px; }
+  .icon-btn svg { width: 24px; height: 24px; }
+  h1 { font-size: 34px; line-height: 1; letter-spacing: -.03em; }
+  .muted { color: var(--ink-soft); }
+
+  .logo { font: 700 20px var(--mono); letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 8px 0; -webkit-touch-callout: none; touch-action: manipulation; }
+  .logo svg { width: 18px; height: 22px; }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 0; border-radius: 999px; background: var(--red); color: #fff; font: 700 17px/1 var(--sans); padding: 18px 24px; box-shadow: 0 3px 0 var(--ink); transition: transform .12s, box-shadow .12s; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); box-shadow: none; }
+  .btn.dark { background: var(--ink); box-shadow: none; }
+
+  .card { background: #fff; border: 2px solid var(--ink); border-radius: 20px; padding: 18px; }
+  .card + .card { margin-top: 12px; }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .spacer { flex: 1; min-height: 20px; }
+
+  /* ===== 1. Onboarding ===== */
+  #onboarding { justify-content: space-between; }
+  .ob-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+  .ob-hero h1 { font-size: 54px; line-height: .95; letter-spacing: -.04em; }
+  .ob-hero h1 em { font-style: normal; color: var(--red); }
+  .mini-receipt { font: 400 13px var(--mono); background: #fff; padding: 14px 16px; max-width: 260px; transform: rotate(-3deg); box-shadow: 0 14px 24px rgba(0,0,0,.1); }
+  .ob-foot p { text-align: center; font: 400 11px var(--mono); color: var(--ink-soft); margin-top: 12px; }
+
+  /* ===== 2. Limits ===== */
+  .slider-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .slider-row b { font-size: 18px; }
+  .slider-row output { font: 700 18px var(--mono); }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 99px; background: linear-gradient(var(--ink), var(--ink)) 0 0 / var(--p, 33%) 100% no-repeat, var(--paper-2); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--red); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink); }
+  input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: var(--red); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink); }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .switch { position: relative; width: 54px; height: 32px; flex: none; border-radius: 99px; background: #CFCBC0; border: 0; transition: background .2s; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+  .switch[aria-checked=true] { background: var(--red); }
+  .switch[aria-checked=true]::after { transform: translateX(22px); }
+  .fineprint { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 8px; }
+  .causes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .cause { font: 700 14px var(--mono); border: 2px solid var(--ink); border-radius: 999px; padding: 10px 14px; background: #fff; }
+  .cause[aria-pressed=true] { background: var(--ink); color: var(--paper); }
+
+  /* ===== 3/4. Today ===== */
+  .app-row { display: flex; align-items: center; gap: 12px; }
+  .app-ico { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; color: #fff; font: 700 16px var(--mono); flex: none; }
+  .app-ico.tt { background: var(--ink); }
+  .app-ico.ig { background: linear-gradient(135deg, #8a3ab9, #e95950 60%, #fccc63); }
+  .app-row .name { font-weight: 700; font-size: 17px; }
+  .app-row .time { margin-left: auto; font: 700 16px var(--mono); text-align: right; white-space: nowrap; }
+  .app-row .time small { font-weight: 400; color: var(--ink-soft); }
+  .track { height: 12px; border-radius: 99px; background: var(--paper-2); margin-top: 14px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 99px; background: var(--ink); width: 0; transition: width .6s ease, background .3s; }
+  .over .fill { background: var(--red); }
+  .over .time { color: var(--red); }
+  .status { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 8px; }
+  .over .status { color: var(--red); font-weight: 700; }
+  .stakes-card { position: relative; background: var(--ink); color: var(--paper); border-color: var(--ink); overflow: hidden; }
+  .stakes-card .label { color: #A9A69D; }
+  .stakes-card .amt { font: 700 48px/1 var(--sans); letter-spacing: -.03em; margin: 8px 0 4px; }
+  .stakes-card .sub { font: 400 12px var(--mono); color: #A9A69D; }
+  .stakes-card .stamp { right: 18px; bottom: auto; top: 54px; mix-blend-mode: normal; background: transparent; display: none; }
+  .stakes-card.paid .stamp { display: block; }
+  .hint { text-align: center; font: 400 11px var(--mono); color: #A9A69D; margin-top: 16px; }
+
+  /* ===== Receipt component (copied from index.html) ===== */
+  .receipt { position: relative; background: #fff; font-family: var(--mono); font-size: 14px; padding: 26px 22px 30px; width: 100%; max-width: 360px; margin: 24px auto 0; filter: drop-shadow(0 18px 30px rgba(0,0,0,.12)); }
+  .receipt::before, .receipt::after { content: ""; position: absolute; left: 0; right: 0; height: 10px; background: linear-gradient(-45deg, transparent 7px, #fff 0) 0 0 / 14px 10px repeat-x, linear-gradient(45deg, transparent 7px, #fff 0) 0 0 / 14px 10px repeat-x; }
+  .receipt::before { top: -10px; transform: rotate(180deg); }
+  .receipt::after { bottom: -10px; }
+  .receipt .head { text-align: center; margin-bottom: 14px; }
+  .receipt .head b { font-size: 22px; letter-spacing: .05em; display: block; }
+  .receipt .head span { font-size: 12px; color: var(--ink-soft); }
+  .receipt hr { border: 0; border-top: 1.5px dashed var(--ink); margin: 12px 0; }
+  .li { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+  .li + .li { margin-top: 4px; }
+  .li .dots { flex: 1; overflow: hidden; color: #9A978F; }
+  .li .dots::after { content: "................................................................"; }
+  .li.big { font-size: 17px; font-weight: 700; }
+  .li.small { font-size: 12.5px; color: var(--ink-soft); }
+  .receipt .thanks { font-size: 12px; margin-top: 14px; color: var(--ink-soft); max-width: 58%; min-height: 48px; }
+  .stamp { position: absolute; right: 16px; bottom: 22px; transform: rotate(-12deg); font: 700 20px/1.05 var(--mono); color: var(--red); border: 3px solid var(--red); border-radius: 6px; padding: 6px 10px; text-align: center; letter-spacing: .04em; mix-blend-mode: multiply; opacity: .92; background: rgba(229,50,45,.04); }
+  .stamp small { display: block; font-size: 11px; letter-spacing: .14em; }
+  .receipt-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+
+  /* ===== 7. Friend pot ===== */
+  .pot-total { text-align: center; padding: 26px 18px; }
+  .pot-total .amt { font: 700 64px/1 var(--sans); letter-spacing: -.04em; color: var(--red); margin: 8px 0; }
+  .friend { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px dashed rgba(26,26,26,.3); }
+  .friend:first-child { border-top: 0; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 14px var(--mono); flex: none; border: 2px solid var(--ink); }
+  .friend .h { font: 700 14px var(--mono); }
+  .friend .s { font-size: 13px; color: var(--ink-soft); }
+  .friend .p { margin-left: auto; font: 700 16px var(--mono); }
+
+  /* ===== Tab bar ===== */
+  .tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; display: none; background: rgba(247,245,239,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px dashed rgba(26,26,26,.3); padding: 8px 12px var(--bottom); }
+  .tabs.show { display: flex; }
+  .tabs button { flex: 1; background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font: 700 11px var(--mono); color: var(--ink-soft); padding: 6px 0; }
+  .tabs button svg { width: 24px; height: 24px; }
+  .tabs button[aria-current=page] { color: var(--red); }
+
+  /* ===== iOS-style notification banner ===== */
+  .banner { position: absolute; z-index: 20; top: calc(var(--top) + 4px); left: 10px; right: 10px; display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 22px; background: rgba(250,250,248,.86); backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6); box-shadow: 0 10px 30px rgba(0,0,0,.18); transform: translateY(calc(-100% - 40px)); visibility: hidden; }
+  .banner.show { transform: none; visibility: visible; }
+  .banner .ico { width: 38px; height: 38px; border-radius: 9px; background: var(--paper); border: 1px solid #ddd; display: grid; place-items: center; flex: none; }
+  .banner .ico svg { width: 16px; height: 20px; }
+  .banner .top { display: flex; justify-content: space-between; font-size: 13px; }
+  .banner .top b { font-weight: 700; }
+  .banner .top span { color: #8a8a8a; }
+  .banner .msg { font-size: 14.5px; line-height: 1.3; font-family: -apple-system, system-ui, var(--sans); }
+  .banner > div:last-child { flex: 1; min-width: 0; }
+
+  .toast { position: absolute; z-index: 20; left: 50%; bottom: calc(var(--bottom) + 96px); transform: translate(-50%, 20px); background: var(--ink); color: var(--paper); font: 700 15px var(--mono); padding: 12px 20px; border-radius: 999px; opacity: 0; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ===== Motion (all of it lives here, so reduced-motion users get none) ===== */
+  @media (prefers-reduced-motion: no-preference) {
+    .screen.active { animation: enter .28s cubic-bezier(.2,.8,.2,1); }
+    .screen.active.from-left { animation-name: enter-back; }
+    @keyframes enter { from { transform: translateX(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes enter-back { from { transform: translateX(-28px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .banner { transition: transform .45s cubic-bezier(.2,1.2,.3,1), visibility 0s .45s; }
+    .banner.show { transition: transform .45s cubic-bezier(.2,1.2,.3,1), visibility 0s; }
+    .toast { transition: opacity .2s, transform .2s; }
+    .printing { animation: feed 1.9s steps(14, end) .3s both; }
+    .printing .stamp { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) 2.4s both; }
+    .stakes-card.paid .stamp.land { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) .35s both; }
+    .bump { animation: bump .4s ease; }
+    @keyframes feed { from { clip-path: inset(-12px 0 100% 0); } to { clip-path: inset(-12px 0 -12px 0); } }
+    @keyframes stamp { from { opacity: 0; transform: rotate(-12deg) scale(2.4); } to { opacity: .92; transform: rotate(-12deg) scale(1); } }
+    @keyframes bump { 40% { transform: scale(1.12); color: var(--red); } }
+  }
+  @media (prefers-reduced-motion: reduce) { .fill { transition: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- notification banner + toast -->
+  <div class="banner" id="banner" role="status" aria-live="polite">
+    <div class="ico"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg></div>
+    <div>
+      <div class="top"><b>Receipts</b><span>now</span></div>
+      <p class="msg" id="banner-msg"></p>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============ 1. ONBOARDING ============ -->
+  <section class="screen" id="onboarding">
+    <div class="bar"><span class="logo"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</span></div>
+    <div class="ob-hero">
+      <div class="mini-receipt" aria-hidden="true">
+        <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
+        <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
+        <div class="li" style="font-weight:700"><span>DONATED</span><span class="dots"></span><span class="red">£11.00</span></div>
+      </div>
+      <h1>Your scrolling, <em>itemised.</em></h1>
+      <p class="muted" style="font-size:17px">Set a limit. Go over, and £1 per 10 minutes goes to a charity you choose. Every Sunday, get the receipt.</p>
+    </div>
+    <div class="ob-foot">
+      <button class="btn" data-go="limits">Get started</button>
+      <p>Demo build · all data is pretend</p>
+    </div>
+  </section>
+
+  <!-- ============ 2. SET LIMITS ============ -->
+  <section class="screen" id="limits">
+    <div class="bar"><button class="back" data-back>‹ Back</button><span></span></div>
+    <h1>Set your limits</h1>
+    <p class="muted" style="margin:8px 0 18px">Per day. You can change these any time.</p>
+    <div class="card">
+      <div class="slider-row"><b>TikTok</b><output id="out-tt">1h 00m</output></div>
+      <input type="range" id="lim-tt" min="15" max="180" step="15" value="60" aria-label="TikTok daily limit in minutes">
+    </div>
+    <div class="card">
+      <div class="slider-row"><b>Instagram</b><output id="out-ig">1h 00m</output></div>
+      <input type="range" id="lim-ig" min="15" max="180" step="15" value="60" aria-label="Instagram daily limit in minutes">
+    </div>
+    <div class="card">
+      <div class="toggle-row">
+        <div><b style="font-size:18px">Stakes mode</b><p class="fineprint" style="margin-top:2px">£1 per 10 min over · capped at £5/day</p></div>
+        <button class="switch" id="stakes" role="switch" aria-checked="true" aria-label="Stakes mode"></button>
+      </div>
+    </div>
+    <div class="card">
+      <b style="font-size:18px">Your money goes to</b>
+      <div class="causes" id="causes">
+        <button class="cause" aria-pressed="true">Mental health</button>
+        <button class="cause" aria-pressed="false">Education</button>
+        <button class="cause" aria-pressed="false">Climate</button>
+      </div>
+      <p class="fineprint">100% donated. We never take a cut.</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" data-go="today">Start tracking</button>
+  </section>
+
+  <!-- ============ 3/4. TODAY ============ -->
+  <section class="screen tabbed" id="today">
+    <div class="bar">
+      <button class="logo" id="secret" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
+      <button class="icon-btn" data-go="limits" aria-label="Edit limits"><svg viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
+    </div>
+    <p class="label" id="today-date">Today</p>
+    <h1 style="margin:6px 0 18px">Today</h1>
+    <div class="card" id="row-tt">
+      <div class="app-row"><span class="app-ico tt">♪</span><span class="name">TikTok</span><span class="time"><span id="tt-used">58m 12s</span> <small>/ <span id="tt-lim">1h</span></small></span></div>
+      <div class="track"><div class="fill" id="tt-fill"></div></div>
+      <p class="status" id="tt-status">Under your limit. Nice.</p>
+    </div>
+    <div class="card" id="row-ig">
+      <div class="app-row"><span class="app-ico ig">◎</span><span class="name">Instagram</span><span class="time"><span id="ig-used">34m</span> <small>/ <span id="ig-lim">1h</span></small></span></div>
+      <div class="track"><div class="fill" id="ig-fill"></div></div>
+      <p class="status">26m left today</p>
+    </div>
+    <div class="card stakes-card" id="stakes-card">
+      <p class="label">Today's stakes → <span class="cause-name">Mental health</span></p>
+      <p class="amt" id="stakes-amt">£0.00</p>
+      <p class="sub" id="stakes-sub">£1 per 10 min over · capped at £5/day</p>
+      <div class="stamp" id="paid-stamp" aria-hidden="true">PAID</div>
+    </div>
+  </section>
+
+  <!-- ============ 5/6. SUNDAY RECEIPT + SHARE ============ -->
+  <section class="screen tabbed" id="receipt">
+    <div class="bar"><span class="label">Sunday · Week 39</span></div>
+    <h1>Your receipt</h1>
+    <div class="receipt" id="the-receipt" aria-label="Weekly receipt: 15 hours 50 minutes scrolled, £11 donated">
+      <div class="head"><b>RECEIPTS</b><span>WEEK 39 · 22–28 SEP</span></div>
+      <hr>
+      <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
+      <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
+      <hr>
+      <div class="li big"><span>TOTAL</span><span class="dots"></span><span>15h 50m</span></div>
+      <div class="li small"><span>Daily limit</span><span class="dots"></span><span>2h 00m</span></div>
+      <div class="li small"><span>Over limit</span><span class="dots"></span><span>1h 50m</span></div>
+      <hr>
+      <div class="li small"><span>That's</span><span class="dots"></span><span>= 2 essays</span></div>
+      <div class="li small"><span>Or</span><span class="dots"></span><span>= 9 gym sessions</span></div>
+      <hr>
+      <div class="li big"><span>DONATED</span><span class="dots"></span><span class="red">£11.00</span></div>
+      <div class="li small"><span>Dodged (you closed it)</span><span class="dots"></span><span>£6.00</span></div>
+      <p class="thanks">→ <span class="cause-name">Mental health</span><br>THANK YOU FOR SCROLLING</p>
+      <div class="stamp" aria-hidden="true">£11<small>DONATED</small></div>
+    </div>
+    <div class="receipt-actions">
+      <button class="btn" id="share"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><path d="M8 10V2M4.5 5.5 8 2l3.5 3.5M3 9v5h10V9" stroke-linecap="round" stroke-linejoin="round"/></svg>Share to story</button>
+    </div>
+  </section>
+
+  <!-- ============ 7. FRIEND POT ============ -->
+  <section class="screen tabbed" id="pot">
+    <div class="bar"><span class="label">Friend pot · Pro</span></div>
+    <h1>Flat 4B pot</h1>
+    <p class="muted" style="margin:8px 0 16px">Shared limits. Every slip goes in the pot.</p>
+    <div class="card pot-total">
+      <p class="label">This week</p>
+      <p class="amt">£14.00</p>
+      <p class="fineprint">Goes to <b>Climate</b> on Sunday · 100% donated</p>
+    </div>
+    <div class="card">
+      <div class="friend"><span class="avatar" style="background:#FDE2E1">NR</span><div><p class="h">@not_a_real_dan</p><p class="s">1h 20m over</p></div><span class="p red">£8</span></div>
+      <div class="friend"><span class="avatar" style="background:#E7E4DA">ST</span><div><p class="h">@scrolltest_sam</p><p class="s">40m over</p></div><span class="p">£4</span></div>
+      <div class="friend"><span class="avatar" style="background:#fff">D3</span><div><p class="h">@demo_user_3</p><p class="s">20m over</p></div><span class="p">£2</span></div>
+      <div class="friend"><span class="avatar" style="background:var(--ink);color:var(--paper)">ME</span><div><p class="h">you</p><p class="s">Under limit all week</p></div><span class="p">£0</span></div>
+    </div>
+    <p class="hint">Fake handles · demo data</p>
+  </section>
+
+  <!-- ============ TAB BAR ============ -->
+  <nav class="tabs" id="tabs">
+    <button data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
+    <button data-tab="receipt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 2h14v20l-2.3-1.4-2.4 1.4-2.3-1.4-2.4 1.4-2.3-1.4L5 22z"/><path d="M9 8h6M9 12h6M9 16h4" stroke-linecap="round"/></svg>Receipt</button>
+    <button data-tab="pot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg>Pot</button>
+  </nav>
+</div>
+
+<script>
+(function () {
+  // Everything below is fake demo state. Nothing leaves the page.
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { limTT: 60, limIG: 60, stakes: true, cause: 'Mental health', ttSecs: 0, overMin: 0, owed: 0 };
+  var CAP = 5;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function fmt(min) { var h = Math.floor(min / 60), m = min % 60; return h ? h + 'h ' + String(m).padStart(2, '0') + 'm' : m + 'm'; }
+  function fmtShort(min) { return min % 60 ? fmt(min) : (min / 60) + 'h'; }
+
+  // ---------- Routing: in-memory stack. Browser history is mirrored only where it works
+  // (it throws in sandboxed iframes / data: URLs, e.g. some previews and Canva embeds). ----------
+  var tabScreens = ['today', 'receipt', 'pot'];
+  var order = ['onboarding', 'limits', 'today', 'receipt', 'pot'];
+  var current = null, stack = ['onboarding'], useHistory = true;
+  try { history.replaceState({ s: 'onboarding' }, ''); } catch (e) { useHistory = false; }
+
+  function go(name) {
+    stack.push(name); show(name);
+    if (useHistory) try { history.pushState({ s: name }, ''); } catch (e) { useHistory = false; }
+  }
+  function swap(name) { // tabs replace the top of the stack
+    stack[stack.length - 1] = name; show(name);
+    if (useHistory) try { history.replaceState({ s: name }, ''); } catch (e) {}
+  }
+  var popped = false;
+  function popScreen() { popped = true; if (stack.length > 1) { stack.pop(); show(stack[stack.length - 1]); } }
+  function back() {
+    if (stack.length < 2) return;
+    if (!useHistory) return popScreen();
+    popped = false; history.back();
+    // Some sandboxes accept pushState but never fire popstate: fall back to the in-memory stack.
+    setTimeout(function () { if (!popped) { useHistory = false; popScreen(); } }, 150);
+  }
+  window.addEventListener('popstate', popScreen);
+
+  function show(name) {
+    if (!$(name)) name = 'onboarding';
+    var prev = current;
+    document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active', 'from-left'); });
+    var el = $(name);
+    if (prev && order.indexOf(name) < order.indexOf(prev)) el.classList.add('from-left');
+    el.classList.add('active');
+    el.scrollTop = 0;
+    current = name;
+    $('tabs').classList.toggle('show', tabScreens.indexOf(name) > -1);
+    document.querySelectorAll('[data-tab]').forEach(function (b) {
+      if (b.dataset.tab === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    if (name === 'today') renderToday();
+    if (name === 'receipt') printReceipt();
+  }
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('[data-go]'), b = e.target.closest('[data-back]'), t = e.target.closest('[data-tab]');
+    if (g) go(g.dataset.go);
+    if (b) back();
+    if (t && t.dataset.tab !== current) swap(t.dataset.tab);
+  });
+
+  // Edge-swipe back, only when installed (in a browser the OS already does this).
+  var standalone = navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  var sx = null, sy = 0;
+  document.addEventListener('touchstart', function (e) { var t = e.touches[0]; sx = (standalone && t.clientX < 28) ? t.clientX : null; sy = t.clientY; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var t = e.changedTouches[0];
+    if (t.clientX - sx > 70 && Math.abs(t.clientY - sy) < 60) back();
+    sx = null;
+  }, { passive: true });
+
+  // ---------- 2. Limits ----------
+  function bindSlider(id, out, key) {
+    var input = $(id);
+    function update() {
+      state[key] = +input.value;
+      $(out).textContent = fmt(state[key]);
+      input.style.setProperty('--p', ((input.value - input.min) / (input.max - input.min) * 100) + '%');
+      if (key === 'limTT' && !state.overMin) state.ttSecs = state.limTT * 60 - 108; // starts 1m48s under, i.e. 58m 12s of 1h
+    }
+    input.addEventListener('input', update); update();
+  }
+  bindSlider('lim-tt', 'out-tt', 'limTT');
+  bindSlider('lim-ig', 'out-ig', 'limIG');
+
+  $('stakes').addEventListener('click', function () {
+    state.stakes = !state.stakes;
+    this.setAttribute('aria-checked', state.stakes);
+  });
+  $('causes').addEventListener('click', function (e) {
+    var b = e.target.closest('.cause'); if (!b) return;
+    this.querySelectorAll('.cause').forEach(function (c) { c.setAttribute('aria-pressed', c === b); });
+    state.cause = b.textContent;
+    document.querySelectorAll('.cause-name').forEach(function (n) { n.textContent = state.cause; });
+  });
+
+  // ---------- 3. Today: ticking counter ----------
+  $('today-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  function renderToday() {
+    var limS = state.limTT * 60;
+    var used = state.overMin ? (state.limTT + state.overMin) * 60 : state.ttSecs;
+    var m = Math.floor(used / 60), s = used % 60;
+    $('tt-used').textContent = state.overMin ? fmt(m) : fmt(m) + ' ' + String(s).padStart(2, '0') + 's';
+    $('tt-lim').textContent = fmtShort(state.limTT);
+    $('tt-fill').style.width = Math.min(used / limS, 1) * 100 + '%';
+    $('row-tt').classList.toggle('over', !!state.overMin);
+    $('tt-status').textContent = state.overMin ? state.overMin + ' min over limit' : fmt(Math.ceil((limS - used) / 60)) + ' left today';
+
+    $('ig-lim').textContent = fmtShort(state.limIG);
+    $('ig-used').textContent = fmt(Math.min(34, state.limIG - 1));
+    $('ig-fill').style.width = Math.min(34, state.limIG - 1) / state.limIG * 100 + '%';
+    $('row-ig').querySelector('.status').textContent = fmt(state.limIG - Math.min(34, state.limIG - 1)) + ' left today';
+
+    $('stakes-amt').textContent = '£' + state.owed.toFixed(2);
+    $('stakes-sub').textContent = state.stakes ? '£1 per 10 min over · capped at £' + CAP + '/day' : 'Stakes off · just tracking';
+  }
+
+  setInterval(function () {
+    if (state.overMin) return;
+    if (state.ttSecs < state.limTT * 60 - 1) state.ttSecs++; // holds at 59:59 until the secret trigger
+    if (current === 'today') renderToday();
+  }, 1000);
+
+  // ---------- 4. Over limit: SECRET trigger (triple-tap or long-press the logo) ----------
+  var logo = $('secret'), taps = 0, tapTimer, pressTimer, longPressed = false;
+  logo.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  logo.addEventListener('pointerdown', function () {
+    longPressed = false;
+    pressTimer = setTimeout(function () { longPressed = true; taps = 0; goOver(); }, 600);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { logo.addEventListener(ev, function () { clearTimeout(pressTimer); }); });
+  logo.addEventListener('click', function () {
+    if (longPressed) return;
+    taps++; clearTimeout(tapTimer);
+    if (taps >= 3) { taps = 0; goOver(); return; }
+    tapTimer = setTimeout(function () { taps = 0; }, 700);
+  });
+
+  function goOver() {
+    state.overMin += 10;
+    var charged = state.stakes && state.owed < CAP;
+    if (charged) state.owed += 1;
+    renderToday();
+    var msg = !state.stakes ? '10 min over on TikTok. Stakes are off, so this one\'s free.'
+      : charged ? '10 min over on TikTok. £1 → ' + state.cause
+      : '10 min over on TikTok. You\'ve hit today\'s £' + CAP + ' cap. Go to bed x';
+    notify(msg);
+    if (charged) {
+      var card = $('stakes-card'), stamp = $('paid-stamp'), amt = $('stakes-amt');
+      card.classList.add('paid');
+      stamp.classList.remove('land'); amt.classList.remove('bump');
+      void stamp.offsetWidth; // restart animations
+      stamp.classList.add('land'); amt.classList.add('bump');
+    }
+    if (navigator.vibrate) navigator.vibrate(30);
+  }
+
+  var bannerTimer;
+  function notify(text) {
+    var b = $('banner');
+    $('banner-msg').textContent = text;
+    b.classList.add('show');
+    clearTimeout(bannerTimer);
+    bannerTimer = setTimeout(function () { b.classList.remove('show'); }, 4200);
+  }
+  $('banner').addEventListener('click', function () { this.classList.remove('show'); });
+
+  // ---------- 5. Sunday receipt prints every time you open it ----------
+  function printReceipt() {
+    var r = $('the-receipt');
+    r.classList.remove('printing'); void r.offsetWidth; r.classList.add('printing');
+  }
+
+  // ---------- 6. Share ----------
+  var toastTimer;
+  function toast(text) {
+    var t = $('toast'); t.textContent = text; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 1800);
+  }
+  $('share').addEventListener('click', function () {
+    var data = { title: 'My Receipts, week 39', text: 'Week 39: 15h 50m scrolled. £11 donated to ' + state.cause + '. Itemised by Receipts.' };
+    if (navigator.share) {
+      navigator.share(data).catch(function (err) { if (err && err.name !== 'AbortError') toast('Saved ✓'); });
+    } else {
+      toast('Saved ✓');
+    }
+  });
+
+  // ---------- Home-screen icon: iOS wants a PNG, so draw one ----------
+  try {
+    var c = document.createElement('canvas'); c.width = c.height = 180;
+    var g = c.getContext('2d');
+    g.fillStyle = '#F7F5EF'; g.fillRect(0, 0, 180, 180);
+    g.lineJoin = 'round'; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(52, 30); g.lineTo(128, 30); g.lineTo(128, 150);
+    for (var i = 0; i < 6; i++) g.lineTo(128 - (i + 1) * 76 / 6, i % 2 ? 150 : 142);
+    g.closePath(); g.fillStyle = '#fff'; g.fill(); g.lineWidth = 8; g.strokeStyle = '#1A1A1A'; g.stroke();
+    g.strokeStyle = '#E5322D'; g.lineWidth = 8;
+    [[68, 112, 64], [68, 112, 86], [68, 96, 108]].forEach(function (l) { g.beginPath(); g.moveTo(l[0], l[2]); g.lineTo(l[1], l[2]); g.stroke(); });
+    $('touch-icon').href = c.toDataURL('image/png');
+  } catch (e) {}
+
+  show('onboarding');
+})();
+</script>
+</body>
+</html>

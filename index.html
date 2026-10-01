@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Receipts — Your scrolling, itemised.</title>
+<meta name="description" content="Receipts puts a price on doomscrolling. Go over your daily limit and £1 per 10 minutes goes to a charity you choose. Every Sunday, get the receipt.">
+<meta name="theme-color" content="#F7F5EF">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F5EF'/%3E%3Cpath d='M18 10h28v44l-4.7-2.8-4.6 2.8-4.7-2.8-4.6 2.8-4.7-2.8L18 54z' fill='%23fff' stroke='%231A1A1A' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cpath d='M25 23h14M25 31h14M25 39h9' stroke='%23E5322D' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<!-- SHARE PREVIEW: replace https://REPLACE-WITH-SITE-URL with the live site address once published (og.png must be hosted there too). -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Receipts">
+<meta property="og:title" content="Receipts — Your scrolling, itemised.">
+<meta property="og:description" content="Go over your TikTok and Instagram limit and £1 per 10 minutes goes to a charity you choose. Every Sunday, get the receipt.">
+<meta property="og:url" content="https://REPLACE-WITH-SITE-URL/">
+<meta property="og:image" content="https://REPLACE-WITH-SITE-URL/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Receipts weekly receipt: 15h 50m scrolled, £11 donated.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== BRAND TOKENS (swap for the team's Canva brand kit if different) ===== */
+  :root {
+    --paper: #F7F5EF;
+    --paper-2: #EEEBE2;
+    --ink: #1A1A1A;
+    --ink-soft: #5A5852;
+    --red: #E5322D;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --max: 1120px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, p { margin: 0; }
+  a { color: inherit; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+  .mono { font-family: var(--mono); }
+  .label { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+  .red { color: var(--red); }
+  section { padding: 72px 0; }
+  h2 { font-size: clamp(32px, 7vw, 52px); line-height: 1.05; letter-spacing: -.02em; font-weight: 700; }
+
+  /* ===== Buttons + form ===== */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; background: var(--red); color: #fff; font: 700 16px/1 var(--sans); padding: 16px 24px; text-decoration: none; cursor: pointer; transition: transform .15s, box-shadow .15s; box-shadow: 0 3px 0 var(--ink); }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--ink); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+  .btn.sm { font-size: 14px; padding: 10px 16px; box-shadow: none; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); box-shadow: none; }
+  .waitlist { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 460px; }
+  .waitlist input { width: 100%; font: 400 16px var(--mono); padding: 15px 18px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; color: var(--ink); }
+  .waitlist input:focus { outline: 3px solid var(--red); outline-offset: 2px; }
+  .waitlist .err { font: 400 13px var(--mono); color: var(--red); }
+  .waitlist .err:empty { display: none; }
+  .waitlist.done input, .waitlist.done button { display: none; }
+  .success { display: none; font: 700 16px var(--mono); border: 2px dashed var(--ink); border-radius: 12px; padding: 14px 18px; background: #fff; }
+  .waitlist.done .success { display: block; }
+  .fine { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 10px; }
+  .waitlist .row { display: flex; flex-direction: column; gap: 10px; }
+  @media (min-width: 560px) { .waitlist .row { flex-direction: row; gap: 8px; } .waitlist .row input { flex: 1; } }
+
+  /* ===== Nav ===== */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(247,245,239,.92); backdrop-filter: blur(8px); border-bottom: 1px dashed rgba(26,26,26,.25); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { font: 700 20px var(--mono); letter-spacing: -.02em; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .logo svg { width: 18px; height: 22px; }
+
+  /* ===== Hero ===== */
+  .hero { padding: 32px 0 64px; }
+  .hero .wrap { display: grid; gap: 40px; align-items: center; }
+  .hero h1 { font-size: clamp(44px, 12vw, 84px); line-height: .95; letter-spacing: -.035em; font-weight: 700; margin: 14px 0 16px; }
+  .hero h1 em { font-style: normal; color: var(--red); }
+  .demo-link { display: inline-block; margin-top: 14px; font: 700 15px var(--sans); color: var(--ink); text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .hero .sub { font-size: 18px; color: var(--ink-soft); max-width: 34ch; margin-bottom: 22px; }
+  @media (min-width: 900px) {
+    .hero { padding: 72px 0 96px; }
+    .hero .wrap { grid-template-columns: 1.1fr .9fr; gap: 56px; }
+  }
+
+  /* ===== Receipt component ===== */
+  .receipt { position: relative; background: #fff; font-family: var(--mono); font-size: 14px; padding: 26px 22px 30px; width: 100%; max-width: 360px; margin: 0 auto; filter: drop-shadow(0 18px 30px rgba(0,0,0,.12)); }
+  .receipt::before, .receipt::after { content: ""; position: absolute; left: 0; right: 0; height: 10px; background: linear-gradient(-45deg, transparent 7px, #fff 0) 0 0 / 14px 10px repeat-x, linear-gradient(45deg, transparent 7px, #fff 0) 0 0 / 14px 10px repeat-x; }
+  .receipt::before { top: -10px; transform: rotate(180deg); }
+  .receipt::after { bottom: -10px; }
+  .receipt .head { text-align: center; margin-bottom: 14px; }
+  .receipt .head b { font-size: 22px; letter-spacing: .05em; display: block; }
+  .receipt .head span { font-size: 12px; color: var(--ink-soft); }
+  .receipt hr { border: 0; border-top: 1.5px dashed var(--ink); margin: 12px 0; }
+  .li { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+  .li + .li { margin-top: 4px; }
+  .li .dots { flex: 1; overflow: hidden; color: #9A978F; }
+  .li .dots::after { content: "................................................................"; }
+  .li.big { font-size: 17px; font-weight: 700; }
+  .li.small { font-size: 12.5px; color: var(--ink-soft); }
+  .receipt .thanks { font-size: 12px; margin-top: 14px; color: var(--ink-soft); max-width: 58%; min-height: 48px; }
+  .stamp { position: absolute; right: 16px; bottom: 22px; transform: rotate(-12deg); font: 700 20px/1.05 var(--mono); color: var(--red); border: 3px solid var(--red); border-radius: 6px; padding: 6px 10px; text-align: center; letter-spacing: .04em; mix-blend-mode: multiply; opacity: .92; background: rgba(229,50,45,.04); }
+  .stamp small { display: block; font-size: 11px; letter-spacing: .14em; }
+
+  /* print animation */
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+    .printing { animation: feed 1.9s steps(14, end) .3s both; }
+    .printing .stamp { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) 2.4s both; }
+    @keyframes feed { from { clip-path: inset(-12px 0 100% 0); } to { clip-path: inset(-12px 0 -12px 0); } }
+    @keyframes stamp { from { opacity: 0; transform: rotate(-12deg) scale(2.4); } to { opacity: .92; transform: rotate(-12deg) scale(1); } }
+  }
+
+  /* ===== Torn edge dividers ===== */
+  .dark { background: var(--ink); color: var(--paper); position: relative; }
+  .dark .label { color: #A9A69D; }
+  .dark::before, .dark::after { content: ""; position: absolute; left: 0; right: 0; height: 12px; background: linear-gradient(-45deg, transparent 8px, var(--ink) 0) 0 0 / 16px 12px repeat-x, linear-gradient(45deg, transparent 8px, var(--ink) 0) 0 0 / 16px 12px repeat-x; }
+  .dark::before { top: -12px; transform: rotate(180deg); }
+  .dark::after { bottom: -12px; }
+
+  /* ===== Problem ===== */
+  .problem .grid { display: grid; gap: 40px; align-items: center; }
+  .bignum { font: 700 clamp(96px, 30vw, 200px)/.85 var(--sans); letter-spacing: -.05em; color: var(--red); }
+  .bignum span { font-size: .32em; letter-spacing: -.02em; color: var(--paper); margin-left: 6px; }
+  .problem .lede { font-size: 22px; line-height: 1.3; margin-top: 18px; max-width: 26ch; }
+  .problem .note { font: 400 12px var(--mono); color: #A9A69D; margin-top: 12px; }
+  .limit-card { background: #2A2A2A; border-radius: 22px; padding: 22px; max-width: 340px; text-align: center; margin: 0 auto; }
+  .limit-card .t { font-weight: 700; font-size: 18px; }
+  .limit-card p { color: #A9A69D; font-size: 14px; margin: 6px 0 16px; }
+  .limit-card .opt { display: block; padding: 12px; border-top: 1px solid #3A3A3A; font-size: 16px; color: #6FA8FF; }
+  .limit-card .opt.ignore { position: relative; }
+  .limit-card .opt.ignore::after { content: "+ £1"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%) rotate(-6deg); font: 700 13px var(--mono); color: var(--red); border: 2px solid var(--red); border-radius: 4px; padding: 1px 6px; }
+  .problem .hook { font-size: 20px; margin-top: 18px; text-align: center; }
+  @media (min-width: 900px) { .problem .grid { grid-template-columns: 1.2fr .8fr; } }
+
+  /* ===== How it works ===== */
+  .steps { display: grid; gap: 16px; margin-top: 36px; counter-reset: s; }
+  .step { border: 2px solid var(--ink); border-radius: 18px; padding: 22px; background: #fff; position: relative; }
+  .step .n { font: 700 13px var(--mono); color: var(--red); }
+  .step svg { width: 40px; height: 40px; display: block; margin: 14px 0 12px; }
+  .step h3 { font-size: 22px; letter-spacing: -.01em; }
+  .step p { color: var(--ink-soft); margin-top: 6px; }
+  @media (min-width: 800px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+
+  /* ===== Receipt close-up ===== */
+  .closeup { background: var(--paper-2); }
+  .closeup .grid { display: grid; gap: 40px; align-items: center; }
+  .phone { width: 300px; max-width: 100%; margin: 0 auto; background: var(--ink); border-radius: 44px; padding: 14px; box-shadow: 0 30px 50px rgba(0,0,0,.18); }
+  .phone .screen { background: var(--red); border-radius: 32px; padding: 34px 16px 18px; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .phone .receipt { font-size: 12px; padding: 18px 16px 22px; filter: none; }
+  .phone .receipt .head b { font-size: 18px; }
+  .phone .li.big { font-size: 14px; }
+  .phone .stamp { font-size: 15px; bottom: 20px; right: 12px; }
+  .phone .receipt .thanks { min-height: 34px; }
+  .share { background: #fff; color: var(--ink); border-radius: 999px; font: 700 14px var(--sans); padding: 11px 20px; display: inline-flex; gap: 8px; align-items: center; border: 0; }
+  .ticks { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 12px; }
+  .ticks li { display: flex; gap: 12px; font-size: 18px; }
+  .ticks li::before { content: "✓"; font: 700 16px var(--mono); color: #fff; background: var(--ink); border-radius: 50%; width: 26px; height: 26px; flex: none; display: grid; place-items: center; }
+  @media (min-width: 900px) { .closeup .grid { grid-template-columns: 1fr 1fr; } .closeup .phone { order: -1; } }
+
+  /* ===== Charity ===== */
+  .charity { text-align: center; }
+  .charity h2 { max-width: 16ch; margin: 12px auto 0; }
+  .charity .sub { color: var(--ink-soft); font-size: 18px; max-width: 46ch; margin: 16px auto 0; }
+  .causes { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 32px 0; }
+  .cause { font: 700 14px var(--mono); border: 2px solid var(--ink); border-radius: 999px; padding: 10px 16px; background: #fff; }
+  .cause.on { background: var(--ink); color: var(--paper); }
+  .pot { display: grid; gap: 16px; text-align: left; max-width: 760px; margin: 0 auto; }
+  .pot > div { border: 2px dashed var(--ink); border-radius: 18px; padding: 20px; }
+  .pot h3 { font-size: 20px; }
+  .pot p { color: var(--ink-soft); margin-top: 4px; }
+  .bigstamp { display: inline-block; transform: rotate(-6deg); font: 700 clamp(22px, 6vw, 30px)/1 var(--mono); color: var(--red); border: 4px solid var(--red); border-radius: 8px; padding: 10px 16px; letter-spacing: .04em; }
+  @media (min-width: 700px) { .pot { grid-template-columns: 1fr 1fr; } }
+
+  /* ===== Pricing ===== */
+  .plans { display: grid; gap: 18px; margin-top: 36px; }
+  .plan { border: 2px solid var(--ink); border-radius: 20px; padding: 26px 22px; background: #fff; display: flex; flex-direction: column; }
+  .plan.pro { background: var(--ink); color: var(--paper); position: relative; }
+  .plan .price { font: 700 44px/1 var(--sans); letter-spacing: -.03em; margin: 10px 0 4px; }
+  .plan .price small { font: 400 14px var(--mono); letter-spacing: 0; }
+  .plan ul { list-style: none; padding: 0; margin: 18px 0 24px; font-family: var(--mono); font-size: 14px; flex: 1; }
+  .plan li { padding: 8px 0; border-top: 1px dashed currentColor; display: flex; gap: 8px; }
+  .plan li::before { content: "+"; color: var(--red); font-weight: 700; }
+  .plan.pro .label { color: #A9A69D; }
+  .plan.pro .btn.ghost { color: var(--paper); border-color: var(--paper); }
+  .tag { position: absolute; top: -12px; right: 18px; background: var(--red); color: #fff; font: 700 11px var(--mono); letter-spacing: .12em; padding: 5px 10px; border-radius: 4px; transform: rotate(3deg); }
+  @media (min-width: 760px) { .plans { grid-template-columns: 1fr 1fr; max-width: 820px; } }
+
+  .money { font: 700 15px var(--mono); margin-top: 14px; display: inline-block; border-bottom: 2px solid var(--red); }
+
+  /* ===== FAQ + small print (native <details>, no JS needed) ===== */
+  .faq { padding-top: 0; }
+  .faq-list { margin-top: 28px; max-width: 820px; border-top: 1.5px dashed var(--ink); }
+  details { border-bottom: 1.5px dashed var(--ink); }
+  summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; align-items: baseline; padding: 18px 0; font-weight: 700; font-size: 19px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font: 700 22px/1 var(--mono); color: var(--red); flex: none; }
+  details[open] > summary::after { content: "\2212"; }
+  details > div { padding: 0 0 20px; color: var(--ink-soft); max-width: 62ch; }
+  details > div p + p { margin-top: 8px; }
+  .small-print { max-width: 640px; margin: 30px auto 0; text-align: left; border-top: 1.5px dashed var(--ink); }
+  .small-print summary { font: 700 14px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 14px 0; }
+  .small-print details > div { font: 400 13px/1.6 var(--mono); }
+
+  /* ===== Coming soon ===== */
+  .soon { padding: 0 0 72px; }
+  .soon .box { border: 2px dashed var(--ink-soft); border-radius: 20px; padding: 22px; display: flex; gap: 18px; align-items: center; max-width: 820px; }
+  .soon .box svg { width: 44px; height: 44px; flex: none; }
+  .soon h3 { font-size: 20px; }
+  .soon p { color: var(--ink-soft); }
+
+  /* ===== Final CTA ===== */
+  .final { text-align: center; padding: 88px 0; }
+  .final h2 { max-width: 14ch; margin: 12px auto 0; color: var(--paper); }
+  .final .count { font: 400 15px var(--mono); color: #A9A69D; margin: 16px 0 26px; }
+  .final .count b { color: var(--paper); }
+  .final .waitlist { margin: 0 auto; }
+  .final .waitlist input { border-color: var(--paper); }
+  .final .success { color: var(--ink); }
+  .final .fine { color: #A9A69D; }
+
+  /* ===== Footer ===== */
+  footer { padding: 64px 0 40px; text-align: center; font-family: var(--mono); }
+  footer .bye { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
+  .barcode { display: block; width: 240px; height: 56px; margin: 18px auto 6px; }
+  footer .code { font-size: 12px; letter-spacing: .3em; color: var(--ink-soft); }
+  footer .links { display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: center; margin: 26px 0 14px; font-size: 13px; }
+  footer .copy { font-size: 11px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="wrap">
+    <a href="#top" class="logo" aria-label="Receipts home">
+      <svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>
+      Receipts
+    </a>
+    <a href="#join" class="btn sm">Join waitlist</a>
+  </div>
+</nav>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="label">● Pre-launch · Built for students</p>                                   <!-- COPY: hero-eyebrow -->
+      <h1>Your scrolling, <em>itemised.</em></h1>                                               <!-- COPY: hero-headline (slogan) -->
+      <p class="sub">Go over your daily TikTok and Instagram limit and every 10 minutes costs £1, all of it to a charity you choose. Every Sunday, you get the receipt.</p> <!-- COPY: hero-subhead (value prop) -->
+      <form class="waitlist" novalidate>
+        <div class="row">
+          <input type="email" name="email" placeholder="you@uni.ac.uk" aria-label="Email address" autocomplete="email" required>
+          <button class="btn" type="submit">Join the waitlist</button>                          <!-- COPY: cta -->
+        </div>
+        <p class="err" aria-live="polite"></p>
+        <p class="success" role="status">You're on the list ✓ <span class="pos"></span></p>   <!-- COPY: success -->
+      </form>
+      <p class="fine">Free plan at launch · One email when we go live. That's it.</p>          <!-- COPY: hero-fineprint -->
+      <a href="https://profound-cascaron-d2dae8.netlify.app" class="demo-link">Try the demo →</a>                                 <!-- COPY: demo-link -->
+    </div>
+
+    <!-- hero receipt: prints line by line on load -->
+    <div class="receipt printing" aria-label="Example weekly receipt: 15 hours 50 minutes scrolled, £11 donated">
+      <div class="head"><b>RECEIPTS</b><span>WEEK 39 · 22–28 SEP</span></div>
+      <hr>
+      <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
+      <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
+      <hr>
+      <div class="li big"><span>TOTAL</span><span class="dots"></span><span>15h 50m</span></div>
+      <div class="li small"><span>Daily limit</span><span class="dots"></span><span>2h 00m</span></div>
+      <div class="li small"><span>Over limit</span><span class="dots"></span><span>1h 50m</span></div>
+      <hr>
+      <div class="li small"><span>That's</span><span class="dots"></span><span>= 2 essays</span></div>
+      <div class="li small"><span>Or</span><span class="dots"></span><span>= 9 gym sessions</span></div>
+      <hr>
+      <div class="li big"><span>DONATED</span><span class="dots"></span><span class="red">£11.00</span></div>
+      <div class="li small"><span>Dodged (you closed it)</span><span class="dots"></span><span>£6.00</span></div>
+      <p class="thanks">→ Mental health charity<br>THANK YOU FOR SCROLLING</p>
+      <div class="stamp" aria-hidden="true">£11<small>DONATED</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="dark problem">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <p class="label">The problem</p>
+        <p class="bignum" style="margin-top:14px">30<span>days</span></p>                    <!-- COPY: problem-number -->
+        <p class="lede">Two hours of scrolling a day is a whole month of your year. Gone.</p>  <!-- COPY: problem-lede -->
+        <p class="note">Just maths, not a survey: 2h × 365 = 730h ≈ 30 days.</p>             <!-- COPY: problem-footnote -->
+      </div>
+      <div>
+        <div class="limit-card" aria-hidden="true">
+          <p class="t" style="color:var(--paper)">Time limit reached</p>
+          <p>You've reached your limit on TikTok.</p>
+          <span class="opt">OK</span>
+          <span class="opt ignore">Ignore limit</span>
+        </div>
+        <p class="hook">Blockers fail because ignoring them is free.<br><b class="red">We make it cost £1.</b></p> <!-- COPY: problem-hook -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="wrap">
+    <p class="label">How it works</p>
+    <h2>Three steps. <span class="red">One receipt.</span></h2>                               <!-- COPY: how-heading -->
+    <div class="steps">
+      <div class="step">
+        <span class="n">01</span>
+        <svg viewBox="0 0 40 40" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><circle cx="20" cy="22" r="14"/><path d="M20 22V13M20 22l6 4M15 4h10" stroke-linecap="round"/></svg>
+        <h3>Set your limit</h3>                                                                 <!-- COPY: step1-title -->
+        <p>Pick a daily cap for TikTok and Instagram. One hour? Two? Your call.</p>             <!-- COPY: step1-body -->
+      </div>
+      <div class="step">
+        <span class="n">02</span>
+        <svg viewBox="0 0 40 40" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><circle cx="20" cy="20" r="15"/><path d="M24 13.5c-1-1.2-2.4-1.8-4-1.5-2 .4-3 2-3 4v12M14 21h8M14 28h12" stroke="#E5322D" stroke-linecap="round"/></svg>
+        <h3>Go over, pay £1</h3>                                                                <!-- COPY: step2-title -->
+        <p>Every 10 minutes past your limit costs £1, and 100% of it goes to charity.</p>        <!-- COPY: step2-body -->
+      </div>
+      <div class="step">
+        <span class="n">03</span>
+        <svg viewBox="0 0 40 40" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><path d="M8 4h24v32l-4-2.5-4 2.5-4-2.5-4 2.5-4-2.5-4 2.5z" stroke-linejoin="round"/><path d="M14 13h12M14 19h12M14 25h7" stroke="#E5322D" stroke-linecap="round"/></svg>
+        <h3>Get your Sunday receipt</h3>                                                        <!-- COPY: step3-title -->
+        <p>Where your hours and your money went. Share it, or keep it to yourself.</p>          <!-- COPY: step3-body -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE RECEIPT (close-up) ============ -->
+<section class="closeup">
+  <div class="wrap">
+    <div class="grid">
+      <div class="phone" aria-label="The Weekly Receipt on a phone, with a Share to story button">
+        <div class="screen">
+          <div class="receipt">
+            <div class="head"><b>RECEIPTS</b><span>WEEK 40 · 29 SEP–5 OCT</span></div>
+            <hr>
+            <div class="li"><span>TikTok</span><span class="dots"></span><span>5h 41m</span></div>
+            <div class="li"><span>Instagram</span><span class="dots"></span><span>4h 09m</span></div>
+            <hr>
+            <div class="li big"><span>TOTAL</span><span class="dots"></span><span>9h 50m</span></div>
+            <div class="li small"><span>vs last week</span><span class="dots"></span><span class="red">−6h 00m</span></div>
+            <div class="li small"><span>That's</span><span class="dots"></span><span>= 1 essay</span></div>
+            <hr>
+            <div class="li big"><span>DONATED</span><span class="dots"></span><span class="red">£3.00</span></div>
+            <div class="li small"><span>Dodged</span><span class="dots"></span><span>£14.00</span></div>
+            <p class="thanks">THANK YOU<br>FOR SCROLLING</p>
+            <div class="stamp" aria-hidden="true">PAID</div>
+          </div>
+          <span class="share">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A1A1A" stroke-width="2" aria-hidden="true"><path d="M8 10V2M4.5 5.5 8 2l3.5 3.5M3 9v5h10V9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Share to story
+          </span>
+        </div>
+      </div>
+      <div>
+        <p class="label">The Weekly Receipt · Free</p>
+        <h2 style="margin-top:12px">Made to be <span class="red">screenshotted.</span></h2>    <!-- COPY: receipt-heading -->
+        <ul class="ticks">
+          <li>Every hour, itemised by app</li>                                                 <!-- COPY: receipt-tick1 -->
+          <li>What that time could have been</li>                                              <!-- COPY: receipt-tick2 -->
+          <li>£ donated vs. £ dodged</li>                                                      <!-- COPY: receipt-tick3 -->
+          <li>One tap to your story. Flex the good weeks, roast the bad ones.</li>             <!-- COPY: receipt-tick4 -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STAKES / CHARITY ============ -->
+<section class="charity">
+  <div class="wrap">
+    <span class="bigstamp">100% DONATED</span>
+    <h2>Every £1 goes to charity. We never take a cut.</h2>                                    <!-- COPY: charity-heading -->
+    <p class="sub">We make money from Pro subscriptions, never from your slip-ups. Stakes are opt-in, and you can switch them off any time.</p> <!-- COPY: charity-sub -->
+    <div class="causes" aria-label="Choose a cause">
+      <span class="cause on">Mental health</span>
+      <span class="cause">Education</span>
+      <span class="cause">Climate</span>
+    </div>
+    <div class="pot">
+      <div>
+        <p class="label">Stakes mode · Pro</p>
+        <h3>Your limit, your money on it</h3>                                                   <!-- COPY: stakes-title -->
+        <p>£1 per 10 minutes over. Capped daily, so a bad night never becomes a bad month.</p> <!-- COPY: stakes-body -->
+      </div>
+      <div>
+        <p class="label">Friend pots · Pro</p>
+        <h3>Scroll less, together</h3>                                                         <!-- COPY: pots-title -->
+        <p>Set limits as a group. Every slip goes into a shared pot for your group's charity.</p> <!-- COPY: pots-body -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section id="pricing" style="padding-top:0">
+  <div class="wrap">
+    <p class="label">Pricing</p>
+    <h2>Cheaper than one <span class="red">meal deal.</span></h2>                               <!-- COPY: pricing-heading -->
+    <p class="money">Pro pays for Receipts. Your donations never do.</p>                      <!-- COPY: pricing-money -->
+    <div class="plans">
+      <div class="plan">
+        <p class="label">Free</p>
+        <p class="price">£0</p>
+        <ul>
+          <li>The Weekly Receipt</li>
+          <li>Screen time by app</li>
+          <li>Share to story</li>
+        </ul>
+        <a href="#join" class="btn ghost">Join the waitlist</a>
+      </div>
+      <div class="plan pro">
+        <span class="tag">STUDENT PRICE</span>
+        <p class="label">Pro</p>
+        <p class="price">£2.99 <small>/ month</small></p>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Stakes mode</li>
+          <li>Friend pots</li>
+          <li>Custom limits per app</li>
+        </ul>
+        <a href="#join" class="btn">Join the waitlist</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMING SOON ============ -->
+<section class="soon">
+  <div class="wrap">
+    <div class="box">
+      <svg viewBox="0 0 44 44" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><rect x="11" y="3" width="22" height="38" rx="5"/><path d="M17 15h10M17 21h10M17 27h6" stroke="#E5322D" stroke-linecap="round"/></svg>
+      <div>
+        <p class="label">Coming soon</p>
+        <h3>The revision feed</h3>                                                              <!-- COPY: soon-title -->
+        <p>A scrollable feed made from your own lecture slides. Scroll it to earn your minutes back.</p> <!-- COPY: soon-body -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq" id="faq">
+  <div class="wrap">
+    <p class="label">Questions</p>
+    <h2>Fair questions.</h2>                                                                    <!-- COPY: faq-heading -->
+    <div class="faq-list">
+      <details>
+        <summary>What if I can't afford it?</summary>                                           <!-- COPY: faq1-q -->
+        <div><p>Stakes are opt-in and capped daily, so one bad night never becomes a bad month. The Free plan has no stakes at all, just the receipt.</p></div> <!-- COPY: faq1-a -->
+      </details>
+      <details>
+        <summary>Which charities does the money go to?</summary>                                <!-- COPY: faq2-q -->
+        <div><p>You pick a cause: mental health, education or climate. We'll announce our charity partners at launch, and 100% of every £1 is passed on.</p></div> <!-- COPY: faq2-a -->
+      </details>
+      <details>
+        <summary>Can Receipts see what I watch?</summary>                                       <!-- COPY: faq3-q -->
+        <div><p>No. Receipts only sees how long each app was open. Never what you watched, posted or messaged.</p></div> <!-- COPY: faq3-a -->
+      </details>
+      <details>
+        <summary>Can't I just delete the app?</summary>                                         <!-- COPY: faq4-q -->
+        <div><p>Sure. But you set the stakes because future you asked present you to. And with a friend pot, your mates will notice.</p></div> <!-- COPY: faq4-a -->
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="dark final" id="join">
+  <div class="wrap">
+    <p class="label">Launching on campus soon</p>
+    <h2>Close the app. Open the waitlist.</h2>                                                 <!-- COPY: final-heading -->
+    <p class="count"><b class="n">1,247</b> students already queued</p>                       <!-- COPY: counter -->
+    <form class="waitlist" novalidate>
+      <div class="row">
+        <input type="email" name="email" placeholder="you@uni.ac.uk" aria-label="Email address" autocomplete="email" required>
+        <button class="btn" type="submit">Join the waitlist</button>
+      </div>
+      <p class="err" aria-live="polite"></p>
+      <p class="success" role="status">You're on the list ✓ <span class="pos"></span></p>
+    </form>
+    <p class="fine">No spam. One email when we launch.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <p class="bye">*** Thank you for scrolling responsibly ***</p>                             <!-- COPY: footer-line -->
+    <svg class="barcode" viewBox="0 0 240 56" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <p class="code">0 0 1 2 4 7 &nbsp;R E C E I P T S</p>
+    <div class="links">
+      <a href="#privacy" data-open="privacy">Privacy</a>
+      <a href="#contact" data-open="contact">Contact</a>
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+    <p class="copy">© 2026 Receipts</p>
+    <div class="small-print">
+      <details id="privacy">
+        <summary>Privacy</summary>
+        <div>
+          <p>Receipts is a student startup, currently pre-launch.</p>
+          <p><b>Waitlist.</b> If you join, we keep your email in a private sign-up list that only the Receipts team can see. We use it for one thing: telling you when we launch. We never sell or share it.</p>
+          <p><b>The app.</b> Receipts will only see how long each app was open. Never what you watched, posted or messaged. Card payments will go through a regulated payment provider; we never store card details.</p>
+          <p><b>Your data, your call.</b> Email us and we'll delete your details, no questions asked.</p>
+        </div>
+      </details>
+      <details id="contact">
+        <summary>Contact</summary>
+        <div>
+          <p>Questions, partnerships, or want your email deleted?</p>
+          <p><a href="mailto:hello@receipts.app">hello@receipts.app</a></p> <!-- REPLACE: a real inbox the team checks -->
+        </div>
+      </details>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // ===== WAITLIST =====
+  // Leave formId empty and the form only *pretends* to sign people up (nothing is stored).
+  // To store real sign-ups in a Google Form, fill in both values (see HANDOVER.md, "Waitlist").
+  var WAITLIST = {
+    formId: '',      // e.g. '1FAIpQLSf...'  (the long id in the form's /viewform link)
+    emailEntry: ''   // e.g. 'entry.123456789' (the email question's field name)
+  };
+  var count = 1247; // demo counter, not a real total
+  var counters = document.querySelectorAll('.count .n');
+  var forms = document.querySelectorAll('form.waitlist');
+  var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  forms.forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = form.querySelector('input');
+      var err = form.querySelector('.err');
+      if (!emailOk.test(input.value.trim())) {
+        err.textContent = 'That email looks off. Try again?';
+        input.focus();
+        return;
+      }
+      err.textContent = '';
+      var btn = form.querySelector('button');
+      if (!WAITLIST.formId) return joined();
+      btn.disabled = true; btn.textContent = 'Joining…';
+      var body = new URLSearchParams();
+      body.append(WAITLIST.emailEntry, input.value.trim());
+      // no-cors: Google doesn't let us read the reply, so a network failure is the only error we can see.
+      fetch('https://docs.google.com/forms/d/e/' + WAITLIST.formId + '/formResponse', { method: 'POST', mode: 'no-cors', body: body })
+        .then(joined)
+        .catch(function () {
+          err.textContent = "Couldn't reach the list. Check your connection and try again?";
+          btn.disabled = false; btn.textContent = 'Join the waitlist';
+        });
+    });
+  });
+
+  function joined() {
+      count += 1;
+      var n = count.toLocaleString('en-GB');
+      counters.forEach(function (c) { c.textContent = n; });
+      forms.forEach(function (f) {
+        f.classList.add('done');
+        f.querySelector('.pos').textContent = '#' + n + ' in the queue';
+      });
+  }
+
+  // Footer links open their small-print panel.
+  document.querySelectorAll('[data-open]').forEach(function (a) {
+    a.addEventListener('click', function () { document.getElementById(a.dataset.open).open = true; });
+  });
+
+  // Footer barcode: fixed pattern so it looks the same every load.
+  var svg = document.querySelector('.barcode');
+  var widths = [3,1,2,1,1,3,2,1,4,1,1,2,3,1,2,2,1,1,3,1,2,4,1,2,1,1,3,2,1,1,2,3,1,4,1,2,1,3,1,1,2,1,2,3,1,1,4,2,1,2,1,3];
+  var x = 4, html = '', bar = true;
+  for (var i = 0; x < 234; i++) {
+    var w = widths[i % widths.length] * 1.5;
+    if (bar) html += '<rect x="' + x + '" y="0" width="' + w + '" height="56" fill="#1A1A1A"/>';
+    x += w; bar = !bar;
+  }
+  svg.innerHTML = html;
+})();
+</script>
+</body>
+</html>
