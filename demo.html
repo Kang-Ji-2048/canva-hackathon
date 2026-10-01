@@ -17,7 +17,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Receipts">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F5EF'/%3E%3Cpath d='M18 10h28v44l-4.7-2.8-4.6 2.8-4.7-2.8-4.6 2.8-4.7-2.8L18 54z' fill='%23fff' stroke='%231A1A1A' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cpath d='M25 23h14M25 31h14M25 39h9' stroke='%23E5322D' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" id="favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F5EF'/%3E%3Cpath d='M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z' fill='%23fff' stroke='%231A1A1A' stroke-width='4.5' stroke-linejoin='round'/%3E%3Cg fill='none' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M29.5 20H42' stroke='%23E5322D'/%3E%3Cpath d='M29.5 29.5H38.5M29.5 39H34.5' stroke='%231A1A1A'/%3E%3C/g%3E%3Ccircle cx='23' cy='20' r='3' fill='%23E5322D'/%3E%3Ccircle cx='23' cy='29.5' r='3' fill='%231A1A1A'/%3E%3Ccircle cx='23' cy='39' r='3' fill='%231A1A1A'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" id="touch-icon" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,8 +75,11 @@
     --good: #1F7A3A; --line: rgba(43,14,27,.3); --stamp: #C8156A;
   }
   body { transition: background-color .25s, color .25s; }
-  .logo svg path:first-child { stroke: currentColor; }
-  .logo svg path + path { stroke: var(--accent-text); }
+  /* Logo mark A (Ranked receipt): coloured by theme tokens */
+  .mark .mk-b { fill: var(--card); stroke: currentColor; stroke-width: 4.5; stroke-linejoin: round; }
+  .mark path.mk-a, .mark path.mk-i { fill: none; stroke-width: 5; stroke-linecap: round; }
+  .mark path.mk-a { stroke: var(--accent-text); } .mark circle.mk-a { fill: var(--accent-text); }
+  .mark path.mk-i { stroke: currentColor; } .mark circle.mk-i { fill: currentColor; }
   .icon-btn svg { stroke: currentColor; }
   .bar-right { display: flex; align-items: center; gap: 4px; }
 
@@ -112,7 +115,7 @@
   .muted { color: var(--ink-soft); }
 
   .logo { font: 700 20px var(--mono); letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 8px 0; -webkit-touch-callout: none; touch-action: manipulation; }
-  .logo svg { width: 18px; height: 22px; }
+  .logo svg { width: 24px; height: 24px; margin: -2px -2px -2px -4px; }
 
   .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 0; border-radius: 999px; background: var(--red); color: var(--on-accent); font: 700 17px/1 var(--sans); padding: 18px 24px; box-shadow: 0 3px 0 var(--ink); transition: transform .12s, box-shadow .12s; }
   .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
@@ -360,7 +363,8 @@
   .banner { position: absolute; z-index: 20; top: calc(var(--top) + 4px); left: 10px; right: 10px; display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 22px; background: rgba(250,250,248,.86); backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6); box-shadow: 0 10px 30px rgba(0,0,0,.18); transform: translateY(calc(-100% - 40px)); visibility: hidden; }
   .banner.show { transform: none; visibility: visible; }
   .banner .ico { width: 38px; height: 38px; border-radius: 9px; background: var(--paper); border: 1px solid #ddd; display: grid; place-items: center; flex: none; }
-  .banner .ico svg { width: 16px; height: 20px; }
+  .banner .ico svg { width: 26px; height: 26px; }
+  .banner { color: #1A1A1A; --card: #fff; --accent-text: #D42A25; } /* iOS-style banner is always light */
   .banner .top { display: flex; justify-content: space-between; font-size: 13px; }
   .banner .top b { font-weight: 700; }
   .banner .top span { color: #8a8a8a; }
@@ -408,7 +412,7 @@
 
   <!-- notification banner + toast -->
   <div class="banner" id="banner" role="status" aria-live="polite">
-    <div class="ico"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg></div>
+    <div class="ico"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg></div>
     <div>
       <div class="top"><b>Receipts</b><span>now</span></div>
       <p class="msg" id="banner-msg"></p>
@@ -418,7 +422,7 @@
 
   <!-- ============ 1. ONBOARDING ============ -->
   <section class="screen" id="onboarding">
-    <div class="bar"><span class="logo"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</span></div>
+    <div class="bar"><span class="logo"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg>Receipts</span></div>
     <div class="ob-hero">
       <div class="mini-receipt" aria-hidden="true">
         <div class="li"><span>1st Charles</span><span class="dots"></span><span>3h 12m</span></div>
@@ -485,7 +489,7 @@
   <!-- ============ 3. COMPETITION (main screen) ============ -->
   <section class="screen tabbed" id="compete">
     <div class="bar">
-      <button class="logo" id="secret" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
+      <button class="logo" id="secret" aria-label="Receipts"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg>Receipts</button>
       <div class="bar-right"><span class="label" id="c-week">Week</span><button class="icon-btn" data-open-settings aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button></div>
     </div>
     <div class="card pot-card">
@@ -579,7 +583,7 @@
   <!-- ============ 3/4. TODAY ============ -->
   <section class="screen tabbed" id="today">
     <div class="bar">
-      <button class="logo" id="secret-today" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
+      <button class="logo" id="secret-today" aria-label="Receipts"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg>Receipts</button>
       <div class="bar-right"><button class="icon-btn" data-open-settings aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button><button class="icon-btn" data-go="limits" aria-label="Edit limits"><svg viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></div>
     </div>
     <p class="label" id="today-date">Today</p>
@@ -1721,6 +1725,7 @@
     var t = themeBy(k); themeNow = t.k;
     if (t.k === 'receipt') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t.k;
     document.querySelector('meta[name=theme-color]').setAttribute('content', t.paper);
+    if (typeof brandIcons === 'function' && $('favicon')) brandIcons();
     try { localStorage.setItem('receipts-theme', t.k); } catch (e) {}
     $('ob-theme-name').textContent = 'Theme · ' + t.n;
     $('ob-themes').innerHTML = THEMES.map(function (x) {
@@ -1746,19 +1751,28 @@
   }
   setTheme(themeNow);
 
-  // ---------- Home-screen icon: iOS wants a PNG, so draw one ----------
-  try {
-    var c = document.createElement('canvas'); c.width = c.height = 180;
-    var g = c.getContext('2d');
-    g.fillStyle = '#F7F5EF'; g.fillRect(0, 0, 180, 180);
-    g.lineJoin = 'round'; g.lineCap = 'round';
-    g.beginPath(); g.moveTo(52, 30); g.lineTo(128, 30); g.lineTo(128, 150);
-    for (var i = 0; i < 6; i++) g.lineTo(128 - (i + 1) * 76 / 6, i % 2 ? 150 : 142);
-    g.closePath(); g.fillStyle = '#fff'; g.fill(); g.lineWidth = 8; g.strokeStyle = '#1A1A1A'; g.stroke();
-    g.strokeStyle = '#E5322D'; g.lineWidth = 8;
-    [[68, 112, 64], [68, 112, 86], [68, 96, 108]].forEach(function (l) { g.beginPath(); g.moveTo(l[0], l[2]); g.lineTo(l[1], l[2]); g.stroke(); });
-    $('touch-icon').href = c.toDataURL('image/png');
-  } catch (e) {}
+  // ---------- Favicon + home-screen icon: logo mark A in the current theme's colours ----------
+  // iOS wants a PNG for the home screen, so the SVG is drawn onto a canvas.
+  function markSVG(ink, acc, card) {
+    return "<path d='M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z' fill='" + card + "' stroke='" + ink + "' stroke-width='4.5' stroke-linejoin='round'/>" +
+      "<g fill='none' stroke-width='5' stroke-linecap='round'><path d='M29.5 20H42' stroke='" + acc + "'/><path d='M29.5 29.5H38.5M29.5 39H34.5' stroke='" + ink + "'/></g>" +
+      "<circle cx='23' cy='20' r='3' fill='" + acc + "'/><circle cx='23' cy='29.5' r='3' fill='" + ink + "'/><circle cx='23' cy='39' r='3' fill='" + ink + "'/>";
+  }
+  function brandIcons() {
+    var cs = getComputedStyle(document.documentElement), v = function (k) { return cs.getPropertyValue('--' + k).trim(); };
+    var mark = markSVG(v('ink'), v('accent-text'), v('card'));
+    $('favicon').href = 'data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='" + v('paper') + "'/>" + mark + '</svg>');
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var c = document.createElement('canvas'); c.width = c.height = 180;
+        c.getContext('2d').drawImage(img, 0, 0, 180, 180);
+        $('touch-icon').href = c.toDataURL('image/png');
+      } catch (e) {}
+    };
+    img.src = 'data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='-12 -10 88 84' width='180' height='180'><rect x='-12' y='-10' width='88' height='84' fill='" + v('paper') + "'/>" + mark + '</svg>');
+  }
+  brandIcons();
 
   show('onboarding');
 })();
