@@ -521,6 +521,7 @@
     </div>
     <h1 id="g-title">Flat 4B</h1>
     <p class="muted" id="g-sub" style="margin:8px 0 16px"></p>
+    <p class="label" id="g-list-label" style="margin-bottom:8px"></p>
     <div class="card" id="g-members" style="padding-top:6px;padding-bottom:6px"></div>
     <button class="btn ghost" id="invite-btn" style="margin-top:12px">+ Invite a friend</button>
     <div class="card" style="margin-top:12px">
@@ -1085,14 +1086,28 @@
     go('reveal');
   }
 
+  // ---------- Leaderboard: one renderer for the Sunday reveal and the Group tab ----------
+  function leaderboardHTML(res, hideForReveal) {
+    return res.map(function (r) {
+      return '<div class="person' + (r.p.me ? ' me' : '') + (r.place === 1 ? ' first' : '') + (hideForReveal ? ' wait' : '') + '"><span class="pl">' + ordinal(r.place) + '</span>' + avatar(r.p) +
+        '<div><p class="h">' + esc(r.p.me ? 'You' : r.p.n) + (r.place === 1 ? '<span class="tag">WINNER</span>' : '') + '</p><p class="s">' + fmt(r.mins) + '</p></div>' +
+        '<div class="lb-pay"><b>' + money(r.won) + '</b><span class="' + (r.net > 0 ? 'up' : '') + '">' + signed(r.net) + '</span></div></div>';
+    }).join('');
+  }
+
   // ---------- 4. Group ----------
   function renderGroup() {
     var n = state.members.length;
     $('g-kicker').textContent = 'Group · week ' + week();
     $('g-title').textContent = state.group;
     $('g-sub').textContent = n + ' members · ' + pounds(state.pledge) + ' each · ' + pounds(state.pledge * n) + ' pot';
-    $('g-members').innerHTML = state.members.map(function (p) {
-      var right = p.me || state.revealed ? fmt(nowMins(p)) : '<span class="redact" aria-label="hidden until Sunday"></span>';
+    $('g-list-label').textContent = state.seen ? 'Week ' + week() + ' leaderboard' : state.revealed ? 'Results are in · reveal them on Compete' : 'Members · times hidden until Sunday 6pm';
+    if (state.seen) { // same leaderboard as the reveal, plus anyone joining next week
+      $('g-members').innerHTML = leaderboardHTML(results(), false) + state.invited.map(function (p) {
+        return '<div class="person">' + avatar(p) + '<div><p class="h">' + esc(p.h) + '</p><p class="s">Invited · joins week ' + (week() + 1) + '</p></div><span class="r">–</span></div>';
+      }).join('');
+    } else $('g-members').innerHTML = state.members.map(function (p) {
+      var right = p.me ? fmt(nowMins(p)) : '<span class="redact" aria-label="hidden until the reveal"></span>';
       return '<div class="person' + (p.me ? ' me' : '') + '">' + avatar(p) + '<div><p class="h">' + esc(p.me ? 'You' : p.h) + '</p><p class="s">Pledged ' + pounds(state.pledge) + ' ✓</p></div>' +
         '<span class="r">' + right + '</span></div>';
     }).concat(state.invited.map(function (p) {
@@ -1259,11 +1274,7 @@
     $('rv-saved').textContent = fmt(Math.max(0, saved.week));
     $('rv-saved-s').textContent = (saved.week >= 0 ? 'vs week ' + last.wk : fmt(-saved.week) + ' more than week ' + last.wk) +
       (saved.total > 0 ? ' · ' + fmt(saved.total) + ' since week ' + state.history[0].wk : '');
-    $('lb').innerHTML = res.map(function (r) {
-      return '<div class="person' + (r.p.me ? ' me' : '') + (r.place === 1 ? ' first' : '') + (state.seen || reduced ? '' : ' wait') + '"><span class="pl">' + ordinal(r.place) + '</span>' + avatar(r.p) +
-        '<div><p class="h">' + esc(r.p.me ? 'You' : r.p.n) + (r.place === 1 ? '<span class="tag">WINNER</span>' : '') + '</p><p class="s">' + fmt(r.mins) + '</p></div>' +
-        '<div class="lb-pay"><b>' + money(r.won) + '</b><span class="' + (r.net > 0 ? 'up' : '') + '">' + signed(r.net) + '</span></div></div>';
-    }).join('');
+    $('lb').innerHTML = leaderboardHTML(res, !(state.seen || reduced));
     $('lb-rule').textContent = pounds(state.pledge * res.length) + ' pot · the less you scrolled, the bigger your share. Last place gets £0. Payouts are simulated in this demo.';
     buildReceipt(me, res.length);
     var nextWk = week() + 1, nextN = state.members.length + state.invited.length;
