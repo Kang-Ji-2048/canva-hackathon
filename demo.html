@@ -231,6 +231,33 @@
   .tip b { color: var(--paper); }
   .tip.show { display: block; }
 
+  /* ===== Stats overview: one trend, with detail available on demand ===== */
+  #stats { padding-bottom: calc(var(--bottom) + 60px); }
+  #stats .bar { min-height: 24px; margin-bottom: 12px; }
+  #stats h1 { font-size: 30px; }
+  .stats-period { align-self: flex-start; margin: 12px 0 16px; padding: 6px 12px; border-radius: 999px; background: var(--paper-2); font: 400 12px var(--mono); }
+  .stats-total { font: 700 58px/1 var(--sans); letter-spacing: -.04em; }
+  .stats-caption { font: 400 13px var(--mono); margin-top: 8px; }
+  .stats-change { font: 400 12px/1.5 var(--mono); color: var(--ink-soft); margin-top: 6px; }
+  #stats .stats-trend { border: 0; border-radius: 18px; padding: 16px; margin-top: 18px; }
+  #stats .stats-trend .s { margin: 2px 0 10px; }
+  .stats-result { padding: 16px 0; }
+  .stats-result .row-between { margin-top: 6px; font-size: 20px; }
+  .stats-result .stats-change { text-align: right; font-size: 11px; }
+  .stats-detail { border-top: 1px solid var(--line); }
+  .stats-detail > summary { display: flex; align-items: center; gap: 12px; padding: 12px 0; list-style: none; cursor: pointer; }
+  .stats-detail > summary::-webkit-details-marker { display: none; }
+  .stats-detail > summary::after { content: '›'; margin-left: auto; font-size: 28px; color: var(--ink-soft); }
+  .stats-detail[open] > summary::after { transform: rotate(90deg); }
+  .stats-detail > summary b { display: block; font-size: 17px; }
+  .stats-detail > summary small { display: block; font: 400 11px/1.5 var(--mono); color: var(--ink-soft); margin-top: 3px; }
+  .stats-detail > summary:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; border-radius: 4px; }
+  .stats-detail-body { padding: 16px; background: var(--card); border-radius: 16px; margin-bottom: 14px; }
+  #stats .stats-detail-body .card { border: 0; background: var(--paper); }
+  #stats .stats-detail-body h2.sec { font-size: 20px; }
+  #stats .streak { border: 0; box-shadow: none; font-size: 11px; }
+  .stats-note { font: 400 11px var(--mono); color: var(--ink-soft); margin-top: 10px; }
+
   /* ===== Reveal ===== */
   #reveal { background: var(--paper); }
   .rv-apps { margin-top: 14px; font: 400 13px var(--mono); }
@@ -603,50 +630,63 @@
     </div>
   </section>
 
-  <!-- ============ 5. STATS: competition record + daily limits ============ -->
+  <!-- ============ 5. STATS: compact overview + expandable details ============ -->
   <section class="screen tabbed" id="stats">
     <div class="bar"><span class="label" id="p-kicker">Stats</span></div>
-    <h1>Your time, charted</h1>
-    <h2 class="sec" style="margin-top:22px">Competition</h2>
-    <div class="tiles" style="margin-top:0">
-      <div class="card tile"><p class="label">Last week</p><p class="big" id="p-last">0m</p><p class="s" id="p-last-s"></p></div>
-      <div class="card tile"><p class="label">Won to date</p><p class="big" id="p-won">£0</p><p class="s" id="p-won-s"></p></div>
-    </div>
-    <div class="card" style="margin-top:12px">
-      <h3>By app</h3>
-      <p class="fineprint" style="margin:2px 0 14px" id="p-apps-s">This week so far</p>
-      <div id="p-apps"></div>
-      <p class="fineprint" style="margin-top:14px">Not counted: WhatsApp, iMessage, Messages</p>
-    </div>
-    <div class="card chart-card">
-      <div class="row-between" style="align-items:center"><h3>Hours per week</h3><span class="streak" id="p-streak"></span></div>
-      <p class="s" id="p-chart-s">Tap a bar</p>
+    <h1>Your progress</h1>
+    <p class="stats-period" id="p-period">Last week</p>
+    <p class="stats-total" id="p-last">0m</p>
+    <p class="stats-caption">Time in counted apps</p>
+    <p class="stats-change" id="p-change"></p>
+    <div class="card chart-card stats-trend">
+      <h3>Weekly trend</h3>
+      <p class="s" id="p-chart-s">Completed weeks</p>
       <svg class="chart" id="chart-weeks" role="img"></svg>
     </div>
-    <div class="card" style="padding-top:12px;padding-bottom:6px">
-      <h3 style="margin-bottom:4px">Past competitions</h3>
-      <div id="p-history"></div>
+    <div class="stats-result">
+      <p class="label">Last result</p>
+      <div class="row-between"><b id="p-last-s"></b><b class="red" id="p-net"></b></div>
+      <p class="stats-change" id="p-return"></p>
     </div>
-    <h2 class="sec">Daily limits</h2>
-    <p class="label" style="margin:-6px 0 12px">Sample stats · 2026</p>
-    <div class="card chart-card">
-      <h3>Hours per week vs your limit</h3>
-      <p class="s">Sample weeks 32–39 · 2026 · tap a bar</p>
-      <svg class="chart" id="chart-limit-weeks" role="img"></svg>
-      <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>14h weekly limit</span></div>
-    </div>
-    <div class="card chart-card">
-      <h3>Week 39, day by day</h3>
-      <p class="s">21–27 Sep 2026 · TikTok + Instagram · tap a bar</p>
-      <svg class="chart" id="chart-days" role="img"></svg>
-      <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>2h daily limit</span></div>
-    </div>
-    <div class="card chart-card">
-      <h3>Where your £122 went</h3>
-      <p class="s">All time, by charity</p>
-      <svg class="chart" id="chart-charity" role="img"></svg>
-    </div>
-    <p class="hint">Demo data · winnings are simulated · example charities, not partners</p>
+    <details class="stats-detail">
+      <summary><span><b>App breakdown</b><small id="p-apps-preview">Current week so far</small></span></summary>
+      <div class="stats-detail-body">
+        <p class="fineprint" style="margin:0 0 14px" id="p-apps-s">This week so far</p>
+        <div id="p-apps"></div>
+        <p class="fineprint" style="margin-top:14px">Not counted: WhatsApp, iMessage, Messages</p>
+        <details class="stats-detail" style="margin-top:18px">
+          <summary><span><b>Daily limits &amp; charity</b><small>Separate sample data · 2026</small></span></summary>
+          <p class="fineprint" style="margin:0 0 14px">These daily-limit examples are separate from your competition results.</p>
+          <div class="card chart-card">
+            <h3>Hours per week vs your limit</h3>
+            <p class="s">Sample weeks 32–39 · 2026 · tap a bar</p>
+            <svg class="chart" id="chart-limit-weeks" role="img"></svg>
+            <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>14h weekly limit</span></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Week 39, day by day</h3>
+            <p class="s">21–27 Sep 2026 · TikTok + Instagram · tap a bar</p>
+            <svg class="chart" id="chart-days" role="img"></svg>
+            <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>2h daily limit</span></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Where your £122 went</h3>
+            <p class="s">All time, by charity · example charities, not partners</p>
+            <svg class="chart" id="chart-charity" role="img"></svg>
+          </div>
+        </details>
+      </div>
+    </details>
+    <details class="stats-detail">
+      <summary><span><b>Past results</b><small id="p-history-s">Completed competitions</small></span></summary>
+      <div class="stats-detail-body">
+        <div class="row-between"><h3>Total returned</h3><b id="p-won">£0</b></div>
+        <p class="fineprint" id="p-won-s"></p>
+        <p style="margin:12px 0"><span class="streak" id="p-streak"></span></p>
+        <div id="p-history"></div>
+      </div>
+    </details>
+    <p class="stats-note">Sample data · 2026 · no real money moves</p>
   </section>
 
   <!-- ============ 6. SUNDAY 6PM REVEAL ============ -->
@@ -1121,42 +1161,50 @@
 
   // ---------- 5. Profile ----------
   function renderProfile() {
-    var mine = nowMins(ME), last = state.history[state.history.length - 1];
-    var won = state.history.map(function (h) { return h.won; }).reduce(add, 0), paid = state.history.map(function (h) { return h.pledge; }).reduce(add, 0);
+    var mine = nowMins(ME), completed = state.history.slice();
+    if (state.revealed && completed[completed.length - 1].wk !== week()) {
+      var me = results().filter(function (r) { return r.p.me; })[0];
+      completed.push({ wk: week(), mins: me.mins, place: me.place, of: state.members.length, won: me.won, pledge: state.pledge });
+    }
+    var last = completed[completed.length - 1], previous = completed[completed.length - 2], delta = last.mins - previous.mins;
+    var won = completed.map(function (h) { return h.won; }).reduce(add, 0), paid = completed.map(function (h) { return h.pledge; }).reduce(add, 0);
     $('p-kicker').textContent = 'Stats · ' + state.group;
+    $('p-period').textContent = (state.revealed ? 'Completed week' : 'Last week') + ' · W' + last.wk;
     $('p-last').textContent = fmt(last.mins);
-    $('p-last-s').textContent = ordinal(last.place) + ' · won ' + money(last.won);
+    $('p-change').textContent = (delta ? fmt(Math.abs(delta)) + (delta < 0 ? ' less' : ' more') : 'Same time') + ' than Week ' + previous.wk;
+    $('p-last-s').textContent = ordinal(last.place) + ' of ' + last.of;
+    $('p-net').textContent = signed(last.won - last.pledge) + ' net';
+    $('p-return').textContent = money(last.pledge) + ' pledged · ' + money(last.won) + ' returned';
     $('p-won').textContent = pounds(Math.round(won * 100) / 100);
-    $('p-won-s').textContent = 'Net ' + signed(won - paid) + ' · ' + state.history.length + ' wks';
+    $('p-won-s').textContent = 'Net ' + signed(won - paid) + ' after ' + pounds(paid) + ' pledged';
+    $('p-history-s').textContent = completed.length + ' completed competitions';
 
     var apps = myAppMins(state.revealed), max = Math.max.apply(null, apps.map(function (x) { return x.m; }).concat(1));
+    $('p-apps-preview').textContent = (state.revealed ? 'Completed week' : 'Current week') + ' · ' + fmt(mine) + (state.revealed ? ' final' : ' so far');
     $('p-apps-s').textContent = state.revealed ? 'Week ' + week() + ', final' : 'Week ' + week() + ' so far';
     $('p-apps').innerHTML = apps.sort(function (a, b) { return b.m - a.m; }).map(function (x) {
       return '<div class="app-row">' + appIco(x.a) + '<div class="grow1"><p class="name"><span>' + x.a.n + '</span><span>' + fmt(x.m) + '</span></p>' +
         '<div class="track"><div class="fill" style="width:' + (x.m / max * 100) + '%"></div></div></div></div>';
     }).join('');
 
-    var past = state.history.slice(-6), pb = Math.min.apply(null, past.map(function (h) { return h.mins; }));
-    var data = past.map(function (h) { return { label: 'W' + h.wk, mins: h.mins, place: h.place, pb: h.mins === pb, tip: '<b>Week ' + h.wk + '</b> · ' + fmt(h.mins) + (h.mins === pb ? ' · ★ PB' : '') + '<br>' + ordinal(h.place) + ' of ' + h.of + ' · won ' + money(h.won) }; });
-    var gap = pb - mine, toBeat = gap > 0 ? fmt(gap) + ' left before you hit your PB' : 'over your PB by ' + fmt(-gap);
-    if (state.revealed && gap > 0) toBeat = 'new PB by ' + fmt(gap) + '!';
-    data.push({ label: 'W' + week(), mins: mine, now: true, tip: '<b>Week ' + week() + '</b> · ' + fmt(mine) + (state.revealed ? '' : ' so far') + '<br>' + toBeat });
-    weekBars($('chart-weeks'), data, pb, state.revealed);
-    $('p-chart-s').textContent = 'Lower wins · get under the PB line · tap a bar';
+    var past = completed.slice(-6);
+    var data = past.map(function (h, i) { return { label: 'W' + h.wk, mins: h.mins, now: i === past.length - 1, tip: '<b>Week ' + h.wk + '</b> · ' + fmt(h.mins) + '<br>' + ordinal(h.place) + ' of ' + h.of + ' · returned ' + money(h.won) }; });
+    weekBars($('chart-weeks'), data);
+    $('p-chart-s').textContent = past.length + ' completed weeks · tap a bar';
 
     // Streak: consecutive weeks each shorter than the one before (this week counts once it's final)
-    var weeks = state.history.map(function (h) { return h.mins; }).concat(state.revealed ? [mine] : []), streak = 0;
+    var weeks = completed.map(function (h) { return h.mins; }), streak = 0;
     for (var i = weeks.length - 1; i > 0 && weeks[i] < weeks[i - 1]; i--) streak++;
     $('p-streak').textContent = streak ? '🔥 ' + streak + '-week streak' : 'No streak yet';
     $('p-streak').className = 'streak' + (streak ? '' : ' cold');
 
-    $('p-history').innerHTML = state.history.slice().reverse().map(function (h) {
+    $('p-history').innerHTML = completed.slice().reverse().map(function (h) {
       return '<div class="person"><span class="pl" style="width:auto;min-width:46px">W' + h.wk + '</span><div><p class="h">' + ordinal(h.place) + ' of ' + h.of + '</p><p class="s">' + fmt(h.mins) + ' scrolled</p></div>' +
         '<span class="r">' + money(h.won) + '<small>' + signed(h.won - h.pledge) + ' net</small></span></div>';
     }).join('');
   }
 
-  // ---------- Profile chart: hours per week (ink = past weeks, red = this week) ----------
+  // ---------- Profile chart: completed weeks (red = latest result) ----------
   var NS = 'http://www.w3.org/2000/svg';
   function el(tag, attrs, parent) {
     var e = document.createElementNS(NS, tag);
@@ -1168,48 +1216,28 @@
     r = Math.min(r, h, w / 2);
     return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z';
   }
-  // Gamified: placement medals on past weeks, a dashed personal-best line to beat, and this week's bar
-  // racing a pulsing ghost of that PB with the minutes left above it.
-  function weekBars(svg, data, pb, final) {
-    var W = 320, H = 200, L = 30, B = 20, T = 34, ih = H - B - T, iw = W - L;
-    var max = Math.max(540, Math.ceil(Math.max.apply(null, data.map(function (d) { return d.mins; })) / 120) * 120), step = max > 600 ? 240 : 120;
+  function weekBars(svg, data) {
+    var W = 320, H = 140, L = 30, B = 20, T = 8, ih = H - B - T, iw = W - L;
+    var max = Math.max(540, Math.ceil(Math.max.apply(null, data.map(function (d) { return d.mins; })) / 120) * 120), step = 240;
     svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    svg.setAttribute('aria-label', 'Hours scrolled per week, personal best ' + fmt(pb) + ': ' + data.map(function (d) { return d.label + ' ' + fmt(d.mins); }).join(', '));
+    svg.setAttribute('aria-label', 'Hours in counted apps per completed week: ' + data.map(function (d) { return d.label + ' ' + fmt(d.mins); }).join(', '));
     var y = function (v) { return T + ih - v / max * ih; };
-    for (var g = 0; g <= max; g += step) { // recessive grid; drop a label the PB tag would sit on
+    for (var g = 0; g <= max; g += step) {
       el('line', { x1: L, x2: W, y1: y(g), y2: y(g), stroke: 'var(--paper-2)', 'stroke-width': 1 }, svg);
-      if (Math.abs(y(g) - y(pb)) > 11) el('text', { x: L - 6, y: y(g) + 3, 'text-anchor': 'end' }, svg).textContent = g / 60 + 'h';
+      el('text', { x: L - 6, y: y(g) + 3, 'text-anchor': 'end' }, svg).textContent = g / 60 + 'h';
     }
     var slot = iw / data.length, bw = Math.min(26, slot * .58);
     data.forEach(function (d, i) {
       var x = L + slot * i + (slot - bw) / 2, h = Math.max(y(0) - y(d.mins), 1), cx = x + bw / 2, top = y(0) - h;
       var grp = el('g', { class: 'grp', tabindex: 0, role: 'button', 'aria-label': d.tip.replace(/<[^>]+>/g, ' ') }, svg);
-      if (d.now && !final && d.mins < pb) // the bar to beat
-        el('path', { class: 'ghost', d: topRounded(x, y(pb), bw, y(0) - y(pb), 4), fill: 'none', stroke: 'var(--red)', 'stroke-width': 1.5, 'stroke-dasharray': '3 2' }, grp);
       el('path', { class: 'seg' + (reduced ? '' : ' grow'), style: reduced ? '' : 'animation-delay:' + i * 40 + 'ms', d: topRounded(x, top, bw, h, 4), fill: d.now ? 'var(--red)' : 'var(--ink)' }, grp);
       el('text', { x: cx, y: H - 6, 'text-anchor': 'middle' }, svg).textContent = d.label;
-      var pop = reduced ? '' : 'animation-delay:' + (300 + i * 60) + 'ms';
-      if (d.place) { // placement medal; 1st is red
-        var m = el('g', { class: 'medal' + (d.place === 1 ? ' gold' : '') + (reduced ? '' : ' pop'), style: pop }, grp);
-        el('rect', { x: cx - 13, y: top - 21, width: 26, height: 15, rx: 7.5, fill: d.place === 1 ? 'var(--red)' : 'var(--card)', stroke: 'var(--ink)', 'stroke-width': 1.5 }, m);
-        el('text', { x: cx, y: top - 10.5, 'text-anchor': 'middle' }, m).textContent = (d.place === 1 ? '★' : '') + ordinal(d.place);
-      } else if (d.now) { // live race against the PB: countdown inside the ghost bar, else above
-        var gap = pb - d.mins, room = top - y(pb) > 34;
-        var lines = gap > 0 ? (final ? ['NEW', 'PB!'] : [fmt(gap), 'to go']) : ['+' + fmt(-gap), 'over'];
-        lines.forEach(function (t, k) {
-          el('text', { class: 'goal' + (reduced ? '' : ' pop'), style: pop, x: cx, y: (room ? y(pb) + 14 : Math.min(top, y(pb)) - 18) + k * 11, 'text-anchor': 'middle' }, grp).textContent = t;
-        });
-      }
-      el('rect', { class: 'hit', x: L + slot * i, y: T, width: slot, height: ih }, grp);
       el('rect', { class: 'hit', x: L + slot * i, y: T, width: slot, height: ih }, grp);
       var showIt = function () { svg.querySelectorAll('.grp').forEach(function (n) { n.classList.remove('on'); }); grp.classList.add('on'); showTip(d.tip, svg, x + bw / 2, y(0) - h); };
       grp.addEventListener('pointerenter', showIt); grp.addEventListener('click', showIt); grp.addEventListener('focus', showIt);
+      grp.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showIt(); } });
       grp.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { grp.classList.remove('on'); hideTip(); } });
     });
-    var pbLine = el('g', { 'pointer-events': 'none' }, svg); // personal best: the line to get under
-    el('line', { x1: L, x2: W, y1: y(pb), y2: y(pb), stroke: 'var(--red)', 'stroke-width': 1.5, 'stroke-dasharray': '4 3' }, pbLine);
-    el('rect', { x: 2, y: y(pb) - 7, width: 24, height: 14, rx: 7, fill: 'var(--red)' }, pbLine);
-    el('text', { class: 'pb-tag', x: 14, y: y(pb) + 3, 'text-anchor': 'middle' }, pbLine).textContent = 'PB';
   }
   function showTip(html, svg, vx, vy) {
     var r = svg.getBoundingClientRect(), a = $('app').getBoundingClientRect(), s = r.width / 320;
@@ -1639,6 +1667,7 @@
     el('line', { x1: L, x2: W, y1: y(limit), y2: y(limit), stroke: 'var(--ink-soft)', 'stroke-width': 1.5, 'stroke-dasharray': '4 3', 'pointer-events': 'none' }, svg);
   }
   $('stats').addEventListener('scroll', hideTip);
+  $('stats').querySelectorAll('details').forEach(function (detail) { detail.addEventListener('toggle', hideTip); });
 
   function renderStats() {
     limitBars($('chart-limit-weeks'), WEEKS, 840, 1200, 240, function (d) {
