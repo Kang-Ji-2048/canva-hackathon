@@ -106,7 +106,7 @@
   .ob-foot { display: flex; flex-direction: column; gap: 10px; }
   .ob-foot p { text-align: center; font: 400 11px var(--mono); color: var(--ink-soft); margin-top: 2px; }
 
-  /* ===== People rows (members, ladder, leaderboard) ===== */
+  /* ===== People rows (members, leaderboard) ===== */
   .person { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px dashed rgba(26,26,26,.3); }
   .person:first-child { border-top: 0; }
   .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 14px var(--mono); flex: none; border: 2px solid var(--ink); background: #fff; }
@@ -384,11 +384,6 @@
         <p class="fineprint" style="margin-top:2px">Everyone puts in the same. It all goes in the pot.</p>
         <div class="chips" id="pledge-chips"></div>
       </div>
-      <div class="card">
-        <b style="font-size:18px">Apps that count</b>
-        <div class="chips" id="app-chips"></div>
-        <p class="fineprint">Never counted: WhatsApp, iMessage, Messages</p>
-      </div>
       <button class="btn" id="start" style="margin-top:6px">Start</button>
     </div>
 
@@ -436,10 +431,6 @@
       <div class="card tile"><p class="label">You so far</p><p class="big" id="c-mine">0m</p><p class="s" id="c-mine-s"></p></div>
       <div class="card tile"><p class="label">Position</p><p class="big" id="c-pos">–</p><p class="s" id="c-pos-s"></p></div>
     </div>
-    <div class="card" style="margin-top:12px">
-      <p class="label">Where you stand</p>
-      <div id="ladder" style="margin-top:4px"></div>
-    </div>
     <p class="hint">Demo · tap the logo 3× to skip to Sunday 6pm · hold it to scroll 30 min</p>
   </section>
 
@@ -451,11 +442,6 @@
     </div>
     <h1 id="g-title">Flat 4B</h1>
     <p class="muted" id="g-sub" style="margin:8px 0 16px"></p>
-    <div class="card">
-      <p class="label">Your position</p>
-      <p style="font:700 30px/1.1 var(--sans);letter-spacing:-.03em;margin:6px 0 4px" id="g-pos">–</p>
-      <p class="fineprint" style="margin:0" id="g-pos-s">You can see your place. Nobody sees anyone's time until Sunday 6pm.</p>
-    </div>
     <div class="card" id="g-members" style="padding-top:6px;padding-bottom:6px"></div>
     <button class="btn ghost" id="invite-btn" style="margin-top:12px">+ Invite a friend</button>
     <div class="card" style="margin-top:12px">
@@ -466,10 +452,8 @@
     <div class="card">
       <p class="label" style="margin-bottom:12px">Fair play</p>
       <ul class="rules">
-        <li>Time comes straight from your phone's Screen Time data. Nobody types it in.</li>
-        <li>Turn off the permission or stop syncing for 24h and you finish last that week.</li>
-        <li>Delete the app mid-week and your pledge stays in the pot.</li>
-        <li>Link every device you scroll on. Browser visits to a counted app's site count too.</li>
+        <li>Time comes from your phone's Screen Time. Nobody types it in.</li>
+        <li>Turn tracking off and you finish last that week.</li>
       </ul>
     </div>
   </section>
@@ -573,8 +557,6 @@
     <h1>Your time, charted</h1>
     <h2 class="sec" style="margin-top:22px">Competition</h2>
     <div class="tiles" style="margin-top:0">
-      <div class="card tile"><p class="label">This week</p><p class="big" id="p-week">0m</p><p class="s" id="p-week-s"></p></div>
-      <div class="card tile"><p class="label">Position</p><p class="big" id="p-pos">–</p><p class="s" id="p-pos-s"></p></div>
       <div class="card tile"><p class="label">Last week</p><p class="big" id="p-last">0m</p><p class="s" id="p-last-s"></p></div>
       <div class="card tile"><p class="label">Won to date</p><p class="big" id="p-won">£0</p><p class="s" id="p-won-s"></p></div>
     </div>
@@ -595,13 +577,7 @@
     </div>
     <h2 class="sec">Daily limits</h2>
     <p class="label" style="margin:-6px 0 12px">Sample stats · 2026</p>
-    <div class="tiles" style="margin-top:0">
-      <div class="card tile"><p class="label">Avg / day</p><p class="big">2h 16m</p><p class="s">Week 39 · 2026 · limit 2h</p></div>
-      <div class="card tile"><p class="label">vs week 38</p><p class="big red">↑ 7%</p><p class="s">+1h 00m. A slip.</p></div>
-      <div class="card tile"><p class="label">Donated</p><p class="big">£122</p><p class="s">Across 8 weeks</p></div>
-      <div class="card tile"><p class="label">Worst day</p><p class="big">Fri</p><p class="s">2h 52m · 52m over</p></div>
-    </div>
-    <div class="card chart-card" style="margin-top:12px">
+    <div class="card chart-card">
       <h3>Hours per week vs your limit</h3>
       <p class="s">Sample weeks 32–39 · 2026 · tap a bar</p>
       <svg class="chart" id="chart-limit-weeks" role="img"></svg>
@@ -628,7 +604,6 @@
     <div class="card pot-card">
       <p class="label">Your week</p>
       <p class="amt" id="rv-time">0m</p>
-      <p class="sub" id="rv-vs"></p>
       <div class="rv-apps" id="rv-apps"></div>
       <div class="rv-saved"><span class="label">Time saved</span><b id="rv-saved">0m</b><span id="rv-saved-s"></span></div>
     </div>
@@ -649,10 +624,8 @@
         <p class="fineprint" id="share-status" role="status" aria-live="polite">Preparing your receipt image.</p>
       </div>
       <div class="card" style="margin-top:28px">
-        <p class="label" id="next-kicker">Next week</p>
-        <h3 style="margin-top:4px">Go again?</h3>
-        <p class="fineprint" style="margin-top:2px" id="next-sub">Same group. Pick next week's pledge.</p>
-        <div class="chips" id="next-pledge"></div>
+        <h3>Go again?</h3>
+        <p class="fineprint" style="margin-top:2px">Same group, same pledge. Change either in Group settings.</p>
         <button class="btn" id="again" style="margin-top:16px">Start next week</button>
       </div>
     </div>
@@ -704,10 +677,6 @@
     { k: 'sc', n: 'Snapchat', g: 'S' }
   ];
   var PLEDGES = [5, 10, 20];
-  var RULES = {
-    prop: { n: 'Proportional', d: 'Your slice grows the further you finish below the group\'s highest total. Last place gets £0.' },
-    podium: { n: 'Podium', d: '50% / 30% / 20% to the top three. Everyone else gets £0.' }
-  };
 
   // Each person's minutes per app for the whole week. Defaults total: Charles 3h 12m, you 4h 01m,
   // Priya 5h 20m, Dan 7h 45m, Sam 9h 30m, which splits a £50 pot £17.80 / £15.49 / £11.77 / £4.94 / £0.
@@ -720,7 +689,7 @@
   ];
 
   var state = {
-    group: 'Flat 4B', pledge: 10, rule: 'prop', apps: { ig: 1, tt: 1, rd: 1, yt: 1, sc: 1 },
+    group: 'Flat 4B', pledge: 10, apps: { ig: 1, tt: 1, rd: 1, yt: 1, sc: 1 },
     members: [ME].concat(FRIENDS), invited: [], pending: null,
     extra: 0, offset: 0, revealed: false, seen: false, history: []
   };
@@ -783,15 +752,11 @@
   function results() {
     var list = state.members.map(function (p) { return { p: p, mins: finalMins(p) }; });
     list.sort(function (a, b) { return a.mins - b.mins || (a.p.me ? 1 : 0) - (b.p.me ? 1 : 0); });
-    // Ties share a place (joint 1st), and under the podium rule they split the slots they cover.
+    // Ties share a place (joint 1st). Your share grows the further you finish below the highest total.
     list.forEach(function (r) { r.place = list.filter(function (x) { return x.mins < r.mins; }).length + 1; });
     var pot = state.pledge * list.length * 100, w;
-    if (state.rule === 'podium') w = list.map(function (r) {
-      var tied = list.filter(function (x) { return x.mins === r.mins; }).length, sum = 0;
-      for (var i = r.place - 1; i < r.place - 1 + tied; i++) sum += [50, 30, 20][i] || 0;
-      return sum / tied;
-    });
-    else { var max = list[list.length - 1].mins; w = list.map(function (r) { return max - r.mins; }); }
+    var max = list[list.length - 1].mins;
+    w = list.map(function (r) { return max - r.mins; });
     var sum = w.reduce(add, 0);
     if (!sum) { w = list.map(function () { return 1; }); sum = list.length; } // everyone tied
     // Split in pennies; leftover pennies go to the largest remainders so the pot adds up exactly.
@@ -929,10 +894,6 @@
     $('m-count').textContent = n + ' people · minimum 3';
     $('m-count').classList.toggle('red', !ok);
     chips($('pledge-chips'), PLEDGES, function (p) { return p === state.pledge; }, function (p) { return '£' + p + '/wk'; }, function (p) { state.pledge = p; renderSetup(); });
-    chips($('app-chips'), APPS, function (a) { return state.apps[a.k]; }, function (a) { return a.n; }, function (a) {
-      if (state.apps[a.k] && on().length === 1) return toast('Keep at least one app');
-      state.apps[a.k] = state.apps[a.k] ? 0 : 1; renderSetup();
-    });
     var start = $('start');
     start.disabled = !ok;
     start.textContent = ok ? 'Start week ' + week() + ' · ' + pounds(state.pledge * n) + ' pot' : 'Add ' + (3 - n) + ' more to start';
@@ -971,7 +932,7 @@
     $('c-week').textContent = 'Week ' + week() + ' · ' + range();
     $('c-pot-label').textContent = state.group + ' prize pot';
     $('c-pot').textContent = pounds(state.pledge * n);
-    $('c-pot-sub').textContent = n + ' × ' + pounds(state.pledge) + ' · ' + RULES[state.rule].n.toLowerCase() + ' split';
+    $('c-pot-sub').textContent = n + ' × ' + pounds(state.pledge) + ' · least scrolling wins most';
     $('cd-card').hidden = state.revealed;
     $('results-card').hidden = !state.revealed;
     if (state.revealed) {
@@ -983,26 +944,8 @@
     $('c-mine-s').textContent = state.revealed ? 'Final total' : on().length + ' apps · this week';
     $('c-pos').textContent = pos ? ordinal(pos) : '–';
     $('c-pos-s').textContent = pos ? 'of ' + n + (state.revealed ? ' · final' : ' · others hidden') : 'Starts Monday';
-    renderLadder();
     tick();
   }
-  function renderLadder() {
-    var pos = myPosition(), n = state.members.length, html = '';
-    if (state.revealed) {
-      html = results().map(function (r) {
-        return '<div class="person' + (r.p.me ? ' me' : '') + '"><span class="pl">' + ordinal(r.place) + '</span>' + avatar(r.p) +
-          '<div><p class="h">' + esc(r.p.me ? 'You' : r.p.n) + '</p></div><span class="r">' + fmt(r.mins) + '</span></div>';
-      }).join('');
-    } else {
-      for (var i = 1; i <= n; i++) {
-        html += i === pos
-          ? '<div class="person me"><span class="pl">' + ordinal(i) + '</span>' + avatar(ME) + '<div><p class="h">You</p><p class="s">' + fmt(nowMins(ME)) + '</p></div><span class="r">' + pounds(state.pledge) + '<small>pledged</small></span></div>'
-          : '<div class="person"><span class="pl">' + ordinal(i) + '</span><span class="avatar unknown">?</span><div><p class="h">Hidden</p><p class="s">Until Sunday 6pm</p></div><span class="r"><span class="redact" aria-label="hidden"></span></span></div>';
-      }
-    }
-    $('ladder').innerHTML = html;
-  }
-
   function tick() {
     if (state.revealed) return;
     var ms = revealAt() - Date.now();
@@ -1049,12 +992,10 @@
 
   // ---------- 4. Group ----------
   function renderGroup() {
-    var n = state.members.length, pos = myPosition();
+    var n = state.members.length;
     $('g-kicker').textContent = 'Group · week ' + week();
     $('g-title').textContent = state.group;
     $('g-sub').textContent = n + ' members · ' + pounds(state.pledge) + ' each · ' + pounds(state.pledge * n) + ' pot';
-    $('g-pos').textContent = pos ? ordinal(pos) + ' of ' + n : 'Week starts Monday';
-    $('g-pos-s').textContent = state.revealed ? 'Final standings are in. Times are public now.' : 'You can see your place. Nobody sees anyone\'s time until Sunday 6pm.';
     $('g-members').innerHTML = state.members.map(function (p) {
       var right = p.me || state.revealed ? fmt(nowMins(p)) : '<span class="redact" aria-label="hidden until Sunday"></span>';
       return '<div class="person' + (p.me ? ' me' : '') + '">' + avatar(p) + '<div><p class="h">' + esc(p.me ? 'You' : p.h) + '</p><p class="s">Pledged ' + pounds(state.pledge) + ' ✓</p></div>' +
@@ -1064,13 +1005,11 @@
     })).join('');
     $('g-set').innerHTML =
       setRow('Weekly pledge', pounds(state.pledge)) +
-      setRow('Payout rule', RULES[state.rule].n) +
       setRow('Apps counted', on().length === APPS.length ? 'All ' + APPS.length : on().length + ' of ' + APPS.length) +
       '<div class="set-row"><span>Reveal</span><span>Sun · 6pm</span></div>';
     var p = state.pending, notes = [];
     if (p) {
       if (p.pledge !== state.pledge) notes.push(pounds(p.pledge) + ' pledge');
-      if (p.rule !== state.rule) notes.push(RULES[p.rule].n.toLowerCase() + ' split');
       if (APPS.some(function (a) { return !!p.apps[a.k] !== !!state.apps[a.k]; })) notes.push(APPS.filter(function (a) { return p.apps[a.k]; }).length + ' apps');
     }
     $('g-pending').hidden = !notes.length;
@@ -1091,14 +1030,13 @@
 
   // Settings changes never touch a running week: they apply from next Monday.
   function openSettings() {
-    var src = state.pending || state, d = { pledge: src.pledge, rule: src.rule, apps: {} };
+    var src = state.pending || state, d = { pledge: src.pledge, apps: {} };
     APPS.forEach(function (a) { d.apps[a.k] = src.apps[a.k]; });
     openSheet('Group settings', 'Changes start next week', '<p class="label group">Weekly pledge</p><div class="chips" id="s-pledge"></div>' +
-      '<p class="label group">Payout rule</p><div id="s-rule"></div>' +
       '<p class="label group">Apps that count</p><div class="chips" id="s-apps"></div>' +
       '<p class="fineprint">Never counted: WhatsApp, iMessage, Messages</p>' +
       '<button class="btn" id="s-save" style="margin-top:18px">Save for week ' + (week() + 1) + '</button>' +
-      '<p class="fineprint" style="text-align:center;margin:12px 0 4px">This week\'s pot and rules are locked in.</p>');
+      '<p class="fineprint" style="text-align:center;margin:12px 0 4px">This week\'s pot is locked in.</p>');
     function draw() {
       chips($('s-pledge'), PLEDGES, function (p) { return p === d.pledge; }, function (p) { return '£' + p; }, function (p) { d.pledge = p; draw(); });
       chips($('s-apps'), APPS, function (a) { return d.apps[a.k]; }, function (a) { return a.n; }, function (a) {
@@ -1106,12 +1044,8 @@
         if (d.apps[a.k] && count === 1) return toast('Keep at least one app');
         d.apps[a.k] = d.apps[a.k] ? 0 : 1; draw();
       });
-      $('s-rule').innerHTML = Object.keys(RULES).map(function (k) {
-        return '<button class="option" data-rule="' + k + '" aria-pressed="' + (d.rule === k) + '"><span class="n">' + RULES[k].n + '</span><span class="d">' + RULES[k].d + '</span></button>';
-      }).join('');
     }
     draw();
-    $('s-rule').onclick = function (e) { var b = e.target.closest('[data-rule]'); if (b) { d.rule = b.dataset.rule; draw(); } };
     $('s-save').onclick = function () { state.pending = d; closeSheet(); renderGroup(); toast('Saved for week ' + (week() + 1)); };
   }
 
@@ -1132,13 +1066,9 @@
 
   // ---------- 5. Profile ----------
   function renderProfile() {
-    var mine = nowMins(ME), pos = myPosition(), last = state.history[state.history.length - 1];
+    var mine = nowMins(ME), last = state.history[state.history.length - 1];
     var won = state.history.map(function (h) { return h.won; }).reduce(add, 0), paid = state.history.map(function (h) { return h.pledge; }).reduce(add, 0);
     $('p-kicker').textContent = 'Stats · ' + state.group;
-    $('p-week').textContent = fmt(mine);
-    $('p-week-s').textContent = state.revealed ? 'Final · week ' + week() : 'So far · week ' + week();
-    $('p-pos').textContent = pos ? ordinal(pos) : '–';
-    $('p-pos-s').textContent = pos ? 'of ' + state.members.length : 'Starts Monday';
     $('p-last').textContent = fmt(last.mins);
     $('p-last-s').textContent = ordinal(last.place) + ' · won ' + money(last.won);
     $('p-won').textContent = pounds(Math.round(won * 100) / 100);
@@ -1241,7 +1171,6 @@
     var run = ++revealRun, res = results(), me = res.filter(function (r) { return r.p.me; })[0];
     var last = state.history[state.history.length - 1], diff = me.mins - last.mins;
     $('rv-kicker').textContent = state.group + ' · week ' + week();
-    $('rv-vs').textContent = (diff <= 0 ? '↓ ' : '↑ ') + fmt(Math.abs(diff)) + ' vs week ' + last.wk + ' · ' + on().length + ' apps counted';
     $('rv-apps').innerHTML = myAppMins(true).map(function (x) { return li(x.a.n, fmt(x.m)); }).join('');
     var saved = timeSaved(me.mins);
     $('rv-saved').textContent = fmt(Math.max(0, saved.week));
@@ -1252,16 +1181,10 @@
         '<div><p class="h">' + esc(r.p.me ? 'You' : r.p.n) + (r.place === 1 ? '<span class="tag">WINNER</span>' : '') + '</p><p class="s">' + fmt(r.mins) + '</p></div>' +
         '<div class="lb-pay"><b>' + money(r.won) + '</b><span class="' + (r.net > 0 ? 'up' : '') + '">' + signed(r.net) + '</span></div></div>';
     }).join('');
-    $('lb-rule').textContent = pounds(state.pledge * res.length) + ' pot · ' + RULES[state.rule].n + ': ' + RULES[state.rule].d + ' Payouts are simulated in this demo.';
+    $('lb-rule').textContent = pounds(state.pledge * res.length) + ' pot · the less you scrolled, the bigger your share. Last place gets £0. Payouts are simulated in this demo.';
     buildReceipt(me, res.length);
     var nextWk = week() + 1, nextN = state.members.length + state.invited.length;
-    var nextPledge = (state.pending || state).pledge;
-    $('next-kicker').textContent = 'Week ' + nextWk;
-    $('next-sub').textContent = 'Same group' + (state.invited.length ? ', plus ' + state.invited.length + ' new' : '') + '. Pick next week\'s pledge.';
-    chips($('next-pledge'), PLEDGES, function (p) { return p === nextPledge; }, function (p) { return '£' + p; }, function (p) {
-      state.pending = state.pending || { pledge: state.pledge, rule: state.rule, apps: JSON.parse(JSON.stringify(state.apps)) };
-      state.pending.pledge = p; renderReveal();
-    });
+    var nextPledge = (state.pending || state).pledge; // set in Group settings
     $('again').textContent = 'Start week ' + nextWk + ' · ' + pounds(nextPledge * nextN) + ' pot';
 
     if (state.seen) { // replay: show everything at once
@@ -1309,7 +1232,7 @@
   $('again').addEventListener('click', function () {
     var me = results().filter(function (r) { return r.p.me; })[0];
     state.history.push({ wk: week(), mins: me.mins, place: me.place, of: state.members.length, won: me.won, pledge: state.pledge });
-    if (state.pending) { state.pledge = state.pending.pledge; state.rule = state.pending.rule; state.apps = state.pending.apps; state.pending = null; }
+    if (state.pending) { state.pledge = state.pending.pledge; state.apps = state.pending.apps; state.pending = null; }
     state.members = state.members.concat(state.invited); state.invited = [];
     var s = week() * 7919;
     var rnd = function () { s = s * 16807 % 2147483647; return s / 2147483647; };
