@@ -143,6 +143,59 @@
   .friend .s { font-size: 13px; color: var(--ink-soft); }
   .friend .p { margin-left: auto; font: 700 16px var(--mono); }
 
+  .friend-btn { width: 100%; background: none; border: 0; border-top: 1px dashed rgba(26,26,26,.3); text-align: left; padding: 12px 0; }
+  .friend-btn:first-child { border-top: 0; }
+  .friend-btn:active { background: var(--paper-2); }
+  .friend .chev { font: 700 18px var(--mono); color: var(--ink-soft); margin-left: 4px; }
+  .nudge-row { display: flex; gap: 10px; margin-top: 28px; }
+
+  /* ===== Home ===== */
+  .ring-card { display: flex; align-items: center; gap: 18px; }
+  .ring { width: 116px; height: 116px; flex: none; }
+  .ring .bg { stroke: var(--paper-2); }
+  .ring .fg { stroke: var(--ink); transition: stroke-dashoffset .6s ease; }
+  .ring.over .fg { stroke: var(--red); }
+  .ring-card .big { font: 700 30px/1 var(--sans); letter-spacing: -.03em; margin: 6px 0 4px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .tiles .card { margin: 0; padding: 14px; }
+  .tile-btn { text-align: left; font: inherit; }
+  .tile .big { font: 700 26px/1.1 var(--sans); letter-spacing: -.02em; margin-top: 6px; }
+  .tile .s { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 2px; }
+  .row-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; margin-top: 12px; }
+  .row-link .chev { font: 700 20px var(--mono); }
+
+  /* ===== Stats charts ===== */
+  .chart-card h3 { font-size: 18px; }
+  .chart-card .s { font: 400 12px var(--mono); color: var(--ink-soft); margin: 2px 0 10px; }
+  .chart { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart text { font-family: var(--mono); font-size: 10px; fill: var(--ink-soft); }
+  .chart .val { fill: var(--ink); font-weight: 700; font-size: 11px; }
+  .chart .hit { fill: transparent; cursor: pointer; }
+  .chart .grp:hover .seg, .chart .grp.on .seg { opacity: .8; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .legend i.line { height: 0; border-top: 2px dashed var(--ink-soft); border-radius: 0; width: 14px; }
+  .tip { position: absolute; z-index: 25; pointer-events: none; background: var(--ink); color: var(--paper); font: 400 12px/1.4 var(--mono); padding: 8px 10px; border-radius: 10px; white-space: nowrap; transform: translate(-50%, calc(-100% - 8px)); display: none; }
+  .tip b { color: #fff; }
+  .tip.show { display: block; }
+
+  /* ===== Charity sheet ===== */
+  .scrim { position: absolute; inset: 0; z-index: 30; background: rgba(26,26,26,.45); opacity: 0; visibility: hidden; }
+  .scrim.show { opacity: 1; visibility: visible; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 31; max-height: 88%; overflow-y: auto; background: var(--paper); border-top: 2px solid var(--ink); border-radius: 24px 24px 0 0; padding: 10px 20px var(--bottom); transform: translateY(100%); visibility: hidden; }
+  .sheet.show { transform: none; visibility: visible; }
+  .grabber { width: 40px; height: 5px; border-radius: 99px; background: #CFCBC0; margin: 0 auto 14px; }
+  .sheet h2 { font-size: 24px; letter-spacing: -.02em; line-height: 1.1; }
+  .sheet .group { margin: 16px 0 8px; }
+  .charity { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: #fff; border: 2px solid var(--ink); border-radius: 16px; padding: 12px 14px; }
+  .charity + .charity { margin-top: 8px; }
+  .charity .n { font-weight: 700; font-size: 16px; display: block; }
+  .charity .d { font: 400 12px var(--mono); color: var(--ink-soft); }
+  .charity .go { margin-left: auto; font: 700 14px var(--mono); white-space: nowrap; }
+  .charity[aria-pressed=true] { background: var(--ink); color: var(--paper); }
+  .charity[aria-pressed=true] .d { color: #A9A69D; }
+
   /* ===== Tab bar ===== */
   .tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; display: none; background: rgba(247,245,239,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px dashed rgba(26,26,26,.3); padding: 8px 12px var(--bottom); }
   .tabs.show { display: flex; }
@@ -173,6 +226,14 @@
     .banner { transition: transform .45s cubic-bezier(.2,1.2,.3,1), visibility 0s .45s; }
     .banner.show { transition: transform .45s cubic-bezier(.2,1.2,.3,1), visibility 0s; }
     .toast { transition: opacity .2s, transform .2s; }
+    .scrim { transition: opacity .25s, visibility 0s .25s; }
+    .scrim.show { transition: opacity .25s, visibility 0s; }
+    .sheet { transition: transform .35s cubic-bezier(.2,.9,.3,1), visibility 0s .35s; }
+    .sheet.show { transition: transform .35s cubic-bezier(.2,.9,.3,1), visibility 0s; }
+    .grow { transform-box: fill-box; transform-origin: bottom; animation: grow .5s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes grow { from { transform: scaleY(0); } }
+    .grow-x { transform-box: fill-box; transform-origin: left; animation: grow-x .5s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes grow-x { from { transform: scaleX(0); } }
     .printing { animation: feed 1.9s steps(14, end) .3s both; }
     .printing .stamp { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) 2.4s both; }
     .stakes-card.paid .stamp.land { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) .35s both; }
@@ -242,9 +303,14 @@
         <button class="cause" aria-pressed="false">Climate</button>
       </div>
       <p class="fineprint">100% donated. We never take a cut.</p>
+      <button class="row-link btn ghost" id="pick-default" style="padding:12px 16px;font-size:15px"><span>Default charity: <b class="charity-name">Mind</b></span><span class="chev">›</span></button>
+      <div class="toggle-row" style="margin-top:14px">
+        <div><b>Ask me each time</b><p class="fineprint" style="margin-top:2px">Pick a charity every time you go over</p></div>
+        <button class="switch" id="ask" role="switch" aria-checked="true" aria-label="Ask me which charity each time"></button>
+      </div>
     </div>
     <div class="spacer"></div>
-    <button class="btn" data-go="today">Start tracking</button>
+    <button class="btn" data-go="home">Start tracking</button>
   </section>
 
   <!-- ============ 3/4. TODAY ============ -->
@@ -266,7 +332,7 @@
       <p class="status">26m left today</p>
     </div>
     <div class="card stakes-card" id="stakes-card">
-      <p class="label">Today's stakes → <span class="cause-name">Mental health</span></p>
+      <p class="label">Today's stakes</p>
       <p class="amt" id="stakes-amt">£0.00</p>
       <p class="sub" id="stakes-sub">£1 per 10 min over · capped at £5/day</p>
       <div class="stamp" id="paid-stamp" aria-hidden="true">PAID</div>
@@ -310,19 +376,98 @@
       <p class="amt">£14.00</p>
       <p class="fineprint">Goes to <b>Climate</b> on Sunday · 100% donated</p>
     </div>
-    <div class="card">
-      <div class="friend"><span class="avatar" style="background:#FDE2E1">NR</span><div><p class="h">@not_a_real_dan</p><p class="s">1h 20m over</p></div><span class="p red">£8</span></div>
-      <div class="friend"><span class="avatar" style="background:#E7E4DA">ST</span><div><p class="h">@scrolltest_sam</p><p class="s">40m over</p></div><span class="p">£4</span></div>
-      <div class="friend"><span class="avatar" style="background:#fff">D3</span><div><p class="h">@demo_user_3</p><p class="s">20m over</p></div><span class="p">£2</span></div>
-      <div class="friend"><span class="avatar" style="background:var(--ink);color:var(--paper)">ME</span><div><p class="h">you</p><p class="s">Under limit all week</p></div><span class="p">£0</span></div>
-    </div>
-    <p class="hint">Fake handles · demo data</p>
+    <div class="card" id="friends" style="padding-top:6px;padding-bottom:6px"></div>
+    <p class="hint">Tap anyone to see their receipt · fake handles, demo data</p>
   </section>
+
+  <!-- ============ 7b. FRIEND RECEIPT ============ -->
+  <section class="screen" id="friend">
+    <div class="bar"><button class="back" data-back>‹ Pot</button><span class="label">Flat 4B · Week 40</span></div>
+    <h1 id="friend-title">Their receipt</h1>
+    <div id="friend-receipt"></div>
+    <div class="nudge-row">
+      <button class="btn ghost" id="nudge">👀 Nudge</button>
+      <button class="btn dark" id="cheer">👏 Cheer</button>
+    </div>
+  </section>
+
+  <!-- ============ HOME ============ -->
+  <section class="screen tabbed" id="home">
+    <div class="bar">
+      <button class="logo secret" aria-label="Receipts"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>Receipts</button>
+      <button class="icon-btn" data-go="limits" aria-label="Edit limits"><svg viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
+    </div>
+    <p class="label" id="home-date">Today</p>
+    <h1 style="margin:6px 0 18px" id="home-hi">Hey, you.</h1>
+    <button class="card ring-card tile-btn" data-tab-go="today">
+      <svg class="ring" id="ring" viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="bg" cx="60" cy="60" r="50" fill="none" stroke-width="14"/>
+        <circle class="fg" id="ring-fg" cx="60" cy="60" r="50" fill="none" stroke-width="14" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
+      </svg>
+      <div>
+        <p class="label">Scrolled today</p>
+        <p class="big" id="home-used">1h 32m</p>
+        <p class="fineprint" style="margin:0" id="home-left">of 2h · 28m left</p>
+      </div>
+    </button>
+    <div class="tiles">
+      <button class="card tile tile-btn" data-tab-go="today"><p class="label">Today's stakes</p><p class="big" id="home-owed">£0.00</p><p class="s" id="home-owed-s">Nothing owed. Keep it up.</p></button>
+      <button class="card tile tile-btn" data-tab-go="pot"><p class="label">Flat 4B pot</p><p class="big">£14</p><p class="s">You're #1 (least over)</p></button>
+      <button class="card tile tile-btn" data-tab-go="stats"><p class="label">8-week trend</p><svg id="spark" viewBox="0 0 120 34" style="width:100%;height:34px;margin-top:8px" aria-label="Weekly scrolling, trending down"></svg><p class="s">↓ 14% since week 32</p></button>
+      <button class="card tile tile-btn" id="home-charity"><p class="label">Your £ goes to</p><p class="big charity-name" style="font-size:20px">Mind</p><p class="s">Tap to change</p></button>
+    </div>
+    <button class="card row-link" data-tab-go="receipt"><span><span class="label">Sunday</span><br><b style="font-size:18px">Week 39 receipt is ready</b></span><span class="chev">›</span></button>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="screen tabbed" id="stats">
+    <div class="bar"><span class="label">Stats · since you started</span></div>
+    <h1 style="margin-bottom:16px">Your time, charted</h1>
+    <div class="tiles" style="margin-top:0">
+      <div class="card tile"><p class="label">Avg / day</p><p class="big">2h 16m</p><p class="s">Week 39 · limit 2h</p></div>
+      <div class="card tile"><p class="label">vs week 38</p><p class="big red">↑ 7%</p><p class="s">+1h 00m. A slip.</p></div>
+      <div class="card tile"><p class="label">Donated</p><p class="big">£122</p><p class="s">Across 8 weeks</p></div>
+      <div class="card tile"><p class="label">Worst day</p><p class="big">Fri</p><p class="s">2h 52m · 52m over</p></div>
+    </div>
+    <div class="card chart-card" style="margin-top:12px">
+      <h3>Hours per week</h3>
+      <p class="s">Weeks 32–39 · tap a bar</p>
+      <svg class="chart" id="chart-weeks" role="img"></svg>
+      <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>14h weekly limit</span></div>
+    </div>
+    <div class="card chart-card">
+      <h3>Week 39, day by day</h3>
+      <p class="s">TikTok + Instagram · tap a bar</p>
+      <svg class="chart" id="chart-days" role="img"></svg>
+      <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>2h daily limit</span></div>
+    </div>
+    <div class="card chart-card">
+      <h3>Where your £122 went</h3>
+      <p class="s">All time, by charity</p>
+      <svg class="chart" id="chart-charity" role="img"></svg>
+    </div>
+    <p class="hint">Demo data · example charities, not partners</p>
+  </section>
+
+  <div class="tip" id="tip" role="status"></div>
+
+  <!-- ============ CHARITY SHEET ============ -->
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="grabber"></div>
+    <p class="label" id="sheet-kicker">10 min over on TikTok</p>
+    <h2 id="sheet-title" style="margin-top:6px">Where should this £1 go?</h2>
+    <div id="charity-list"></div>
+    <button class="btn ghost" id="sheet-default" style="margin-top:16px">Send to my default</button>
+    <p class="fineprint" style="text-align:center;margin:12px 0 4px">Example charities, not partners (yet) · 100% passed on</p>
+  </div>
 
   <!-- ============ TAB BAR ============ -->
   <nav class="tabs" id="tabs">
     <button data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
     <button data-tab="receipt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 2h14v20l-2.3-1.4-2.4 1.4-2.3-1.4-2.4 1.4-2.3-1.4L5 22z"/><path d="M9 8h6M9 12h6M9 16h4" stroke-linecap="round"/></svg>Receipt</button>
+    <button data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 11 12 3l9 8"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Home</button>
+    <button data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M6 17v-5M11 17V7M16 17v-8M21 17V4" /></svg>Stats</button>
     <button data-tab="pot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg>Pot</button>
   </nav>
 </div>
@@ -331,8 +476,18 @@
 (function () {
   // Everything below is fake demo state. Nothing leaves the page.
   var $ = function (id) { return document.getElementById(id); };
-  var state = { limTT: 60, limIG: 60, stakes: true, cause: 'Mental health', ttSecs: 0, overMin: 0, owed: 0 };
+  var state = { limTT: 60, limIG: 60, stakes: true, cause: 'Mental health', charity: 'Mind', ask: true, given: {}, ttSecs: 0, overMin: 0, owed: 0 };
   var CAP = 5;
+  // Example charities only: not partners. Grouped by the three causes on the Limits screen.
+  var CHARITIES = [
+    { n: 'Mind', d: 'Mental health support', c: 'Mental health' },
+    { n: 'YoungMinds', d: 'Young people\'s mental health', c: 'Mental health' },
+    { n: 'Samaritans', d: '24/7 listening line', c: 'Mental health' },
+    { n: 'BookTrust', d: 'Getting kids reading', c: 'Education' },
+    { n: 'Teach First', d: 'Teachers where they\'re needed', c: 'Education' },
+    { n: 'Woodland Trust', d: 'Planting UK woods', c: 'Climate' },
+    { n: 'ClientEarth', d: 'Climate law', c: 'Climate' }
+  ];
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function fmt(min) { var h = Math.floor(min / 60), m = min % 60; return h ? h + 'h ' + String(m).padStart(2, '0') + 'm' : m + 'm'; }
@@ -340,8 +495,8 @@
 
   // ---------- Routing: in-memory stack. Browser history is mirrored only where it works
   // (it throws in sandboxed iframes / data: URLs, e.g. some previews and Canva embeds). ----------
-  var tabScreens = ['today', 'receipt', 'pot'];
-  var order = ['onboarding', 'limits', 'today', 'receipt', 'pot'];
+  var tabScreens = ['today', 'receipt', 'home', 'stats', 'pot'];
+  var order = ['onboarding', 'limits', 'today', 'receipt', 'home', 'stats', 'pot', 'friend'];
   var current = null, stack = ['onboarding'], useHistory = true;
   try { history.replaceState({ s: 'onboarding' }, ''); } catch (e) { useHistory = false; }
 
@@ -379,12 +534,16 @@
     });
     if (name === 'today') renderToday();
     if (name === 'receipt') printReceipt();
+    if (name === 'home') renderHome();
+    if (name === 'stats') renderStats();
+    hideTip();
   }
   document.addEventListener('click', function (e) {
-    var g = e.target.closest('[data-go]'), b = e.target.closest('[data-back]'), t = e.target.closest('[data-tab]');
+    var g = e.target.closest('[data-go]'), b = e.target.closest('[data-back]');
+    var t = e.target.closest('[data-tab]') || e.target.closest('[data-tab-go]');
     if (g) go(g.dataset.go);
     if (b) back();
-    if (t && t.dataset.tab !== current) swap(t.dataset.tab);
+    if (t) { var to = t.dataset.tab || t.dataset.tabGo; if (to !== current) swap(to); }
   });
 
   // Edge-swipe back, only when installed (in a browser the OS already does this).
@@ -421,7 +580,51 @@
     this.querySelectorAll('.cause').forEach(function (c) { c.setAttribute('aria-pressed', c === b); });
     state.cause = b.textContent;
     document.querySelectorAll('.cause-name').forEach(function (n) { n.textContent = state.cause; });
+    setCharity(CHARITIES.filter(function (c) { return c.c === state.cause; })[0].n);
   });
+  $('ask').addEventListener('click', function () {
+    state.ask = !state.ask;
+    this.setAttribute('aria-checked', state.ask);
+  });
+  function setCharity(name) {
+    state.charity = name;
+    document.querySelectorAll('.charity-name').forEach(function (n) { n.textContent = name; });
+    $('sheet-default').textContent = 'Send to ' + name + ' (default)';
+  }
+
+  // ---------- Charity sheet: pick a default, or pick where one overage £1 goes ----------
+  var sheetMode = null;
+  function openSheet(mode) {
+    sheetMode = mode;
+    var over = mode === 'over';
+    $('sheet-kicker').textContent = over ? state.overMin + ' min over on TikTok · £1 due' : 'Default charity';
+    $('sheet-title').textContent = over ? 'Where should this £1 go?' : 'Where should your £1s go?';
+    $('sheet-default').style.display = over ? '' : 'none';
+    var html = '', last = null;
+    CHARITIES.forEach(function (c) {
+      if (c.c !== last) { html += '<p class="label group">' + c.c + '</p>'; last = c.c; }
+      html += '<button class="charity" data-charity="' + c.n + '" aria-pressed="' + (c.n === state.charity) + '">' +
+        '<span><span class="n">' + c.n + '</span><span class="d">' + c.d + '</span></span>' +
+        '<span class="go">' + (over ? 'Send £1 →' : (c.n === state.charity ? '✓' : '')) + '</span></button>';
+    });
+    $('charity-list').innerHTML = html;
+    $('scrim').classList.add('show'); $('sheet').classList.add('show');
+  }
+  function closeSheet() {
+    if (sheetMode === 'over') pay(state.charity); // the £1 is owed either way; dismissing sends it to the default
+    sheetMode = null;
+    $('scrim').classList.remove('show'); $('sheet').classList.remove('show');
+  }
+  $('charity-list').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-charity]'); if (!b) return;
+    if (sheetMode === 'over') { pay(b.dataset.charity); sheetMode = null; }
+    else { setCharity(b.dataset.charity); toast('Default: ' + b.dataset.charity); }
+    closeSheet();
+  });
+  $('sheet-default').addEventListener('click', closeSheet);
+  $('scrim').addEventListener('click', closeSheet);
+  $('pick-default').addEventListener('click', function () { openSheet('default'); });
+  $('home-charity').addEventListener('click', function () { openSheet('default'); });
 
   // ---------- 3. Today: ticking counter ----------
   $('today-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -442,47 +645,80 @@
     $('row-ig').querySelector('.status').textContent = fmt(state.limIG - Math.min(34, state.limIG - 1)) + ' left today';
 
     $('stakes-amt').textContent = '£' + state.owed.toFixed(2);
-    $('stakes-sub').textContent = state.stakes ? '£1 per 10 min over · capped at £' + CAP + '/day' : 'Stakes off · just tracking';
+    $('stakes-card').classList.toggle('paid', state.owed > 0);
+    var given = Object.keys(state.given).map(function (k) { return k + ' £' + state.given[k]; }).join(' · ');
+    $('stakes-sub').textContent = !state.stakes ? 'Stakes off · just tracking'
+      : given ? '→ ' + given : '£1 per 10 min over · capped at £' + CAP + '/day';
+  }
+
+  // ---------- Home: today at a glance ----------
+  var hello = new Date().getHours();
+  $('home-hi').textContent = hello < 12 ? 'Morning.' : hello < 18 ? 'Afternoon.' : 'Evening.';
+  function renderHome() {
+    var ttMin = state.overMin ? state.limTT + state.overMin : Math.floor(state.ttSecs / 60);
+    var used = ttMin + Math.min(34, state.limIG - 1), lim = state.limTT + state.limIG;
+    var over = state.overMin;
+    $('home-used').textContent = fmt(used);
+    $('home-left').textContent = 'of ' + fmtShort(lim) + ' · ' + (over ? over + 'm over on TikTok' : fmt(lim - used) + ' left');
+    $('ring').classList.toggle('over', !!over);
+    $('ring-fg').style.strokeDashoffset = 314.16 * (1 - Math.min(used / lim, 1));
+    $('home-owed').textContent = '£' + state.owed.toFixed(2);
+    $('home-owed').classList.toggle('red', state.owed > 0);
+    $('home-owed-s').textContent = state.owed ? '→ ' + Object.keys(state.given).join(', ') : 'Nothing owed. Keep it up.';
   }
 
   setInterval(function () {
     if (state.overMin) return;
     if (state.ttSecs < state.limTT * 60 - 1) state.ttSecs++; // holds at 59:59 until the secret trigger
     if (current === 'today') renderToday();
+    if (current === 'home') renderHome();
   }, 1000);
 
   // ---------- 4. Over limit: SECRET trigger (triple-tap or long-press the logo) ----------
-  var logo = $('secret'), taps = 0, tapTimer, pressTimer, longPressed = false;
-  logo.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-  logo.addEventListener('pointerdown', function () {
-    longPressed = false;
-    pressTimer = setTimeout(function () { longPressed = true; taps = 0; goOver(); }, 600);
-  });
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { logo.addEventListener(ev, function () { clearTimeout(pressTimer); }); });
-  logo.addEventListener('click', function () {
-    if (longPressed) return;
-    taps++; clearTimeout(tapTimer);
-    if (taps >= 3) { taps = 0; goOver(); return; }
-    tapTimer = setTimeout(function () { taps = 0; }, 700);
+  // Works on the logo on both Today and Home.
+  var taps = 0, tapTimer, pressTimer, longPressed = false;
+  document.querySelectorAll('#secret, .secret').forEach(function (logo) {
+    logo.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    logo.addEventListener('pointerdown', function () {
+      longPressed = false;
+      pressTimer = setTimeout(function () { longPressed = true; taps = 0; goOver(); }, 600);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { logo.addEventListener(ev, function () { clearTimeout(pressTimer); }); });
+    logo.addEventListener('click', function () {
+      if (longPressed) return;
+      taps++; clearTimeout(tapTimer);
+      if (taps >= 3) { taps = 0; goOver(); return; }
+      tapTimer = setTimeout(function () { taps = 0; }, 700);
+    });
   });
 
+  function rerender() { if (current === 'today') renderToday(); if (current === 'home') renderHome(); }
+
   function goOver() {
+    if (sheetMode) return; // already asking about the last £1
     state.overMin += 10;
     var charged = state.stakes && state.owed < CAP;
-    if (charged) state.owed += 1;
-    renderToday();
-    var msg = !state.stakes ? '10 min over on TikTok. Stakes are off, so this one\'s free.'
-      : charged ? '10 min over on TikTok. £1 → ' + state.cause
-      : '10 min over on TikTok. You\'ve hit today\'s £' + CAP + ' cap. Go to bed x';
-    notify(msg);
-    if (charged) {
-      var card = $('stakes-card'), stamp = $('paid-stamp'), amt = $('stakes-amt');
-      card.classList.add('paid');
-      stamp.classList.remove('land'); amt.classList.remove('bump');
-      void stamp.offsetWidth; // restart animations
-      stamp.classList.add('land'); amt.classList.add('bump');
-    }
+    rerender();
     if (navigator.vibrate) navigator.vibrate(30);
+    if (!charged) {
+      notify(!state.stakes ? '10 min over on TikTok. Stakes are off, so this one\'s free.'
+        : '10 min over on TikTok. You\'ve hit today\'s £' + CAP + ' cap. Go to bed x');
+      return;
+    }
+    if (state.ask) openSheet('over'); else pay(state.charity);
+  }
+
+  function pay(charity) {
+    state.owed += 1;
+    state.given[charity] = (state.given[charity] || 0) + 1;
+    rerender();
+    notify('10 min over on TikTok. £1 → ' + charity);
+    if (current !== 'today') return;
+    var stamp = $('paid-stamp'), amt = $('stakes-amt');
+    $('stakes-card').classList.add('paid');
+    stamp.classList.remove('land'); amt.classList.remove('bump');
+    void stamp.offsetWidth; // restart animations
+    stamp.classList.add('land'); amt.classList.add('bump');
   }
 
   var bannerTimer;
@@ -515,6 +751,140 @@
       toast('Saved ✓');
     }
   });
+
+  // ---------- 7. Pot: tap a friend to see their receipt ----------
+  // Week 40 so far. Minutes. Over = total - 7 × daily limit; £1 per 10 min over.
+  var FRIENDS = [
+    { h: '@not_a_real_dan', i: 'NR', bg: '#FDE2E1', lim: 120, tt: 665, ig: 255, dodged: 3 },
+    { h: '@scrolltest_sam', i: 'ST', bg: '#E7E4DA', lim: 90, tt: 220, ig: 450, dodged: 5 },
+    { h: '@demo_user_3', i: 'D3', bg: '#fff', lim: 60, tt: 130, ig: 310, dodged: 2 },
+    { h: 'you', i: 'ME', bg: 'var(--ink);color:var(--paper)', lim: 120, tt: 412, ig: 288, dodged: 6 }
+  ];
+  FRIENDS.forEach(function (f) { f.over = Math.max(0, f.tt + f.ig - f.lim * 7); f.paid = Math.floor(f.over / 10); });
+
+  $('friends').innerHTML = FRIENDS.map(function (f, i) {
+    return '<button class="friend friend-btn" data-friend="' + i + '" aria-label="See ' + f.h + '\'s receipt">' +
+      '<span class="avatar" style="background:' + f.bg + '">' + f.i + '</span>' +
+      '<div><p class="h">' + f.h + '</p><p class="s">' + (f.over ? fmt(f.over) + ' over' : 'Under limit all week') + '</p></div>' +
+      '<span class="p' + (i === 0 ? ' red' : '') + '">£' + f.paid + '</span><span class="chev">›</span></button>';
+  }).join('');
+
+  function receiptHTML(f) {
+    var total = f.tt + f.ig;
+    var stamp = f.paid ? '£' + f.paid + '<small>DONATED</small>' : 'CLEAN<small>WEEK</small>';
+    return '<div class="receipt" aria-label="' + f.h + ': ' + fmt(total) + ' scrolled, £' + f.paid + ' donated">' +
+      '<div class="head"><b>RECEIPTS</b><span>' + f.h.toUpperCase() + ' · WEEK 40</span></div><hr>' +
+      li('TikTok', fmt(f.tt)) + li('Instagram', fmt(f.ig)) + '<hr>' +
+      li('TOTAL', fmt(total), 'big') + li('Daily limit', fmt(f.lim), 'small') + li('Over limit', f.over ? fmt(f.over) : '0m', 'small') + '<hr>' +
+      li('That\'s', '= ' + Math.max(1, Math.floor(total / 360)) + ' essay' + (total >= 720 ? 's' : ''), 'small') +
+      li('Or', '= ' + Math.floor(total / 100) + ' gym sessions', 'small') + '<hr>' +
+      li('DONATED', '<span class="red">£' + f.paid + '.00</span>', 'big') + li('Dodged (closed it)', '£' + f.dodged + '.00', 'small') +
+      '<p class="thanks">→ Climate · Flat 4B pot<br>THANK YOU FOR SCROLLING</p>' +
+      '<div class="stamp" aria-hidden="true">' + stamp + '</div></div>';
+  }
+  function li(a, b, cls) { return '<div class="li' + (cls ? ' ' + cls : '') + '"><span>' + a + '</span><span class="dots"></span><span>' + b + '</span></div>'; }
+
+  var friendNow = null;
+  $('friends').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-friend]'); if (!b) return;
+    friendNow = FRIENDS[+b.dataset.friend];
+    var me = friendNow.h === 'you';
+    $('friend-title').textContent = me ? 'Your receipt' : friendNow.h.slice(1);
+    $('friend-receipt').innerHTML = receiptHTML(friendNow);
+    $('friend-receipt').firstChild.classList.add('printing');
+    $('nudge').parentNode.style.display = me ? 'none' : '';
+    go('friend');
+  });
+  $('nudge').addEventListener('click', function () { toast('Nudged ' + friendNow.h + ' 👀'); });
+  $('cheer').addEventListener('click', function () { toast('Cheered ' + friendNow.h + ' 👏'); });
+
+  // ---------- Stats: SVG charts (ink = within limit, red = over limit) ----------
+  var NS = 'http://www.w3.org/2000/svg';
+  var WEEKS = [1105, 1060, 1010, 1045, 980, 915, 890, 950].map(function (t, i) { return { label: 'W' + (32 + i), total: t }; });
+  var DAYS = [[70, 50], [85, 45], [65, 60], [95, 48], [105, 67], [72, 63], [60, 65]].map(function (d, i) {
+    return { label: ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i], day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i], tt: d[0], ig: d[1], total: d[0] + d[1] };
+  });
+  var GIVEN = [['Mind', 58], ['YoungMinds', 31], ['Woodland Trust', 21], ['BookTrust', 12]];
+
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function topRounded(x, y, w, h, r) { // flat at the baseline, rounded at the data end
+    r = Math.min(r, h, w / 2);
+    return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z';
+  }
+
+  function limitBars(svg, data, limit, max, step, tipFor) {
+    var W = 320, H = 170, L = 30, B = 20, T = 8, ih = H - B - T, iw = W - L;
+    svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var y = function (v) { return T + ih - v / max * ih; };
+    for (var g = 0; g <= max; g += step) { // recessive grid
+      el('line', { x1: L, x2: W, y1: y(g), y2: y(g), stroke: '#E4E1D8', 'stroke-width': 1 }, svg);
+      el('text', { x: L - 6, y: y(g) + 3, 'text-anchor': 'end' }, svg).textContent = g / 60 + 'h';
+    }
+    var slot = iw / data.length, bw = Math.min(26, slot * .58);
+    data.forEach(function (d, i) {
+      var x = L + slot * i + (slot - bw) / 2, under = Math.min(d.total, limit), over = d.total - under;
+      var grp = el('g', { class: 'grp', tabindex: 0, role: 'button', 'aria-label': tipFor(d).replace(/<[^>]+>/g, ' ') }, svg);
+      var delay = reduced ? '' : 'animation-delay:' + i * 40 + 'ms';
+      el('path', { class: 'seg' + (reduced ? '' : ' grow'), style: delay, d: over > 0 ? 'M' + x + ',' + y(0) + 'V' + y(under) + 'H' + (x + bw) + 'V' + y(0) + 'Z' : topRounded(x, y(under), bw, y(0) - y(under), 4), fill: 'var(--ink)' }, grp);
+      if (over > 0) el('path', { class: 'seg' + (reduced ? '' : ' grow'), style: delay, d: topRounded(x, y(d.total), bw, Math.max(y(under) - y(d.total) - 2, 1), 4), fill: 'var(--red)' }, grp); // 2px gap
+      el('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle' }, svg).textContent = d.label;
+      el('rect', { class: 'hit', x: L + slot * i, y: T, width: slot, height: ih }, grp);
+      var show = function () { svg.querySelectorAll('.grp').forEach(function (n) { n.classList.remove('on'); }); grp.classList.add('on'); showTip(tipFor(d), svg, x + bw / 2, y(d.total)); };
+      grp.addEventListener('pointerenter', show); grp.addEventListener('click', show); grp.addEventListener('focus', show);
+      grp.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { grp.classList.remove('on'); hideTip(); } });
+    });
+    el('line', { x1: L, x2: W, y1: y(limit), y2: y(limit), stroke: 'var(--ink-soft)', 'stroke-width': 1.5, 'stroke-dasharray': '4 3', 'pointer-events': 'none' }, svg);
+  }
+
+  function showTip(html, svg, vx, vy) {
+    var r = svg.getBoundingClientRect(), a = $('app').getBoundingClientRect(), s = r.width / 320;
+    var t = $('tip'); t.innerHTML = html; t.classList.add('show');
+    var left = r.left - a.left + vx * s, half = t.offsetWidth / 2;
+    t.style.left = Math.max(half + 8, Math.min(a.width - half - 8, left)) + 'px';
+    t.style.top = (r.top - a.top + vy * s) + 'px';
+  }
+  function hideTip() { $('tip').classList.remove('show'); }
+  $('stats').addEventListener('scroll', hideTip);
+
+  function hm(min) { return fmt(min); }
+  function renderStats() {
+    limitBars($('chart-weeks'), WEEKS, 840, 1200, 240, function (d) {
+      var o = d.total - 840;
+      return '<b>Week ' + d.label.slice(1) + '</b> · ' + hm(d.total) + '<br>' + (o > 0 ? hm(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
+    });
+    $('chart-weeks').setAttribute('aria-label', 'Hours scrolled per week, weeks 32 to 39: ' + WEEKS.map(function (w) { return w.label + ' ' + hm(w.total); }).join(', '));
+    limitBars($('chart-days'), DAYS, 120, 180, 60, function (d) {
+      var o = d.total - 120;
+      return '<b>' + d.day + '</b> · ' + hm(d.total) + (o > 0 ? ' · <span style="color:#FF8A85">' + o + 'm over</span>' : '') + '<br>TikTok ' + hm(d.tt) + ' · Insta ' + hm(d.ig);
+    });
+    $('chart-days').setAttribute('aria-label', 'Week 39 by day: ' + DAYS.map(function (d) { return d.day + ' ' + hm(d.total); }).join(', '));
+
+    var svg = $('chart-charity'), W = 320, rowH = 30, H = GIVEN.length * rowH, L = 108, max = GIVEN[0][1];
+    svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('aria-label', 'Donations by charity: ' + GIVEN.map(function (g) { return g[0] + ' £' + g[1]; }).join(', '));
+    GIVEN.forEach(function (g, i) {
+      var yy = i * rowH + 6, w = (W - L - 40) * g[1] / max;
+      el('text', { x: 0, y: yy + 12, style: 'fill:var(--ink);font-size:11px' }, svg).textContent = g[0];
+      var bar = el('rect', { x: L, y: yy + 2, width: w, height: 14, rx: 4, fill: 'var(--ink)' }, svg);
+      if (!reduced) { bar.setAttribute('class', 'grow-x'); bar.style.animationDelay = i * 60 + 'ms'; }
+      el('text', { x: L + w + 6, y: yy + 13, class: 'val' }, svg).textContent = '£' + g[1];
+    });
+  }
+
+  // 8-week sparkline on Home
+  (function () {
+    var s = $('spark'), max = 1200, min = 800;
+    var pts = WEEKS.map(function (w, i) { return [4 + i * 112 / 7, 30 - (w.total - min) / (max - min) * 26]; });
+    el('line', { x1: 0, x2: 120, y1: 30 - (840 - min) / (max - min) * 26, y2: 30 - (840 - min) / (max - min) * 26, stroke: 'var(--ink-soft)', 'stroke-dasharray': '3 3', 'stroke-width': 1 }, s);
+    el('polyline', { points: pts.join(' '), fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, s);
+    var p = pts[pts.length - 1];
+    el('circle', { cx: p[0], cy: p[1], r: 4, fill: 'var(--red)', stroke: '#fff', 'stroke-width': 2 }, s);
+  })();
 
   // ---------- Home-screen icon: iOS wants a PNG, so draw one ----------
   try {

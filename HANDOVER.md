@@ -83,5 +83,9 @@ Each one is tagged `<!-- COPY: id -->` in `index.html`.
 
 ## App demo (`demo.html`)
 - This is a clickable prototype, and all of its data is fake and lives only in the page. The secret trigger is to tap the logo on Today 3 times, or long-press it. Each trigger adds 10 min over and charges £1, up to the £5/day cap.
+- Tabs: Today · Receipt · **Home** (middle, where "Start tracking" lands) · **Stats** · Pot. The secret trigger works on the Home logo too.
+- **Charity picker:** when you go over with "Ask me each time" on (Limits screen), a sheet asks which charity gets that £1. Dismissing it sends the £1 to your default charity. The default is set from Limits or the Home tile. The charities (Mind, YoungMinds, Samaritans, BookTrust, Teach First, Woodland Trust, ClientEarth) are **examples, not partners**, and the page says so. Swap them for the real partners once those are agreed.
+- **Pot:** tap anyone to see their week-40 receipt, with Nudge/Cheer buttons that only show a toast. The numbers add up to the £14 pot.
+- **Stats:** weekly hours for weeks 32–39 and week 39 by day, with the time within the limit in ink and the time over it in red. There's also a breakdown of donations by charity. Tap a bar for details. The week 39 by-day figures add up to the Sunday receipt (15h 50m, 1h 50m over, £11).
 - The `Try the demo →` link in `index.html` points to the relative path `demo.html`. Once both are hosted, change it to the demo's full URL. A relative link won't resolve from a Canva-published page.
 - To add it to the home screen, it must be served over https (Canva Code publish, Netlify Drop or GitHub Pages). On iOS, use Safari → Share → Add to Home Screen. The icon is drawn as a PNG at load time; that should work, but I haven't tested it on a real iPhone. Android needs a web manifest for true full-screen, and I didn't add one.
