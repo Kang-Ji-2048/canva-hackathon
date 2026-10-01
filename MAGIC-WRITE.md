@@ -3,7 +3,7 @@
 The brief says the slogan, value proposition and pitch script must come from Canva AI / Magic Write. Everything on the site is a draft until this pass is done.
 
 ## How to run it (about 15 minutes)
-1. In Canva, create a **Doc** called "Receipts copy (Magic Write)". Keep it: it's your evidence if judges ask.
+1. In Canva, create a **Doc** called "ScrollSaver copy (Magic Write)". Keep it: it's your evidence if judges ask.
 2. Type `/` and choose **Magic Write** (or use the Canva AI panel). Paste **Prompt 0** first, then each prompt below in turn.
 3. **Screenshot each prompt and its result** before editing anything.
 4. Pick the winners, paste them into the "Chosen" column below (or paste them into the project chat), and the team will swap them into `index.html`, `demo.html` and `og.png`.
@@ -13,13 +13,13 @@ Rule of thumb: keep Magic Write's wording where it's good. Only fix facts (pledg
 ---
 
 ### Prompt 0: brand context (paste first)
-> Receipts is a student startup prototype for friend screen-time competitions. Groups pledge £5, £10 or £20 each per week. Each person's share of the pot is proportional to how far their screen time finishes below the group's highest total. Highest usage gets £0; if everyone ties, pledges are returned. Results and an itemised receipt arrive Sunday at 6pm. Receipts show time by app, place, pledge, return and net. The demo uses sample data and moves no real money. Daily-limit charity stakes are an earlier secondary prototype. The call to action is "Try the demo"; no account is needed. Do not add subscription pricing or a waitlist. Audience: UK students and Gen Z. Tone: playful, kind, never shaming. British English.
+> ScrollSaver is a student startup prototype for friend screen-time competitions. Groups pledge £5, £10 or £20 each per week. Each person's share of the pot is proportional to how far their screen time finishes below the group's highest total. Highest usage gets £0; if everyone ties, pledges are returned. Results and an itemised receipt arrive Sunday at 6pm. Receipts show time by app, place, pledge, return and net. Optional daily limits are pacing reminders only and never trigger a separate payment. The demo uses sample data and moves no real money. The call to action is "Try the demo"; no account is needed. Do not add subscription pricing or a waitlist. Audience: UK students and Gen Z. Tone: playful, kind, never shaming. British English.
 
 ### Prompt 1: slogan
-> Write 10 slogans for Receipts, max 5 words each. Use the receipt/itemised idea. One of them can be "Your scrolling, itemised." if nothing beats it.
+> Write 10 slogans for ScrollSaver, max 5 words each. Use the receipt/itemised idea. One of them can be "Your scrolling, itemised." if nothing beats it.
 
 ### Prompt 2: value proposition (hero subhead)
-> Write 5 value propositions for the Receipts landing page hero, max 30 words each. Mention pledging with friends, less scrolling for a bigger share of the pot, and the Sunday 6pm receipt. Do not promise a profit.
+> Write 5 value propositions for the ScrollSaver landing page hero, max 30 words each. Mention pledging with friends, less scrolling for a bigger share of the pot, and the Sunday 6pm receipt. Do not promise a profit.
 
 ### Prompt 3: problem hook
 > Write 5 two-line hooks about how easy it is to ignore app limits and how a shared pledge gives friends a reason to scroll less together. Max 20 words total each. Avoid claims of proven effectiveness.
@@ -28,10 +28,10 @@ Rule of thumb: keep Magic Write's wording where it's good. Only fix facts (pledg
 > Write 3 options each, max 6 words, for these landing page headings: (a) How the friend competition works, (b) the shareable Sunday receipt, (c) how the pot is shared, (d) final call to try the demo. Keep the FAQ heading as "Frequently asked questions."
 
 ### Prompt 5: pitch script (60 seconds)
-> Write a 60-second pitch script (about 150 spoken words) for Receipts for hackathon judges. Structure: hook → ignored app limits → friend competition with a live demo moment ("watch the Sunday reveal") → receipt with pledge, return and net → invitation to try the demo → slogan. Say the demo uses sample data and moves no money. Do not present sample results as evidence of behaviour change.
+> Write a 60-second pitch script (about 150 spoken words) for ScrollSaver for hackathon judges. Structure: hook → ignored app limits → friend competition with a live demo moment ("watch the Sunday reveal") → receipt with pledge, return and net → invitation to try the demo → slogan. Say the demo uses sample data and moves no money. Do not present sample results as evidence of behaviour change.
 
 ### Prompt 6 (optional): FAQ answers
-> Write friendly FAQ answers, max 45 words each: "What if I can’t afford it?", "Where does the pot go?", "Can Receipts see what I watch?", "Can I change the group rules?" Use Prompt 0’s facts. The demo tracks nothing. Changes to pledge and counted apps start next week.
+> Write friendly FAQ answers, max 45 words each: "What if I can’t afford it?", "Where does the pot go?", "Can ScrollSaver see what I watch?", "Can I change the group rules?" Use Prompt 0’s facts. The demo tracks nothing. Changes to pledge and counted apps start next week.
 
 ---
 

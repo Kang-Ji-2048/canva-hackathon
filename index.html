@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Receipts — Your scrolling, itemised.</title>
-<meta name="description" content="Pledge with friends. Scroll less for a bigger share of the pot. Get your results and receipt every Sunday at 6pm. Explore the Receipts prototype.">
+<title>ScrollSaver — Your scrolling, itemised.</title>
+<meta name="description" content="Pledge with friends. Scroll less for a bigger share of the pot. Get your results and receipt every Sunday at 6pm. Explore the ScrollSaver prototype.">
 <meta name="theme-color" content="#F7F5EF">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F5EF'/%3E%3Cpath d='M18 10h28v44l-4.7-2.8-4.6 2.8-4.7-2.8-4.6 2.8-4.7-2.8L18 54z' fill='%23fff' stroke='%231A1A1A' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cpath d='M25 23h14M25 31h14M25 39h9' stroke='%23E5322D' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
 <!-- SHARE PREVIEW: replace https://REPLACE-WITH-SITE-URL with the live site address once published (og.png must be hosted there too). -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Receipts">
-<meta property="og:title" content="Receipts — Your scrolling, itemised.">
+<meta property="og:site_name" content="ScrollSaver">
+<meta property="og:title" content="ScrollSaver — Your scrolling, itemised.">
 <meta property="og:description" content="Pledge with friends. Scroll less for a bigger share of the pot. Get your results and receipt every Sunday at 6pm.">
 <meta property="og:url" content="https://canva-hackathon-smoky.vercel.app/">
 <meta property="og:image" content="https://canva-hackathon-smoky.vercel.app/og.png">
@@ -54,9 +56,9 @@
   .fine { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 10px; }
   /* ===== Nav ===== */
   nav { position: sticky; top: 0; z-index: 10; background: rgba(247,245,239,.92); backdrop-filter: blur(8px); border-bottom: 1px dashed rgba(26,26,26,.25); }
-  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
-  .logo { font: 700 20px var(--mono); letter-spacing: -.02em; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-  .logo svg { width: 18px; height: 22px; }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+  .logo { font: 700 clamp(16px, 5vw, 20px) var(--mono); letter-spacing: -.02em; text-decoration: none; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .logo img { width: 36px; height: 36px; mix-blend-mode: multiply; }
 
   /* ===== Hero ===== */
   .hero { padding: 32px 0 64px; }
@@ -115,7 +117,7 @@
   .limit-card p { color: #A9A69D; font-size: 14px; margin: 6px 0 16px; }
   .limit-card .opt { display: block; padding: 12px; border-top: 1px solid #3A3A3A; font-size: 16px; color: #6FA8FF; }
   .limit-card .opt.ignore { position: relative; }
-  .limit-card .opt.ignore::after { content: "+ £1"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%) rotate(-6deg); font: 700 13px var(--mono); color: var(--red); border: 2px solid var(--red); border-radius: 4px; padding: 1px 6px; }
+  .limit-card .opt.ignore::after { content: "COUNTS THIS WEEK"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%) rotate(-4deg); font: 700 11px var(--mono); color: var(--red); border: 2px solid var(--red); border-radius: 4px; padding: 2px 6px; }
   .problem .hook { font-size: 20px; margin-top: 18px; text-align: center; }
   @media (min-width: 900px) { .problem .grid { grid-template-columns: 1.2fr .8fr; } }
 
@@ -144,10 +146,10 @@
   .ticks li::before { content: "✓"; font: 700 16px var(--mono); color: #fff; background: var(--ink); border-radius: 50%; width: 26px; height: 26px; flex: none; display: grid; place-items: center; }
   @media (min-width: 900px) { .closeup .grid { grid-template-columns: 1fr 1fr; } .closeup .phone { order: -1; } }
 
-  /* ===== Charity ===== */
-  .charity { text-align: center; }
-  .charity h2 { max-width: 16ch; margin: 12px auto 0; }
-  .charity .sub { color: var(--ink-soft); font-size: 18px; max-width: 46ch; margin: 16px auto 0; }
+  /* ===== Weekly pot ===== */
+  .weekly-pot { text-align: center; }
+  .weekly-pot h2 { max-width: 16ch; margin: 12px auto 0; }
+  .weekly-pot .sub { color: var(--ink-soft); font-size: 18px; max-width: 46ch; margin: 16px auto 0; }
   .causes { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 32px 0; }
   .cause { font: 700 14px var(--mono); border: 2px solid var(--ink); border-radius: 999px; padding: 10px 16px; background: #fff; }
   .cause.on { background: var(--ink); color: var(--paper); }
@@ -199,9 +201,9 @@
 <!-- ============ NAV ============ -->
 <nav>
   <div class="wrap">
-    <a href="#top" class="logo" aria-label="Receipts home">
-      <svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 1h16v19l-2.7-1.6L11.6 20 9 18.4 6.4 20l-2.7-1.6L1 20z" fill="none" stroke="#1A1A1A" stroke-width="1.8"/><path d="M5 7h8M5 11h8M5 15h5" stroke="#E5322D" stroke-width="1.8"/></svg>
-      Receipts
+    <a href="#top" class="logo" aria-label="ScrollSaver home">
+      <img src="icons/icon-192.png" width="36" height="36" alt="">
+      ScrollSaver
     </a>
     <a href="demo.html" class="btn sm">Try the demo</a>
   </div>
@@ -222,7 +224,7 @@
 
     <!-- hero receipt: prints line by line on load -->
     <div class="receipt printing" aria-label="Sample competition receipt, Week 40, 28 September–4 October 2026: 4h 01m, 2nd of 5, £10 pledged, £15.49 returned, £5.49 net. Simulated data.">
-      <div class="head"><b>RECEIPTS</b><span>SAMPLE COMPETITION · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
+      <div class="head"><b>SCROLLSAVER</b><span>SAMPLE COMPETITION · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
       <hr>
       <div class="li"><span>TikTok</span><span class="dots"></span><span>1h 12m</span></div>
       <div class="li"><span>Instagram</span><span class="dots"></span><span>1h 28m</span></div>
@@ -301,7 +303,7 @@
       <div class="phone" aria-label="Sample competition receipt, Week 40, 28 September–4 October 2026: 4h 01m, 2nd of 5, £10 pledged, £15.49 returned, £5.49 net. Simulated data.">
         <div class="screen">
           <div class="receipt">
-            <div class="head"><b>RECEIPTS</b><span>SAMPLE COMPETITION · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
+            <div class="head"><b>SCROLLSAVER</b><span>SAMPLE COMPETITION · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
             <hr>
             <div class="li"><span>TikTok</span><span class="dots"></span><span>1h 12m</span></div>
             <div class="li"><span>Instagram</span><span class="dots"></span><span>1h 28m</span></div>
@@ -336,12 +338,12 @@
   </div>
 </section>
 
-<!-- ============ STAKES / CHARITY ============ -->
-<section class="charity">
+<!-- ============ WEEKLY POT ============ -->
+<section class="weekly-pot">
   <div class="wrap">
     <span class="bigstamp">WEEKLY POT</span>
-    <h2>Less scrolling. A bigger share.</h2>                                    <!-- COPY: charity-heading -->
-    <p class="sub">Everyone pledges the same amount. The pot is divided in proportion to how far each person finishes below the group's highest screen time.</p> <!-- COPY: charity-sub -->
+    <h2>Less scrolling. A bigger share.</h2>                                    <!-- COPY: pot-heading -->
+    <p class="sub">Everyone pledges the same amount. The pot is divided in proportion to how far each person finishes below the group's highest screen time.</p> <!-- COPY: pot-sub -->
     <div class="causes" aria-label="Weekly pledge options">
       <span class="cause on">£5 each</span>
       <span class="cause">£10 each</span>
@@ -354,9 +356,9 @@
         <p>Highest screen time gets £0. If everyone ties, pledges are returned. Settings changes start next week.</p> <!-- COPY: stakes-body -->
       </div>
       <div>
-        <p class="label">Earlier prototype</p>
-        <h3>Daily limits &amp; charity</h3>                                                         <!-- COPY: pots-title -->
-        <p>Also in the demo: simulated £1 donations for every 10 minutes over an app limit, capped at £5 a day.</p> <!-- COPY: pots-body -->
+        <p class="label">Same rules all week</p>
+        <h3>Fair from Monday to Sunday</h3>                                                         <!-- COPY: pots-title -->
+        <p>Pledge and counted-app changes start next week, so everyone competes under the same settings.</p> <!-- COPY: pots-body -->
       </div>
     </div>
   </div>
@@ -388,10 +390,10 @@
       </details>
       <details>
         <summary>Where does the pot go?</summary>                                <!-- COPY: faq2-q -->
-        <div><p>The competition pot is shared among the group according to screen time. Daily-limit donations belong to the separate earlier charity prototype.</p></div> <!-- COPY: faq2-a -->
+        <div><p>The competition pot is shared among the group according to screen time. Highest usage gets £0; if everyone ties, all pledges are returned.</p></div> <!-- COPY: faq2-a -->
       </details>
       <details>
-        <summary>Can Receipts see what I watch?</summary>                                       <!-- COPY: faq3-q -->
+        <summary>Can ScrollSaver see what I watch?</summary>                                       <!-- COPY: faq3-q -->
         <div><p>This demo uses sample data and tracks nothing. The planned app would use time per app, never what you watched, posted or messaged.</p></div> <!-- COPY: faq3-a -->
       </details>
       <details>
@@ -419,21 +421,21 @@
   <div class="wrap">
     <p class="bye">*** Thank you for scrolling responsibly ***</p>                             <!-- COPY: footer-line -->
     <svg class="barcode" viewBox="0 0 240 56" preserveAspectRatio="none" aria-hidden="true"></svg>
-    <p class="code">0 0 1 2 4 7 &nbsp;R E C E I P T S</p>
+    <p class="code">0 0 1 2 4 7 &nbsp;S C R O L L S A V E R</p>
     <div class="links">
       <a href="#privacy" data-open="privacy">Privacy</a>
       <a href="#contact" data-open="contact">Contact</a>
       <a href="#">Instagram</a>
       <a href="#">TikTok</a>
     </div>
-    <p class="copy">© 2026 Receipts</p>
+    <p class="copy">© 2026 ScrollSaver</p>
     <div class="small-print">
       <details id="privacy">
         <summary>Privacy</summary>
         <div>
-          <p>Receipts is a student startup, currently pre-launch.</p>
+          <p>ScrollSaver is a student startup, currently pre-launch.</p>
           <p><b>This prototype.</b> The landing page collects no email addresses. The demo uses sample data and tracks no real screen time. Its theme preference may be saved in your browser.</p>
-          <p><b>The planned app.</b> Receipts would use time per app, never what you watched, posted or messaged. No real payments are taken in this demo.</p>
+          <p><b>The planned app.</b> ScrollSaver would use time per app, never what you watched, posted or messaged. No real payments are taken in this demo.</p>
         </div>
       </details>
       <details id="contact">

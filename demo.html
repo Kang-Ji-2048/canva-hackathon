@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <!--
-  Receipts: clickable app demo (hackathon proof of concept).
+  ScrollSaver: clickable app demo (hackathon proof of concept).
   ALL DATA ON THIS PAGE IS FAKE AND CLIENT-SIDE. Nothing is tracked or stored and no money moves:
   screen-time numbers, friends, the pot and the payouts are hard-coded demo values.
   Only an explicit receipt share or download exports the receipt image.
@@ -11,11 +11,11 @@
   or long-press it to add 30 minutes of scrolling to your week.
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Receipts</title>
+<title>ScrollSaver</title>
 <meta name="theme-color" content="#F7F5EF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Receipts">
+<meta name="apple-mobile-web-app-title" content="ScrollSaver">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -34,7 +34,7 @@
     --on-accent: #fff;       /* text on accent fills */
     --accent-text: #D42A25;  /* accent-coloured text on paper/cards */
     --card: #fff;
-    --dark: #1A1A1A; --on-dark: #F7F5EF; --on-dark-soft: #A9A69D; /* pot + stakes cards */
+    --dark: #1A1A1A; --on-dark: #F7F5EF; --on-dark-soft: #A9A69D; /* prize-pot cards */
     --good: #1F7A3A;
     --line: rgba(26,26,26,.3);
     --stamp: #E5322D;        /* stamps on the always-white receipt paper */
@@ -76,11 +76,6 @@
     --good: #1F7A3A; --line: rgba(43,14,27,.3); --stamp: #C8156A;
   }
   body { transition: background-color .25s, color .25s; }
-  /* Logo mark A (Ranked receipt): coloured by theme tokens */
-  .mark .mk-b { fill: var(--card); stroke: currentColor; stroke-width: 4.5; stroke-linejoin: round; }
-  .mark path.mk-a, .mark path.mk-i { fill: none; stroke-width: 5; stroke-linecap: round; }
-  .mark path.mk-a { stroke: var(--accent-text); } .mark circle.mk-a { fill: var(--accent-text); }
-  .mark path.mk-i { stroke: currentColor; } .mark circle.mk-i { fill: currentColor; }
   .icon-btn svg { stroke: currentColor; }
   .bar-right { display: flex; align-items: center; gap: 4px; }
 
@@ -116,7 +111,7 @@
   .muted { color: var(--ink-soft); }
 
   .logo { font: 700 20px var(--mono); letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 8px 0; -webkit-touch-callout: none; touch-action: manipulation; }
-  .logo svg { width: 24px; height: 24px; margin: -2px -2px -2px -4px; }
+  .logo img { width: 32px; height: 32px; border-radius: 6px; }
 
   .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 0; border-radius: 999px; background: var(--red); color: var(--on-accent); font: 700 17px/1 var(--sans); padding: 18px 24px; box-shadow: 0 3px 0 var(--ink); transition: transform .12s, box-shadow .12s; }
   .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
@@ -299,7 +294,7 @@
   .receipt-actions button:disabled { opacity: .6; cursor: wait; }
   .receipt-actions .fineprint { margin-top: 0; text-align: center; }
 
-  /* ===== Daily limits: Limits, Today, Stats (from the first prototype) ===== */
+  /* ===== Daily limits: optional pacing alongside the weekly competition ===== */
   .slider-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
   .slider-row b { font-size: 18px; }
   .slider-row output { font: 700 18px var(--mono); }
@@ -311,9 +306,6 @@
   .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
   .switch[aria-checked=true] { background: var(--red); }
   .switch[aria-checked=true]::after { transform: translateX(22px); }
-  .causes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .cause { font: 700 14px var(--mono); border: 2px solid var(--ink); border-radius: 999px; padding: 10px 14px; background: var(--card); }
-  .cause[aria-pressed=true] { background: var(--ink); color: var(--paper); }
   .row-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; margin-top: 12px; }
   .row-link .chev { font: 700 20px var(--mono); }
   #today .app-ico { width: 40px; height: 40px; border-radius: 11px; font-size: 16px; }
@@ -325,24 +317,11 @@
   .over .time { color: var(--accent-text); }
   .status { font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 8px; }
   .over .status { color: var(--accent-text); font-weight: 700; }
-  .stakes-card { position: relative; background: var(--dark); color: var(--on-dark); border-color: var(--dark); overflow: hidden; }
-  .stakes-card .label { color: var(--on-dark-soft); }
-  .stakes-card .amt { font: 700 48px/1 var(--sans); letter-spacing: -.03em; margin: 8px 0 4px; }
-  .stakes-card .sub { font: 400 12px var(--mono); color: var(--on-dark-soft); }
-  .stakes-card .stamp { right: 18px; bottom: auto; top: 54px; mix-blend-mode: normal; background: transparent; display: none; }
-  .stakes-card.paid .stamp { display: block; }
   .chart .val { fill: var(--ink); font-weight: 700; font-size: 11px; }
   .legend { display: flex; flex-wrap: wrap; gap: 14px; font: 400 12px var(--mono); color: var(--ink-soft); margin-top: 10px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
   .legend i.line { height: 0; border-top: 2px dashed var(--ink-soft); border-radius: 0; width: 14px; }
-  .charity { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--card); border: 2px solid var(--ink); border-radius: 16px; padding: 12px 14px; }
-  .charity + .charity { margin-top: 8px; }
-  .charity .n { font-weight: 700; font-size: 16px; display: block; }
-  .charity .d { font: 400 12px var(--mono); color: var(--ink-soft); }
-  .charity .go { margin-left: auto; font: 700 14px var(--mono); white-space: nowrap; }
-  .charity[aria-pressed=true] { background: var(--ink); color: var(--paper); }
-  .charity[aria-pressed=true] .d { color: inherit; opacity: .7; }
 
   /* ===== Bottom sheet ===== */
   .scrim { position: absolute; inset: 0; z-index: 30; background: rgba(26,26,26,.45); opacity: 0; visibility: hidden; }
@@ -364,7 +343,7 @@
   .banner { position: absolute; z-index: 20; top: calc(var(--top) + 4px); left: 10px; right: 10px; display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 22px; background: rgba(250,250,248,.86); backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6); box-shadow: 0 10px 30px rgba(0,0,0,.18); transform: translateY(calc(-100% - 40px)); visibility: hidden; }
   .banner.show { transform: none; visibility: visible; }
   .banner .ico { width: 38px; height: 38px; border-radius: 9px; background: var(--paper); border: 1px solid #ddd; display: grid; place-items: center; flex: none; }
-  .banner .ico svg { width: 26px; height: 26px; }
+  .banner .ico img { width: 32px; height: 32px; border-radius: 6px; }
   .banner { color: #1A1A1A; --card: #fff; --accent-text: #D42A25; } /* iOS-style banner is always light */
   .banner .top { display: flex; justify-content: space-between; font-size: 13px; }
   .banner .top b { font-weight: 700; }
@@ -397,7 +376,6 @@
     .person { transition: opacity .45s ease, transform .45s cubic-bezier(.2,1.4,.4,1); }
     .printing { animation: feed 1.9s steps(14, end) .3s both; }
     .printing .stamp { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) 2.4s both; }
-    .stakes-card.paid .stamp.land { animation: stamp .35s cubic-bezier(.2,1.6,.4,1) .35s both; }
     .grow-x { transform-box: fill-box; transform-origin: left; animation: grow-x .5s cubic-bezier(.2,.8,.2,1) both; }
     @keyframes grow-x { from { transform: scaleX(0); } }
     .bump { animation: bump .4s ease; }
@@ -413,9 +391,9 @@
 
   <!-- notification banner + toast -->
   <div class="banner" id="banner" role="status" aria-live="polite">
-    <div class="ico"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg></div>
+    <div class="ico"><img src="icons/icon-192.png" width="32" height="32" alt="" draggable="false"></div>
     <div>
-      <div class="top"><b>Receipts</b><span>now</span></div>
+      <div class="top"><b>ScrollSaver</b><span>now</span></div>
       <p class="msg" id="banner-msg"></p>
     </div>
   </div>
@@ -423,7 +401,7 @@
 
   <!-- ============ 1. ONBOARDING ============ -->
   <section class="screen" id="onboarding">
-    <div class="bar"><span class="logo"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg>Receipts</span></div>
+    <div class="bar"><span class="logo"><img src="icons/icon-192.png" width="32" height="32" alt="" draggable="false">ScrollSaver</span></div>
     <div class="ob-hero">
       <div class="mini-receipt" aria-hidden="true">
         <div class="li"><span>1st Charles</span><span class="dots"></span><span>3h 12m</span></div>
@@ -490,7 +468,7 @@
   <!-- ============ 3. COMPETITION (main screen) ============ -->
   <section class="screen tabbed" id="compete">
     <div class="bar">
-      <button class="logo" id="secret" aria-label="Receipts"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg>Receipts</button>
+      <button class="logo" id="secret" aria-label="ScrollSaver"><img src="icons/icon-192.png" width="32" height="32" alt="" draggable="false">ScrollSaver</button>
       <div class="bar-right"><span class="label" id="c-week">Week</span><button class="icon-btn" data-open-settings aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button></div>
     </div>
     <div class="card pot-card">
@@ -543,12 +521,12 @@
     </div>
   </section>
 
-  <!-- ============ DAILY LIMITS, TODAY, WEEKLY RECEIPT, STATS (first prototype) ============ -->
-  <!-- ============ 2. SET LIMITS ============ -->
+  <!-- ============ DAILY LIMITS, TODAY, WEEKLY RECEIPT, STATS ============ -->
+  <!-- ============ 2. SET OPTIONAL LIMITS ============ -->
   <section class="screen" id="limits">
     <div class="bar"><button class="back" data-back>‹ Back</button><span></span></div>
     <h1>Set your limits</h1>
-    <p class="muted" style="margin:8px 0 18px">Per day. You can change these any time.</p>
+    <p class="muted" style="margin:8px 0 18px">Optional daily pacing. Competition settings stay locked for the week.</p>
     <div class="card">
       <div class="slider-row"><b>TikTok</b><output id="out-tt">1h 00m</output></div>
       <input type="range" id="lim-tt" min="15" max="180" step="15" value="60" aria-label="TikTok daily limit in minutes">
@@ -558,24 +536,8 @@
       <input type="range" id="lim-ig" min="15" max="180" step="15" value="60" aria-label="Instagram daily limit in minutes">
     </div>
     <div class="card">
-      <div class="toggle-row">
-        <div><b style="font-size:18px">Stakes mode</b><p class="fineprint" style="margin-top:2px">£1 per 10 min over · capped at £5/day</p></div>
-        <button class="switch" id="stakes" role="switch" aria-checked="true" aria-label="Stakes mode"></button>
-      </div>
-    </div>
-    <div class="card">
-      <b style="font-size:18px">Your money goes to</b>
-      <div class="causes" id="causes">
-        <button class="cause" aria-pressed="true">Mental health</button>
-        <button class="cause" aria-pressed="false">Education</button>
-        <button class="cause" aria-pressed="false">Climate</button>
-      </div>
-      <p class="fineprint">100% donated. We never take a cut.</p>
-      <button class="row-link btn ghost" id="pick-default" style="padding:12px 16px;font-size:15px"><span>Default charity: <b class="charity-name">Mind</b></span><span class="chev">›</span></button>
-      <div class="toggle-row" style="margin-top:14px">
-        <div><b>Ask me each time</b><p class="fineprint" style="margin-top:2px">Pick a charity every time you go over</p></div>
-        <button class="switch" id="ask" role="switch" aria-checked="true" aria-label="Ask me which charity each time"></button>
-      </div>
+      <b style="font-size:18px">What limits do</b>
+      <p class="fineprint" style="margin-top:6px">They help pace your day. Your weekly ranking still uses total time across every counted app.</p>
     </div>
     <div class="spacer"></div>
     <button class="btn" data-back>Save limits</button>
@@ -584,7 +546,7 @@
   <!-- ============ 3/4. TODAY ============ -->
   <section class="screen tabbed" id="today">
     <div class="bar">
-      <button class="logo" id="secret-today" aria-label="Receipts"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path class="mk-b" d="M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z"/><path class="mk-a" d="M29.5 20H42"/><circle class="mk-a" cx="23" cy="20" r="3"/><path class="mk-i" d="M29.5 29.5H38.5M29.5 39H34.5"/><circle class="mk-i" cx="23" cy="29.5" r="3"/><circle class="mk-i" cx="23" cy="39" r="3"/></svg>Receipts</button>
+      <button class="logo" id="secret-today" aria-label="ScrollSaver"><img src="icons/icon-192.png" width="32" height="32" alt="" draggable="false">ScrollSaver</button>
       <div class="bar-right"><button class="icon-btn" data-open-settings aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button><button class="icon-btn" data-go="limits" aria-label="Edit limits"><svg viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></div>
     </div>
     <p class="label" id="today-date">Today</p>
@@ -599,39 +561,43 @@
       <div class="track"><div class="fill" id="ig-fill"></div></div>
       <p class="status">26m left today</p>
     </div>
-    <div class="card stakes-card" id="stakes-card">
-      <p class="label">Today's stakes</p>
-      <p class="amt" id="stakes-amt">£0.00</p>
-      <p class="sub" id="stakes-sub">£1 per 10 min over · capped at £5/day</p>
-      <div class="stamp" id="paid-stamp" aria-hidden="true">PAID</div>
+    <div class="card pot-card">
+      <p class="label" id="today-pot-label">Flat 4B prize pot</p>
+      <p class="amt" id="today-pot">£50</p>
+      <p class="sub" id="today-pot-sub">5 × £10 · results Sunday at 6pm</p>
     </div>
   </section>
 
   <!-- ============ 5/6. SUNDAY RECEIPT + SHARE ============ -->
   <section class="screen tabbed" id="receipt">
-    <div class="bar"><span class="label">Sample · Sunday 27 September 2026</span></div>
+    <div class="bar"><span class="label">Sample competition · Week 40</span></div>
     <h1>Your receipt</h1>
-    <div class="receipt" id="week-receipt" aria-label="Sample weekly receipt, Week 39, 21–27 September 2026: 15 hours 50 minutes scrolled, £11 donated. Illustrative data.">
-      <div class="head"><b>RECEIPTS</b><span>SAMPLE RECEIPT · WEEK 39<br>21–27 SEP 2026</span></div>
+    <div class="receipt" id="week-receipt" aria-label="Sample competition receipt, Week 40, 28 September–4 October 2026: 4 hours 1 minute scrolled, 2nd of 5, £10 pledged, £15.49 returned, £5.49 net. Simulated data.">
+      <div class="head"><b>SCROLLSAVER</b><span>SAMPLE COMPETITION · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
       <hr>
-      <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
-      <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
+      <div class="li"><span>Instagram</span><span class="dots"></span><span>1h 28m</span></div>
+      <div class="li"><span>TikTok</span><span class="dots"></span><span>1h 12m</span></div>
+      <div class="li"><span>YouTube</span><span class="dots"></span><span>46m</span></div>
+      <div class="li"><span>Snapchat</span><span class="dots"></span><span>20m</span></div>
+      <div class="li"><span>Reddit</span><span class="dots"></span><span>15m</span></div>
       <hr>
-      <div class="li big"><span>TOTAL</span><span class="dots"></span><span>15h 50m</span></div>
-      <div class="li small"><span>Daily limit</span><span class="dots"></span><span>2h 00m</span></div>
-      <div class="li small"><span>Over limit</span><span class="dots"></span><span>1h 50m</span></div>
+      <div class="li big"><span>TOTAL</span><span class="dots"></span><span>4h 01m</span></div>
+      <div class="li small"><span>Time saved</span><span class="dots"></span><span>37m</span></div>
+      <div class="li small"><span>Group</span><span class="dots"></span><span>Flat 4B · 5</span></div>
       <hr>
-      <div class="li small"><span>That's</span><span class="dots"></span><span>= 2 essays</span></div>
-      <div class="li small"><span>Or</span><span class="dots"></span><span>= 9 gym sessions</span></div>
+      <div class="li small"><span>That's</span><span class="dots"></span><span>= 1 essay</span></div>
+      <div class="li small"><span>Or</span><span class="dots"></span><span>= 2 gym sessions</span></div>
       <hr>
-      <div class="li big"><span>DONATED</span><span class="dots"></span><span class="red">£11.00</span></div>
-      <div class="li small"><span>Dodged (you closed it)</span><span class="dots"></span><span>£6.00</span></div>
-      <p class="thanks">→ <span class="cause-name">Mental health</span><br>THANK YOU FOR SCROLLING</p>
-      <div class="stamp" aria-hidden="true">£11<small>DONATED</small></div>
+      <div class="li big"><span>PLACE</span><span class="dots"></span><span>2nd of 5</span></div>
+      <div class="li small"><span>Pledged</span><span class="dots"></span><span>£10.00</span></div>
+      <div class="li big"><span>RETURNED</span><span class="dots"></span><span class="red">£15.49</span></div>
+      <div class="li small"><span>Net</span><span class="dots"></span><span>+£5.49</span></div>
+      <p class="thanks"><span>SIMULATED RESULT</span><br>NO MONEY MOVES</p>
+      <div class="stamp" aria-hidden="true">2ND<small>OF 5</small></div>
     </div>
     <div class="receipt-actions">
       <button class="btn" id="share-w" disabled>Preparing image…</button>
-      <a class="btn ghost" id="download-w" download="receipts-sample-2026-week-39.png" hidden>Download receipt image</a>
+      <a class="btn ghost" id="download-w" download="scrollsaver-sample-2026-week-40.png" hidden>Download receipt image</a>
       <p class="fineprint" id="share-status-w" role="status" aria-live="polite">Preparing your receipt image.</p>
     </div>
   </section>
@@ -661,8 +627,8 @@
         <div id="p-apps"></div>
         <p class="fineprint" style="margin-top:14px">Not counted: WhatsApp, iMessage, Messages</p>
         <details class="stats-detail" style="margin-top:18px">
-          <summary><span><b>Daily limits &amp; charity</b><small>Separate sample data · 2026</small></span></summary>
-          <p class="fineprint" style="margin:0 0 14px">These daily-limit examples are separate from your competition results.</p>
+          <summary><span><b>Daily limits</b><small>Optional pacing · sample data</small></span></summary>
+          <p class="fineprint" style="margin:0 0 14px">Daily limits help you pace yourself; the competition is decided by weekly totals.</p>
           <div class="card chart-card">
             <h3>Hours per week vs your limit</h3>
             <p class="s">Sample weeks 32–39 · 2026 · tap a bar</p>
@@ -674,11 +640,6 @@
             <p class="s">21–27 Sep 2026 · TikTok + Instagram · tap a bar</p>
             <svg class="chart" id="chart-days" role="img"></svg>
             <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>2h daily limit</span></div>
-          </div>
-          <div class="card chart-card">
-            <h3>Where your £122 went</h3>
-            <p class="s">All time, by charity · example charities, not partners</p>
-            <svg class="chart" id="chart-charity" role="img"></svg>
           </div>
         </details>
       </div>
@@ -718,7 +679,7 @@
       <div class="receipt" id="the-receipt"></div>
       <div class="receipt-actions">
         <button class="btn" id="share" disabled>Preparing image…</button>
-        <a class="btn ghost" id="download-receipt" download="receipts.png" hidden>Download receipt image</a>
+        <a class="btn ghost" id="download-receipt" download="scrollsaver.png" hidden>Download receipt image</a>
         <p class="fineprint" id="share-status" role="status" aria-live="polite">Preparing your receipt image.</p>
       </div>
       <div class="card" style="margin-top:28px">
@@ -738,17 +699,6 @@
     <p class="label" id="sheet-kicker"></p>
     <h2 id="sheet-title"></h2>
     <div id="sheet-body"></div>
-  </div>
-
-  <!-- ============ CHARITY SHEET ============ -->
-  <div class="scrim" id="cscrim"></div>
-  <div class="sheet" id="csheet" role="dialog" aria-modal="true" aria-labelledby="csheet-title">
-    <div class="grabber"></div>
-    <p class="label" id="csheet-kicker">10 min over on TikTok</p>
-    <h2 id="csheet-title" style="margin-top:6px">Where should this £1 go?</h2>
-    <div id="charity-list"></div>
-    <button class="btn ghost" id="sheet-default" style="margin-top:16px">Send to my default</button>
-    <p class="fineprint" style="text-align:center;margin:12px 0 4px">Example charities, not partners (yet) · 100% passed on</p>
   </div>
 
   <!-- ============ TAB BAR ============ -->
@@ -1281,7 +1231,7 @@
       (saved.total > 0 ? ' · ' + fmt(saved.total) + ' since week ' + state.history[0].wk : '');
     $('lb').innerHTML = leaderboardHTML(res, !(state.seen || reduced));
     $('lb-rule').textContent = pounds(state.pledge * res.length) + ' pot · the less you scrolled, the bigger your share. Last place gets £0. Payouts are simulated in this demo.';
-    buildReceipt(me, res.length);
+    buildReceipt('the-receipt', me, res.length);
     var nextWk = week() + 1, nextN = state.members.length + state.invited.length;
     var nextPledge = (state.pending || state).pledge; // set in Group settings
     $('again').textContent = 'Start week ' + nextWk + ' · ' + pounds(nextPledge * nextN) + ' pot';
@@ -1347,12 +1297,12 @@
 
   // ---------- Receipt: same component as before, now itemising the competition ----------
   function li(a, b, cls, valCls) { return '<div class="li' + (cls ? ' ' + cls : '') + '"><span>' + a + '</span><span class="dots"></span><span' + (valCls ? ' class="' + valCls + '"' : '') + '>' + b + '</span></div>'; }
-  function buildReceipt(me, n) {
+  function buildReceipt(id, me, n) {
     var last = state.history[state.history.length - 1], diff = me.mins - last.mins, total = me.mins;
-    var stamp = me.place === 1 ? '1ST<small>PLACE</small>' : me.won ? money(me.won) + '<small>WON</small>' : 'LAST<small>PLACE</small>';
-    var r = $('the-receipt');
-    r.setAttribute('aria-label', 'Weekly receipt: ' + fmt(total) + ' scrolled, finished ' + ordinal(me.place) + ' of ' + n + ', won ' + money(me.won));
-    r.innerHTML = '<div class="head"><b>RECEIPTS</b><span>WEEK ' + week() + ' · ' + range() + '</span></div><hr>' +
+    var stamp = ordinal(me.place).toUpperCase() + '<small>OF ' + n + '</small>';
+    var r = $(id);
+    r.setAttribute('aria-label', 'Weekly competition receipt: ' + fmt(total) + ' scrolled, finished ' + ordinal(me.place) + ' of ' + n + ', returned ' + money(me.won));
+    r.innerHTML = '<div class="head"><b>SCROLLSAVER</b><span>WEEK ' + week() + ' · ' + range() + '</span></div><hr>' +
       myAppMins(true).map(function (x) { return li(x.a.n, fmt(x.m)); }).join('') + '<hr>' +
       li('TOTAL', fmt(total), 'big') +
       li('TIME SAVED', fmt(Math.max(0, -diff)), '', diff < 0 ? 'red' : '') +
@@ -1361,9 +1311,9 @@
       li('Or', '= ' + Math.max(1, Math.floor(total / 100)) + ' gym session' + (total >= 200 ? 's' : ''), 'small') + '<hr>' +
       li('PLACE', ordinal(me.place) + ' of ' + n, 'big') +
       li('Pledged', money(state.pledge), 'small') +
-      li('WON', money(me.won), 'big', 'red') +
+      li('RETURNED', money(me.won), 'big', 'red') +
       li('Net', signed(me.net), 'small') +
-      '<p class="thanks">→ <span class="to">' + esc(state.group) + '</span><br>THANK YOU FOR SCROLLING</p>' +
+      '<p class="thanks"><span>SIMULATED RESULT</span><br>NO MONEY MOVES</p>' +
       '<div class="stamp" aria-hidden="true">' + stamp + '</div>';
   }
 
@@ -1393,7 +1343,12 @@
       g.fillText(value, x, baseline);
     }
     text(receipt.querySelector('.head b').textContent, 360, 116, 42, true, ink, 'center');
-    var headingLines = receipt.querySelector('.head span').innerText.split('\n');
+    function htmlLines(node) {
+      return node.innerHTML.split(/<br\s*\/?\s*>/i).map(function (line) {
+        var box = document.createElement('span'); box.innerHTML = line; return box.textContent.trim();
+      });
+    }
+    var headingLines = htmlLines(receipt.querySelector('.head span'));
     headingLines.forEach(function (line, i) { text(line, 360, 156 + i * 32, 23, false, muted, 'center'); });
     y += (headingLines.length - 1) * 32;
     Array.from(receipt.children).forEach(function (row) {
@@ -1416,9 +1371,10 @@
         g.setLineDash([]); y += big ? 46 : 40;
       }
     });
-    // The thank-you text and stamp occupy separate rows to keep long names clear.
-    text('→ ' + receipt.querySelector('.thanks span').textContent, left, y + 20, 23, false, muted);
-    text('THANK YOU FOR SCROLLING', left, y + 56, 21, false, muted);
+    // The note and stamp occupy separate rows to keep long names clear.
+    htmlLines(receipt.querySelector('.thanks')).forEach(function (line, i) {
+      text(line, left, y + 20 + i * 36, i ? 21 : 23, false, muted);
+    });
     var stamp = receipt.querySelector('.stamp'), stampLabel = stamp.querySelector('small');
     var stampAmount = stamp.firstChild.textContent.trim();
     g.save(); g.translate(556, 956); g.rotate(-Math.PI / 15);
@@ -1433,12 +1389,18 @@
     catch (err) { return false; }
   }
 
-  // One sharer per receipt (Sunday reveal, weekly limits receipt): same flow, separate buttons and state.
+  // One sharer per receipt (Sunday reveal and Receipt tab): same flow, separate buttons and state.
   function makeSharer(o) {
-  var receiptFile = null, receiptURL = null, receiptVersion = 0;
+  var receiptFile = null, receiptURL = null, receiptVersion = 0, receiptKey = null, preparingKey = null;
   var shareButton = $(o.share), downloadReceipt = $(o.download), shareStatus = $(o.status);
+  function currentKey() {
+    var root = getComputedStyle(document.documentElement);
+    return $(o.receipt).innerHTML + '|' + o.name() + '|' + root.getPropertyValue('--stamp') + '|' + root.getPropertyValue('--paper');
+  }
   function prepareReceiptImage() {
-    var version = ++receiptVersion, name = o.name();
+    var key = currentKey();
+    if ((key === receiptKey && receiptURL) || key === preparingKey) return;
+    var version = ++receiptVersion, name = o.name(); preparingKey = key;
     downloadReceipt.setAttribute('download', name);
     receiptFile = null; shareButton.hidden = false; shareButton.disabled = true;
     shareButton.textContent = 'Preparing image…'; downloadReceipt.hidden = true;
@@ -1446,6 +1408,7 @@
     if (receiptURL) { URL.revokeObjectURL(receiptURL); receiptURL = null; downloadReceipt.removeAttribute('href'); }
     function failed() {
       if (version !== receiptVersion) return;
+      preparingKey = null; receiptKey = null;
       if (receiptURL) { URL.revokeObjectURL(receiptURL); receiptURL = null; }
       receiptFile = null; downloadReceipt.hidden = true; downloadReceipt.removeAttribute('href');
       shareButton.disabled = false; shareButton.textContent = 'Try again';
@@ -1460,6 +1423,7 @@
         try {
           receiptURL = URL.createObjectURL(blob);
           receiptFile = typeof File === 'function' ? new File([blob], name, { type: 'image/png' }) : null;
+          receiptKey = key; preparingKey = null;
           downloadReceipt.href = receiptURL; downloadReceipt.hidden = false;
           var nativeShare = receiptFile && canShareReceipt(receiptFile);
           shareButton.hidden = !nativeShare; shareButton.disabled = false;
@@ -1493,28 +1457,19 @@
   });
   return {
     prepare: prepareReceiptImage,
-    print: function () { var r = $(o.receipt); r.classList.remove('printing'); void r.offsetWidth; r.classList.add('printing'); prepareReceiptImage(); }
+    print: function () {
+      if (o.animate !== false) { var r = $(o.receipt); r.classList.remove('printing'); void r.offsetWidth; r.classList.add('printing'); }
+      prepareReceiptImage();
+    }
   };
   }
   var revealShare = makeSharer({ receipt: 'the-receipt', share: 'share', download: 'download-receipt', status: 'share-status',
-    name: function () { return 'receipts-week-' + week() + '.png'; }, title: function () { return 'My Receipts, week ' + week(); } });
-  var weekShare = makeSharer({ receipt: 'week-receipt', share: 'share-w', download: 'download-w', status: 'share-status-w',
-    name: function () { return 'receipts-sample-2026-week-39.png'; }, title: function () { return 'Receipts sample — Week 39, 21–27 September 2026'; } });
+    name: function () { return 'scrollsaver-week-' + week() + '.png'; }, title: function () { return 'My ScrollSaver, week ' + week(); } });
+  var weekShare = makeSharer({ receipt: 'week-receipt', share: 'share-w', download: 'download-w', status: 'share-status-w', animate: false,
+    name: function () { return 'scrollsaver-sample-2026-week-40.png'; }, title: function () { return 'ScrollSaver competition sample — Week 40, 28 September–4 October 2026'; } });
 
-  // ---------- Daily limits (first prototype): Limits, Today, weekly receipt, Stats ----------
-  // Its own fake state: per-app daily limits, £1 per 10 min over to charity, capped daily.
-  var day = { limTT: 60, limIG: 60, stakes: true, cause: 'Mental health', charity: 'Mind', ask: true, given: {}, ttSecs: 0, overMin: 0, owed: 0 };
-  var CAP = 5;
-  // Example charities only: not partners. Grouped by the three causes on the Limits screen.
-  var CHARITIES = [
-    { n: 'Mind', d: 'Mental health support', c: 'Mental health' },
-    { n: 'YoungMinds', d: 'Young people\'s mental health', c: 'Mental health' },
-    { n: 'Samaritans', d: '24/7 listening line', c: 'Mental health' },
-    { n: 'BookTrust', d: 'Getting kids reading', c: 'Education' },
-    { n: 'Teach First', d: 'Teachers where they\'re needed', c: 'Education' },
-    { n: 'Woodland Trust', d: 'Planting UK woods', c: 'Climate' },
-    { n: 'ClientEarth', d: 'Climate law', c: 'Climate' }
-  ];
+  // ---------- Optional daily limits: pacing only; the weekly group pot is separate ----------
+  var day = { limTT: 60, limIG: 60, ttSecs: 0, overMin: 0 };
   function fmtShort(min) { return min % 60 ? fmt(min) : (min / 60) + 'h'; }
 
   function bindSlider(id, out, key) {
@@ -1529,60 +1484,6 @@
   }
   bindSlider('lim-tt', 'out-tt', 'limTT');
   bindSlider('lim-ig', 'out-ig', 'limIG');
-
-  $('stakes').addEventListener('click', function () {
-    day.stakes = !day.stakes;
-    this.setAttribute('aria-checked', day.stakes);
-  });
-  $('causes').addEventListener('click', function (e) {
-    var b = e.target.closest('.cause'); if (!b) return;
-    this.querySelectorAll('.cause').forEach(function (c) { c.setAttribute('aria-pressed', c === b); });
-    day.cause = b.textContent;
-    document.querySelectorAll('.cause-name').forEach(function (n) { n.textContent = day.cause; });
-    setCharity(CHARITIES.filter(function (c) { return c.c === day.cause; })[0].n);
-  });
-  $('ask').addEventListener('click', function () {
-    day.ask = !day.ask;
-    this.setAttribute('aria-checked', day.ask);
-  });
-  function setCharity(name) {
-    day.charity = name;
-    document.querySelectorAll('.charity-name').forEach(function (n) { n.textContent = name; });
-    $('sheet-default').textContent = 'Send to ' + name + ' (default)';
-  }
-
-  // Charity sheet: pick a default, or pick where one overage £1 goes
-  var charityMode = null;
-  function openCharity(mode) {
-    charityMode = mode;
-    var over = mode === 'over';
-    $('csheet-kicker').textContent = over ? day.overMin + ' min over on TikTok · £1 due' : 'Default charity';
-    $('csheet-title').textContent = over ? 'Where should this £1 go?' : 'Where should your £1s go?';
-    $('sheet-default').style.display = over ? '' : 'none';
-    var html = '', last = null;
-    CHARITIES.forEach(function (c) {
-      if (c.c !== last) { html += '<p class="label group">' + c.c + '</p>'; last = c.c; }
-      html += '<button class="charity" data-charity="' + c.n + '" aria-pressed="' + (c.n === day.charity) + '">' +
-        '<span><span class="n">' + c.n + '</span><span class="d">' + c.d + '</span></span>' +
-        '<span class="go">' + (over ? 'Send £1 →' : (c.n === day.charity ? '✓' : '')) + '</span></button>';
-    });
-    $('charity-list').innerHTML = html;
-    $('cscrim').classList.add('show'); $('csheet').classList.add('show');
-  }
-  function closeCharity() {
-    if (charityMode === 'over') pay(day.charity); // the £1 is owed either way; dismissing sends it to the default
-    charityMode = null;
-    $('cscrim').classList.remove('show'); $('csheet').classList.remove('show');
-  }
-  $('charity-list').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-charity]'); if (!b) return;
-    if (charityMode === 'over') { pay(b.dataset.charity); charityMode = null; }
-    else { setCharity(b.dataset.charity); toast('Default: ' + b.dataset.charity); }
-    closeCharity();
-  });
-  $('sheet-default').addEventListener('click', closeCharity);
-  $('cscrim').addEventListener('click', closeCharity);
-  $('pick-default').addEventListener('click', function () { openCharity('default'); });
 
   // Today: fixed sample usage; only controls and the secret trigger change it
   $('today-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -1601,11 +1502,9 @@
     $('ig-fill').style.width = Math.min(34, day.limIG - 1) / day.limIG * 100 + '%';
     $('row-ig').querySelector('.status').textContent = fmt(day.limIG - Math.min(34, day.limIG - 1)) + ' left today';
 
-    $('stakes-amt').textContent = '£' + day.owed.toFixed(2);
-    $('stakes-card').classList.toggle('paid', day.owed > 0);
-    var given = Object.keys(day.given).map(function (k) { return k + ' £' + day.given[k]; }).join(' · ');
-    $('stakes-sub').textContent = !day.stakes ? 'Stakes off · just tracking'
-      : given ? '→ ' + given : '£1 per 10 min over · capped at £' + CAP + '/day';
+    $('today-pot-label').textContent = state.group + ' prize pot';
+    $('today-pot').textContent = pounds(state.pledge * state.members.length);
+    $('today-pot-sub').textContent = state.members.length + ' × ' + pounds(state.pledge) + ' · results Sunday at 6pm';
   }
   // Over limit: SECRET trigger on the Today logo (triple-tap or long-press)
   var dTaps = 0, dTapTimer, dPressTimer, dLongPressed = false, dLogo = $('secret-today');
@@ -1622,28 +1521,10 @@
     dTapTimer = setTimeout(function () { dTaps = 0; }, 700);
   });
   function goOver() {
-    if (charityMode) return; // already asking about the last £1
     day.overMin += 10;
-    var charged = day.stakes && day.owed < CAP;
     if (current === 'today') renderToday();
     if (navigator.vibrate) navigator.vibrate(30);
-    if (!charged) {
-      notify(!day.stakes ? '10 min over on TikTok. Stakes are off, so this one\'s free.'
-        : '10 min over on TikTok. You\'ve hit today\'s £' + CAP + ' cap. Go to bed x');
-      return;
-    }
-    if (day.ask) openCharity('over'); else pay(day.charity);
-  }
-  function pay(charity) {
-    day.owed += 1;
-    day.given[charity] = (day.given[charity] || 0) + 1;
-    notify('10 min over on TikTok. £1 → ' + charity);
-    if (current !== 'today') return;
-    renderToday();
-    var stamp = $('paid-stamp'), amt = $('stakes-amt');
-    stamp.classList.remove('land'); amt.classList.remove('bump');
-    void stamp.offsetWidth; // restart animations
-    stamp.classList.add('land'); amt.classList.add('bump');
+    notify('TikTok is ' + day.overMin + ' min over today\'s optional limit. It still counts towards your weekly total.');
   }
 
   // Stats: SVG charts (ink = within limit, red = over limit)
@@ -1651,7 +1532,6 @@
   var DAYS = [[70, 50], [85, 45], [65, 60], [95, 48], [105, 67], [72, 63], [60, 65]].map(function (d, i) {
     return { label: ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i], day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i], tt: d[0], ig: d[1], total: d[0] + d[1] };
   });
-  var GIVEN = [['Mind', 58], ['YoungMinds', 31], ['Woodland Trust', 21], ['BookTrust', 12]];
 
   function limitBars(svg, data, limit, max, step, tipFor) {
     var W = 320, H = 170, L = 30, B = 20, T = 8, ih = H - B - T, iw = W - L;
@@ -1682,7 +1562,7 @@
   function renderStats() {
     limitBars($('chart-limit-weeks'), WEEKS, 840, 1200, 240, function (d) {
       var o = d.total - 840;
-      return '<b>Sample week ' + d.label.slice(1) + ' · 2026</b> · ' + fmt(d.total) + '<br>' + (o > 0 ? fmt(o) + ' over → £' + Math.floor(o / 10) : 'Under limit');
+      return '<b>Sample week ' + d.label.slice(1) + ' · 2026</b> · ' + fmt(d.total) + '<br>' + (o > 0 ? fmt(o) + ' over the optional limit' : 'Within the optional limit');
     });
     $('chart-limit-weeks').setAttribute('aria-label', 'Sample hours scrolled per week, weeks 32 to 39 of 2026: ' + WEEKS.map(function (w) { return w.label + ' ' + fmt(w.total); }).join(', '));
     limitBars($('chart-days'), DAYS, 120, 180, 60, function (d) {
@@ -1691,16 +1571,6 @@
     });
     $('chart-days').setAttribute('aria-label', 'Sample Week 39 by day, 21–27 September 2026: ' + DAYS.map(function (d) { return d.day + ' ' + fmt(d.total); }).join(', '));
 
-    var svg = $('chart-charity'), W = 320, rowH = 30, H = GIVEN.length * rowH, L = 108, max = GIVEN[0][1];
-    svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    svg.setAttribute('aria-label', 'Sample donations by charity: ' + GIVEN.map(function (g) { return g[0] + ' £' + g[1]; }).join(', '));
-    GIVEN.forEach(function (g, i) {
-      var yy = i * rowH + 6, w = (W - L - 40) * g[1] / max;
-      el('text', { x: 0, y: yy + 12, style: 'fill:var(--ink);font-size:11px' }, svg).textContent = g[0];
-      var bar = el('rect', { x: L, y: yy + 2, width: w, height: 14, rx: 4, fill: 'var(--ink)' }, svg);
-      if (!reduced) { bar.setAttribute('class', 'grow-x'); bar.style.animationDelay = i * 60 + 'ms'; }
-      el('text', { x: L + w + 6, y: yy + 13, class: 'val' }, svg).textContent = '£' + g[1];
-    });
   }
 
   // ---------- Themes: start-screen dots + Settings sheet. Remembered where storage is allowed. ----------
@@ -1726,6 +1596,7 @@
       return '<button class="theme-dot" data-theme-pick="' + x.k + '" style="' + dotStyle(x) + '" aria-label="' + x.n + ' theme" aria-pressed="' + (x.k === t.k) + '"></button>';
     }).join('');
     var list = $('theme-list'); if (list) list.innerHTML = themeOptions();
+    if (weekShare) weekShare.prepare(); // warm the Receipt tab and refresh its theme-coloured PNG
   }
   function themeOptions() {
     return THEMES.map(function (x) {
@@ -1738,7 +1609,7 @@
   });
   function openAppSettings() {
     openSheet('Settings', 'Make it yours', '<p class="label group">Theme</p><div id="theme-list">' + themeOptions() + '</div>' +
-      '<p class="label group">Daily limits</p><button class="option" id="to-limits"><span class="n">Limits and charity ›</span><span class="d">TikTok and Instagram caps, stakes, where your £1s go</span></button>' +
+      '<p class="label group">Daily pacing</p><button class="option" id="to-limits"><span class="n">Optional limits ›</span><span class="d">TikTok and Instagram daily reminders</span></button>' +
       '<button class="btn dark" id="settings-done" style="margin:18px 0 12px">Done</button>');
     $('to-limits').onclick = function () { closeSheet(); go('limits'); };
     $('settings-done').onclick = closeSheet;

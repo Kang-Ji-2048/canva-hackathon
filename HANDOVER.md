@@ -1,4 +1,4 @@
-# Receipts landing page: handover
+# ScrollSaver landing page: handover
 
 Files: `index.html` (landing page: one self-contained file, inline CSS and JS, Google Fonts with system-font fallbacks, no framework), `demo.html` (app demo), `og.png` + `og-card.html` (link-preview image and its source), `MAGIC-WRITE.md` (Magic Write prompts). I tested it at 390px and 1100px wide. On a phone the hero CTA sits at about 470px from the top, so it's above the fold.
 
@@ -20,8 +20,8 @@ The navbar, hero and final call to action all say **Try the demo** and link to `
 
 ## Assumptions I made (change any of these)
 - **Problem stat:** I didn't use an attributed statistic. The page shows arithmetic: 2h/day × 365 ≈ 30 days a year, labelled "Just maths, not a survey".
-- **Sample receipt convention:** the landing page and share card use one simulated competition result for Week 40, **28 Sep–4 Oct 2026**: Flat 4B, five friends, £10 pledged each, £50 pot; you scroll 4h 01m, finish 2nd and receive £15.49 (+£5.49 net). App totals are Instagram 1h 28m, TikTok 1h 12m, other three apps 1h 21m. The earlier charity prototype retains its separate Week 39 sample. These are illustrative fixtures, not evidence of improvement or real transactions.
-- **Legacy charity mode:** daily-limit donations remain an earlier secondary prototype. The main landing page and pitch now lead with friend competitions.
+- **Sample receipt convention:** the landing page, Receipt tab and share card use one simulated competition result for Week 40, **28 Sep–4 Oct 2026**: Flat 4B, five friends, £10 pledged each, £50 pot; you scroll 4h 01m, finish 2nd and receive £15.49 (+£5.49 net). App totals are Instagram 1h 28m, TikTok 1h 12m, YouTube 46m, Snapchat 20m and Reddit 15m. These are illustrative fixtures, not evidence of improvement or real transactions.
+- **Optional daily limits:** TikTok and Instagram limits are pacing reminders only. Going over still counts towards the weekly competition and never triggers a separate payment.
 - **Contact email** `hello@receipts.app` is a placeholder (the team doesn't own that domain). Swap in a real inbox the team checks. Instagram/TikTok footer links are still `#`.
 - **Privacy note:** the landing page collects no email addresses; the demo uses sample data and may save the theme preference locally.
 - **App privacy:** the demo tracks nothing. Time-per-app-only access is a planned product requirement, not an implemented integration.
@@ -52,31 +52,30 @@ Each one is tagged `<!-- COPY: id -->` in `index.html`.
 | step3-title / body | Get your Sunday receipt / Sunday at 6pm: reveal the standings, your return and your weekly receipt. |
 | receipt-heading | Made to be screenshotted. |
 | receipt-tick1–4 | Time in each counted app · Your place in the group · Pledged, returned and net · Share your receipt or download the image. |
-| charity-heading | Less scrolling. A bigger share. |
-| charity-sub | Everyone pledges the same amount. The pot is divided in proportion to how far each person finishes below the group's highest screen time. |
+| pot-heading | Less scrolling. A bigger share. |
+| pot-sub | Everyone pledges the same amount. The pot is divided in proportion to how far each person finishes below the group's highest screen time. |
 | stakes-title / body | Your pledge, your group / Highest screen time gets £0. If everyone ties, pledges are returned. Settings changes start next week. |
-| pots-title / body | Daily limits & charity / Also in the demo: simulated £1 donations for every 10 minutes over an app limit, capped at £5 a day. |
+| pots-title / body | Fair from Monday to Sunday / Pledge and counted-app changes start next week, so everyone competes under the same settings. |
 | soon-title / body | The revision feed / A lecture-slide revision feed concept. Not part of the current competition demo. |
 | final-heading | Your next scroll, itemised. |
 | footer-line | *** Thank you for scrolling responsibly *** |
 | faq-heading | Frequently asked questions. |
 | faq1 | What if I can't afford it? / Explore this demo free, with no real payment. The competition models pledges of £5, £10 or £20. A return can be £0. |
-| faq2 | Where does the pot go? / The competition pot is shared among the group according to screen time. Daily-limit donations belong to the separate earlier charity prototype. |
-| faq3 | Can Receipts see what I watch? / This demo uses sample data and tracks nothing. The planned app would use time per app, never what you watched, posted or messaged. |
+| faq2 | Where does the pot go? / The competition pot is shared among the group according to screen time. Highest usage gets £0; if everyone ties, all pledges are returned. |
+| faq3 | Can ScrollSaver see what I watch? / This demo uses sample data and tracks nothing. The planned app would use time per app, never what you watched, posted or messaged. |
 | faq4 | Can I change the group rules? / Yes. Changes to the pledge and counted apps take effect next week, so everyone finishes the current week under the same rules. |
 
 ## App demo (`demo.html`)
 - This is a clickable prototype, and all of its data is fake and lives only in the page. **No money moves**: pots and payouts are simulated.
-- **Two models in one demo.** The first prototype's daily limits (Today · Receipt · Stats, plus Limits and the charity picker) sit alongside the friend competition (Compete · Group, plus the Sunday reveal). Tabs: Today · Receipt · Compete · Stats · Group. Stats combines your competition record (this week, position, winnings, time by app, weekly chart, past competitions) with the daily-limits charts below it. Onboarding creates or joins a group and lands on Compete. Limits opens from the sliders icon on Today.
+- **One competition model.** Tabs are Today · Receipt · Compete · Stats · Group. Today shows optional pacing limits and the current group pot; Receipt shows the latest competition result; Stats combines the competition record with optional-limit charts. Onboarding creates or joins a group and lands on Compete. Limits opens from the sliders icon on Today.
 - **Demo start state.** The first week opens already finished: Compete shows a red "results are in" card, so the Sunday reveal is one tap away. After "Start next week" the countdown runs live.
-- **Secret triggers.** Today logo: tap 3× or long-press to go 10 min over (£1 to charity, up to the £5/day cap). Compete logo: tap 3× to skip to Sunday 6pm, or long-press to add 30 min of scrolling (your position can drop).
+- **Secret triggers.** Today logo: tap 3× or long-press to go 10 min over the optional TikTok limit. Compete logo: tap 3× to skip to Sunday 6pm, or long-press to add 30 min of scrolling (your position can drop).
 - **Competition.** Pot = pledge × members (£5/£10/£20). The countdown runs to the real next Sunday 6pm. During the week you see only your own time and place; everyone else's is hidden. Group settings (pledge, apps counted) and invites take effect next week. New groups count all five apps by default.
 - **Payout rule.** Proportional: your share is proportional to how far you finished below the group's highest total, so last place gets £0. Ties share a place. Default numbers: Charles 3h 12m, you 4h 01m, Priya 5h 20m, Dan 7h 45m, Sam 9h 30m, which splits £50 as £17.80 / £15.49 / £11.77 / £4.94 / £0.
-- **Reveal.** Your week (with time saved vs last week and since your first week), then the leaderboard from last to first, then the receipt (same component, itemising time, time saved, place, pledge and winnings) with share/download, then a single "go again" button (same group and pledge).
-- **Stats** (daily limits): illustrative weekly hours for weeks 32–39 of 2026 and Week 39 (**21–27 Sep 2026**) by day, with the time within the limit in ink and the time over it in red. There's also an illustrative breakdown of donations by charity. Tap a bar for details. The Week 39 by-day figures add up to the sample Sunday receipt (15h 50m, 1h 50m over, £11); none of these figures represents real tracking or donations.
-- **Logo.** Mark A, "Ranked receipt" (a receipt whose printed lines are a leaderboard, 1st in the accent), chosen from the concepts in `logos.html`. It is used for the in-app logos and the notification banner. The **app icon** (favicon and home-screen icon) is the team's arcade-machine artwork in `icons/` (source: `icons/app-icon-source.png`; 32, 180, 192 and 512px exports). Note it shows a $ coin while the app uses £. `index.html` still uses the old mark.
+- **Reveal.** Your week (with time saved vs last week and since your first week), then the leaderboard from last to first, then the receipt (same component, itemising time, time saved, place, pledge and amount returned) with share/download, then a single "go again" button (same group and pledge).
+- **Stats** (daily limits): illustrative weekly hours for weeks 32–39 of 2026 and Week 39 (**21–27 Sep 2026**) by day, with the time within the limit in ink and the time over it in red. Tap a bar for details. None of these figures represents real tracking.
+- **Brand.** The product name is **ScrollSaver**. The landing page, demo, notification banner and share card use the team's arcade-machine artwork in `icons/`, matching the favicon and home-screen icon (source: `icons/app-icon-source.png`; 32, 180, 192 and 512px exports). Note it shows a $ coin while the app uses £. Earlier receipt-mark concepts remain in `logos.html`.
 - **Themes.** Six colour themes (Receipt, Night shift, Cobalt, Highlighter, Mint, Bubblegum): pick one with the dots on the start screen, or from Settings (gear icon on Compete and Today). The choice is saved in the browser where storage is allowed. All colours are CSS tokens at the top of `demo.html`; `themes.html` previews every theme with contrast checks. Receipt paper stays white in every theme so shared images look like a receipt.
-- **Charity picker** (daily limits): the charities (Mind, YoungMinds, Samaritans, BookTrust, Teach First, Woodland Trust, ClientEarth) are **examples, not partners**, and the page says so.
-- The landing page and Magic Write brief lead with the friend competition. Daily-limit charity stakes remain an earlier secondary prototype.
+- **Receipt preload.** The Receipt tab's 720×1080 share image is prepared after the theme is applied, cached while its content and theme are unchanged, and reused on repeat visits.
 - The **Try the demo** links use `demo.html`; deploy both HTML files in the same directory.
 - To add it to the home screen, it must be served over https (Canva Code publish, Netlify Drop or GitHub Pages). On iOS, use Safari → Share → Add to Home Screen. The icon is drawn as a PNG at load time; that should work, but I haven't tested it on a real iPhone. Android needs a web manifest for true full-screen, and I didn't add one.
