@@ -474,34 +474,6 @@
     </div>
   </section>
 
-  <!-- ============ 5. PROFILE ============ -->
-  <section class="screen tabbed" id="profile">
-    <div class="bar"><span class="label" id="p-kicker">Profile</span></div>
-    <h1 style="margin-bottom:16px">Your record</h1>
-    <div class="tiles" style="margin-top:0">
-      <div class="card tile"><p class="label">This week</p><p class="big" id="p-week">0m</p><p class="s" id="p-week-s"></p></div>
-      <div class="card tile"><p class="label">Position</p><p class="big" id="p-pos">–</p><p class="s" id="p-pos-s"></p></div>
-      <div class="card tile"><p class="label">Last week</p><p class="big" id="p-last">0m</p><p class="s" id="p-last-s"></p></div>
-      <div class="card tile"><p class="label">Won to date</p><p class="big" id="p-won">£0</p><p class="s" id="p-won-s"></p></div>
-    </div>
-    <div class="card" style="margin-top:12px">
-      <h3>By app</h3>
-      <p class="fineprint" style="margin:2px 0 14px" id="p-apps-s">This week so far</p>
-      <div id="p-apps"></div>
-      <p class="fineprint" style="margin-top:14px">Not counted: WhatsApp, iMessage, Messages</p>
-    </div>
-    <div class="card chart-card">
-      <div class="row-between" style="align-items:center"><h3>Hours per week</h3><span class="streak" id="p-streak"></span></div>
-      <p class="s" id="p-chart-s">Tap a bar</p>
-      <svg class="chart" id="chart-weeks" role="img"></svg>
-    </div>
-    <div class="card" style="padding-top:12px;padding-bottom:6px">
-      <h3 style="margin-bottom:4px">Past competitions</h3>
-      <div id="p-history"></div>
-    </div>
-    <p class="hint">Demo data · winnings are simulated</p>
-  </section>
-
   <!-- ============ DAILY LIMITS, TODAY, WEEKLY RECEIPT, STATS (first prototype) ============ -->
   <!-- ============ 2. SET LIMITS ============ -->
   <section class="screen" id="limits">
@@ -595,10 +567,34 @@
     </div>
   </section>
 
-  <!-- ============ STATS ============ -->
+  <!-- ============ 5. STATS: competition record + daily limits ============ -->
   <section class="screen tabbed" id="stats">
-    <div class="bar"><span class="label">Sample stats · 2026</span></div>
-    <h1 style="margin-bottom:16px">Your time, charted</h1>
+    <div class="bar"><span class="label" id="p-kicker">Stats</span></div>
+    <h1>Your time, charted</h1>
+    <h2 class="sec" style="margin-top:22px">Competition</h2>
+    <div class="tiles" style="margin-top:0">
+      <div class="card tile"><p class="label">This week</p><p class="big" id="p-week">0m</p><p class="s" id="p-week-s"></p></div>
+      <div class="card tile"><p class="label">Position</p><p class="big" id="p-pos">–</p><p class="s" id="p-pos-s"></p></div>
+      <div class="card tile"><p class="label">Last week</p><p class="big" id="p-last">0m</p><p class="s" id="p-last-s"></p></div>
+      <div class="card tile"><p class="label">Won to date</p><p class="big" id="p-won">£0</p><p class="s" id="p-won-s"></p></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>By app</h3>
+      <p class="fineprint" style="margin:2px 0 14px" id="p-apps-s">This week so far</p>
+      <div id="p-apps"></div>
+      <p class="fineprint" style="margin-top:14px">Not counted: WhatsApp, iMessage, Messages</p>
+    </div>
+    <div class="card chart-card">
+      <div class="row-between" style="align-items:center"><h3>Hours per week</h3><span class="streak" id="p-streak"></span></div>
+      <p class="s" id="p-chart-s">Tap a bar</p>
+      <svg class="chart" id="chart-weeks" role="img"></svg>
+    </div>
+    <div class="card" style="padding-top:12px;padding-bottom:6px">
+      <h3 style="margin-bottom:4px">Past competitions</h3>
+      <div id="p-history"></div>
+    </div>
+    <h2 class="sec">Daily limits</h2>
+    <p class="label" style="margin:-6px 0 12px">Sample stats · 2026</p>
     <div class="tiles" style="margin-top:0">
       <div class="card tile"><p class="label">Avg / day</p><p class="big">2h 16m</p><p class="s">Week 39 · 2026 · limit 2h</p></div>
       <div class="card tile"><p class="label">vs week 38</p><p class="big red">↑ 7%</p><p class="s">+1h 00m. A slip.</p></div>
@@ -606,7 +602,7 @@
       <div class="card tile"><p class="label">Worst day</p><p class="big">Fri</p><p class="s">2h 52m · 52m over</p></div>
     </div>
     <div class="card chart-card" style="margin-top:12px">
-      <h3>Hours per week</h3>
+      <h3>Hours per week vs your limit</h3>
       <p class="s">Sample weeks 32–39 · 2026 · tap a bar</p>
       <svg class="chart" id="chart-limit-weeks" role="img"></svg>
       <div class="legend"><span><i style="background:var(--ink)"></i>Within limit</span><span><i style="background:var(--red)"></i>Over limit</span><span><i class="line"></i>14h weekly limit</span></div>
@@ -622,7 +618,7 @@
       <p class="s">All time, by charity</p>
       <svg class="chart" id="chart-charity" role="img"></svg>
     </div>
-    <p class="hint">Demo data · example charities, not partners</p>
+    <p class="hint">Demo data · winnings are simulated · example charities, not partners</p>
   </section>
 
   <!-- ============ 6. SUNDAY 6PM REVEAL ============ -->
@@ -691,7 +687,6 @@
     <button data-tab="compete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 21l1-4h4l1 4"/></svg>Compete</button>
     <button data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M6 17v-5M11 17V7M16 17v-8M21 17V4" /></svg>Stats</button>
     <button data-tab="group"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"/></svg>Group</button>
-    <button data-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Profile</button>
   </nav>
 </div>
 
@@ -815,8 +810,8 @@
 
   // ---------- Routing: in-memory stack. Browser history is mirrored only where it works
   // (it throws in sandboxed iframes / data: URLs, e.g. some previews and Canva embeds). ----------
-  var tabScreens = ['today', 'receipt', 'compete', 'stats', 'group', 'profile'];
-  var order = ['onboarding', 'setup', 'limits', 'today', 'receipt', 'compete', 'stats', 'group', 'profile', 'reveal'];
+  var tabScreens = ['today', 'receipt', 'compete', 'stats', 'group'];
+  var order = ['onboarding', 'setup', 'limits', 'today', 'receipt', 'compete', 'stats', 'group', 'reveal'];
   var current = null, stack = ['onboarding'], useHistory = true;
   try { history.replaceState({ s: 'onboarding' }, ''); } catch (e) { useHistory = false; }
 
@@ -854,12 +849,11 @@
     });
     if (name === 'compete') renderCompete();
     if (name === 'group') renderGroup();
-    if (name === 'profile') renderProfile();
     if (name === 'reveal') renderReveal();
     if (name === 'setup') renderSetup();
     if (name === 'today') renderToday();
     if (name === 'receipt') weekShare.print();
-    if (name === 'stats') renderStats();
+    if (name === 'stats') { renderProfile(); renderStats(); }
     hideTip();
   }
   document.addEventListener('click', function (e) {
@@ -1020,7 +1014,7 @@
     $('cd-s').textContent = String(s % 60).padStart(2, '0');
   }
   setInterval(function () { if (current === 'compete') tick(); }, 1000);
-  function rerender() { if (current === 'compete') renderCompete(); if (current === 'group') renderGroup(); if (current === 'profile') renderProfile(); }
+  function rerender() { if (current === 'compete') renderCompete(); if (current === 'group') renderGroup(); if (current === 'stats') renderProfile(); }
 
   // ---------- SECRET triggers on the Competition logo: triple-tap = skip to 6pm, long-press = scroll 30 min ----------
   var taps = 0, tapTimer, pressTimer, longPressed = false, logo = $('secret');
@@ -1140,7 +1134,7 @@
   function renderProfile() {
     var mine = nowMins(ME), pos = myPosition(), last = state.history[state.history.length - 1];
     var won = state.history.map(function (h) { return h.won; }).reduce(add, 0), paid = state.history.map(function (h) { return h.pledge; }).reduce(add, 0);
-    $('p-kicker').textContent = 'Profile · ' + state.group;
+    $('p-kicker').textContent = 'Stats · ' + state.group;
     $('p-week').textContent = fmt(mine);
     $('p-week-s').textContent = state.revealed ? 'Final · week ' + week() : 'So far · week ' + week();
     $('p-pos').textContent = pos ? ordinal(pos) : '–';
@@ -1240,7 +1234,6 @@
     t.style.top = (r.top - a.top + vy * s) + 'px';
   }
   function hideTip() { $('tip').classList.remove('show'); }
-  $('profile').addEventListener('scroll', hideTip);
 
   // ---------- 6. Sunday 6pm reveal: your time → leaderboard (last to first) → receipt ----------
   var revealRun = 0;
