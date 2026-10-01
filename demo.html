@@ -17,8 +17,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Receipts">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="icon" type="image/svg+xml" id="favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F5EF'/%3E%3Cpath d='M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z' fill='%23fff' stroke='%231A1A1A' stroke-width='4.5' stroke-linejoin='round'/%3E%3Cg fill='none' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M29.5 20H42' stroke='%23E5322D'/%3E%3Cpath d='M29.5 29.5H38.5M29.5 39H34.5' stroke='%231A1A1A'/%3E%3C/g%3E%3Ccircle cx='23' cy='20' r='3' fill='%23E5322D'/%3E%3Ccircle cx='23' cy='29.5' r='3' fill='%231A1A1A'/%3E%3Ccircle cx='23' cy='39' r='3' fill='%231A1A1A'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" id="touch-icon" href="">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -1725,7 +1726,6 @@
     var t = themeBy(k); themeNow = t.k;
     if (t.k === 'receipt') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t.k;
     document.querySelector('meta[name=theme-color]').setAttribute('content', t.paper);
-    if (typeof brandIcons === 'function' && $('favicon')) brandIcons();
     try { localStorage.setItem('receipts-theme', t.k); } catch (e) {}
     $('ob-theme-name').textContent = 'Theme · ' + t.n;
     $('ob-themes').innerHTML = THEMES.map(function (x) {
@@ -1750,29 +1750,6 @@
     $('settings-done').onclick = closeSheet;
   }
   setTheme(themeNow);
-
-  // ---------- Favicon + home-screen icon: logo mark A in the current theme's colours ----------
-  // iOS wants a PNG for the home screen, so the SVG is drawn onto a canvas.
-  function markSVG(ink, acc, card) {
-    return "<path d='M15 8H49V55L43.3 51.2 37.7 55 32 51.2 26.3 55 20.7 51.2 15 55Z' fill='" + card + "' stroke='" + ink + "' stroke-width='4.5' stroke-linejoin='round'/>" +
-      "<g fill='none' stroke-width='5' stroke-linecap='round'><path d='M29.5 20H42' stroke='" + acc + "'/><path d='M29.5 29.5H38.5M29.5 39H34.5' stroke='" + ink + "'/></g>" +
-      "<circle cx='23' cy='20' r='3' fill='" + acc + "'/><circle cx='23' cy='29.5' r='3' fill='" + ink + "'/><circle cx='23' cy='39' r='3' fill='" + ink + "'/>";
-  }
-  function brandIcons() {
-    var cs = getComputedStyle(document.documentElement), v = function (k) { return cs.getPropertyValue('--' + k).trim(); };
-    var mark = markSVG(v('ink'), v('accent-text'), v('card'));
-    $('favicon').href = 'data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='" + v('paper') + "'/>" + mark + '</svg>');
-    var img = new Image();
-    img.onload = function () {
-      try {
-        var c = document.createElement('canvas'); c.width = c.height = 180;
-        c.getContext('2d').drawImage(img, 0, 0, 180, 180);
-        $('touch-icon').href = c.toDataURL('image/png');
-      } catch (e) {}
-    };
-    img.src = 'data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='-12 -10 88 84' width='180' height='180'><rect x='-12' y='-10' width='88' height='84' fill='" + v('paper') + "'/>" + mark + '</svg>');
-  }
-  brandIcons();
 
   show('onboarding');
 })();
