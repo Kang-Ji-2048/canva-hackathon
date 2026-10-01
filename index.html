@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Receipts — Your scrolling, itemised.</title>
-<meta name="description" content="Receipts puts a price on doomscrolling. Go over your daily limit and £1 per 10 minutes goes to a charity you choose. Every Sunday, get the receipt.">
+<meta name="description" content="Pledge with friends. Scroll less for a bigger share of the pot. Get your results and receipt every Sunday at 6pm. Explore the Receipts prototype.">
 <meta name="theme-color" content="#F7F5EF">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F5EF'/%3E%3Cpath d='M18 10h28v44l-4.7-2.8-4.6 2.8-4.7-2.8-4.6 2.8-4.7-2.8L18 54z' fill='%23fff' stroke='%231A1A1A' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cpath d='M25 23h14M25 31h14M25 39h9' stroke='%23E5322D' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <!-- SHARE PREVIEW: replace https://REPLACE-WITH-SITE-URL with the live site address once published (og.png must be hosted there too). -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Receipts">
 <meta property="og:title" content="Receipts — Your scrolling, itemised.">
-<meta property="og:description" content="Go over your TikTok and Instagram limit and £1 per 10 minutes goes to a charity you choose. Every Sunday, get the receipt.">
+<meta property="og:description" content="Pledge with friends. Scroll less for a bigger share of the pot. Get your results and receipt every Sunday at 6pm.">
 <meta property="og:url" content="https://canva-hackathon-smoky.vercel.app/">
 <meta property="og:image" content="https://canva-hackathon-smoky.vercel.app/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Sample Receipts receipt, Week 39, 21–27 September 2026: 15h 50m scrolled, £11 donated. Illustrative data.">
+<meta property="og:image:alt" content="Sample competition receipt, Week 40, 28 September–4 October 2026: 4h 01m, 2nd of 5, £10 pledged, £15.49 returned, £5.49 net. Simulated data.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -248,7 +248,7 @@
     <div>
       <p class="label">● Pre-launch · Built for students</p>                                   <!-- COPY: hero-eyebrow -->
       <h1>Your scrolling, <em>itemised.</em></h1>                                               <!-- COPY: hero-headline (slogan) -->
-      <p class="sub">Go over your daily TikTok and Instagram limit and every 10 minutes costs £1, all of it to a charity you choose. Every Sunday, you get the receipt.</p> <!-- COPY: hero-subhead (value prop) -->
+      <p class="sub">Pledge £5, £10 or £20 with friends. Scroll less for a bigger share of the pot. Your results and receipt arrive Sunday at 6pm.</p> <!-- COPY: hero-subhead (value prop) -->
       <form class="waitlist" novalidate>
         <div class="row">
           <input type="email" name="email" placeholder="you@uni.ac.uk" aria-label="Email address" autocomplete="email" required>
@@ -257,28 +257,29 @@
         <p class="err" aria-live="polite"></p>
         <p class="success" role="status">You're on the list ✓ <span class="pos"></span></p>   <!-- COPY: success -->
       </form>
-      <p class="fine">Free plan at launch · One email when we go live. That's it.</p>          <!-- COPY: hero-fineprint -->
+      <p class="fine">Interactive prototype · Sample data · No real money moves.</p>          <!-- COPY: hero-fineprint -->
       <a href="https://canva-hackathon-smoky.vercel.app/demo.html" class="demo-link">Try the demo →</a>                                 <!-- COPY: demo-link -->
     </div>
 
     <!-- hero receipt: prints line by line on load -->
-    <div class="receipt printing" aria-label="Sample weekly receipt, Week 39, 21–27 September 2026: 15 hours 50 minutes scrolled, £11 donated. Illustrative data.">
-      <div class="head"><b>RECEIPTS</b><span>SAMPLE RECEIPT · WEEK 39<br>21–27 SEP 2026</span></div>
+    <div class="receipt printing" aria-label="Sample competition receipt, Week 40, 28 September–4 October 2026: 4h 01m, 2nd of 5, £10 pledged, £15.49 returned, £5.49 net. Simulated data.">
+      <div class="head"><b>RECEIPTS</b><span>SAMPLE COMPETITION · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
       <hr>
-      <div class="li"><span>TikTok</span><span class="dots"></span><span>9h 12m</span></div>
-      <div class="li"><span>Instagram</span><span class="dots"></span><span>6h 38m</span></div>
+      <div class="li"><span>TikTok</span><span class="dots"></span><span>1h 12m</span></div>
+      <div class="li"><span>Instagram</span><span class="dots"></span><span>1h 28m</span></div>
+      <div class="li"><span>Other 3 apps</span><span class="dots"></span><span>1h 21m</span></div>
       <hr>
-      <div class="li big"><span>TOTAL</span><span class="dots"></span><span>15h 50m</span></div>
-      <div class="li small"><span>Daily limit</span><span class="dots"></span><span>2h 00m</span></div>
-      <div class="li small"><span>Over limit</span><span class="dots"></span><span>1h 50m</span></div>
+      <div class="li big"><span>TOTAL</span><span class="dots"></span><span>4h 01m</span></div>
+      <div class="li small"><span>Place</span><span class="dots"></span><span>2nd of 5</span></div>
+      <div class="li small"><span>Group pot</span><span class="dots"></span><span>£50.00</span></div>
       <hr>
-      <div class="li small"><span>That's</span><span class="dots"></span><span>= 2 essays</span></div>
-      <div class="li small"><span>Or</span><span class="dots"></span><span>= 9 gym sessions</span></div>
+      <div class="li small"><span>Pledged</span><span class="dots"></span><span>£10.00</span></div>
+      <div class="li small"><span>Group</span><span class="dots"></span><span>Flat 4B · 5 friends</span></div>
       <hr>
-      <div class="li big"><span>DONATED</span><span class="dots"></span><span class="red">£11.00</span></div>
-      <div class="li small"><span>Dodged (you closed it)</span><span class="dots"></span><span>£6.00</span></div>
-      <p class="thanks">→ Mental health charity<br>THANK YOU FOR SCROLLING</p>
-      <div class="stamp" aria-hidden="true">£11<small>DONATED</small></div>
+      <div class="li big"><span>RETURNED</span><span class="dots"></span><span class="red">£15.49</span></div>
+      <div class="li small"><span>Net gain</span><span class="dots"></span><span>+£5.49</span></div>
+      <p class="thanks">SIMULATED RESULT<br>NO MONEY MOVES</p>
+      <div class="stamp" aria-hidden="true">2ND<small>OF 5</small></div>
     </div>
   </div>
 </section>
@@ -300,7 +301,7 @@
           <span class="opt">OK</span>
           <span class="opt ignore">Ignore limit</span>
         </div>
-        <p class="hook">Blockers fail because ignoring them is free.<br><b class="red">We make it cost £1.</b></p> <!-- COPY: problem-hook -->
+        <p class="hook">Ignoring a limit is easy.<br><b class="red">Give your friends a reason to notice.</b></p> <!-- COPY: problem-hook -->
       </div>
     </div>
   </div>
@@ -315,20 +316,20 @@
       <div class="step">
         <span class="n">01</span>
         <svg viewBox="0 0 40 40" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><circle cx="20" cy="22" r="14"/><path d="M20 22V13M20 22l6 4M15 4h10" stroke-linecap="round"/></svg>
-        <h3>Set your limit</h3>                                                                 <!-- COPY: step1-title -->
-        <p>Pick a daily cap for TikTok and Instagram. One hour? Two? Your call.</p>             <!-- COPY: step1-body -->
+        <h3>Make your group</h3>                                                                 <!-- COPY: step1-title -->
+        <p>Choose a weekly pledge: £5, £10 or £20 each. Everyone puts in the same.</p>             <!-- COPY: step1-body -->
       </div>
       <div class="step">
         <span class="n">02</span>
         <svg viewBox="0 0 40 40" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><circle cx="20" cy="20" r="15"/><path d="M24 13.5c-1-1.2-2.4-1.8-4-1.5-2 .4-3 2-3 4v12M14 21h8M14 28h12" stroke="#E5322D" stroke-linecap="round"/></svg>
-        <h3>Go over, pay £1</h3>                                                                <!-- COPY: step2-title -->
-        <p>Every 10 minutes past your limit costs £1, and 100% of it goes to charity.</p>        <!-- COPY: step2-body -->
+        <h3>Scroll less, together</h3>                                                                <!-- COPY: step2-title -->
+        <p>Your share grows with the gap between your screen time and the group's highest total.</p>        <!-- COPY: step2-body -->
       </div>
       <div class="step">
         <span class="n">03</span>
         <svg viewBox="0 0 40 40" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><path d="M8 4h24v32l-4-2.5-4 2.5-4-2.5-4 2.5-4-2.5-4 2.5z" stroke-linejoin="round"/><path d="M14 13h12M14 19h12M14 25h7" stroke="#E5322D" stroke-linecap="round"/></svg>
         <h3>Get your Sunday receipt</h3>                                                        <!-- COPY: step3-title -->
-        <p>Where your hours and your money went. Share it, or keep it to yourself.</p>          <!-- COPY: step3-body -->
+        <p>Sunday at 6pm: reveal the standings, your return and your weekly receipt.</p>          <!-- COPY: step3-body -->
       </div>
     </div>
   </div>
@@ -338,22 +339,23 @@
 <section class="closeup">
   <div class="wrap">
     <div class="grid">
-      <div class="phone" aria-label="Sample Week 40 receipt, 28 September–4 October 2026: an illustrative improvement on Week 39, with a Share to story button">
+      <div class="phone" aria-label="Sample competition receipt, Week 40, 28 September–4 October 2026: 4h 01m, 2nd of 5, £10 pledged, £15.49 returned, £5.49 net. Simulated data.">
         <div class="screen">
           <div class="receipt">
-            <div class="head"><b>RECEIPTS</b><span>SAMPLE RECEIPT · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
+            <div class="head"><b>RECEIPTS</b><span>SAMPLE COMPETITION · WEEK 40<br>28 SEP–4 OCT 2026</span></div>
             <hr>
-            <div class="li"><span>TikTok</span><span class="dots"></span><span>5h 41m</span></div>
-            <div class="li"><span>Instagram</span><span class="dots"></span><span>4h 09m</span></div>
+            <div class="li"><span>TikTok</span><span class="dots"></span><span>1h 12m</span></div>
+            <div class="li"><span>Instagram</span><span class="dots"></span><span>1h 28m</span></div>
+            <div class="li"><span>Other 3 apps</span><span class="dots"></span><span>1h 21m</span></div>
             <hr>
-            <div class="li big"><span>TOTAL</span><span class="dots"></span><span>9h 50m</span></div>
-            <div class="li small"><span>vs Week 39</span><span class="dots"></span><span class="red">−6h 00m</span></div>
-            <div class="li small"><span>That's</span><span class="dots"></span><span>= 1 essay</span></div>
+            <div class="li big"><span>TOTAL</span><span class="dots"></span><span>4h 01m</span></div>
+            <div class="li small"><span>Place</span><span class="dots"></span><span class="red">2nd of 5</span></div>
+            <div class="li small"><span>Pledged</span><span class="dots"></span><span>£10.00</span></div>
             <hr>
-            <div class="li big"><span>DONATED</span><span class="dots"></span><span class="red">£3.00</span></div>
-            <div class="li small"><span>Dodged</span><span class="dots"></span><span>£14.00</span></div>
-            <p class="thanks">THANK YOU<br>FOR SCROLLING</p>
-            <div class="stamp" aria-hidden="true">PAID</div>
+            <div class="li big"><span>RETURNED</span><span class="dots"></span><span class="red">£15.49</span></div>
+            <div class="li small"><span>Net gain</span><span class="dots"></span><span>+£5.49</span></div>
+            <p class="thanks">SIMULATED RESULT<br>NO MONEY MOVES</p>
+            <div class="stamp" aria-hidden="true">2ND<small>OF 5</small></div>
           </div>
           <span class="share">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1A1A1A" stroke-width="2" aria-hidden="true"><path d="M8 10V2M4.5 5.5 8 2l3.5 3.5M3 9v5h10V9" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -362,13 +364,13 @@
         </div>
       </div>
       <div>
-        <p class="label">The Weekly Receipt · Free</p>
+        <p class="label">The Sunday receipt</p>
         <h2 style="margin-top:12px">Made to be <span class="red">screenshotted.</span></h2>    <!-- COPY: receipt-heading -->
         <ul class="ticks">
-          <li>Every hour, itemised by app</li>                                                 <!-- COPY: receipt-tick1 -->
-          <li>What that time could have been</li>                                              <!-- COPY: receipt-tick2 -->
-          <li>£ donated vs. £ dodged</li>                                                      <!-- COPY: receipt-tick3 -->
-          <li>One tap to your story. Flex the good weeks, roast the bad ones.</li>             <!-- COPY: receipt-tick4 -->
+          <li>Time in each counted app</li>                                                 <!-- COPY: receipt-tick1 -->
+          <li>Your place in the group</li>                                              <!-- COPY: receipt-tick2 -->
+          <li>Pledged, returned and net</li>                                                      <!-- COPY: receipt-tick3 -->
+          <li>Share your receipt or download the image.</li>             <!-- COPY: receipt-tick4 -->
         </ul>
       </div>
     </div>
@@ -378,24 +380,24 @@
 <!-- ============ STAKES / CHARITY ============ -->
 <section class="charity">
   <div class="wrap">
-    <span class="bigstamp">100% DONATED</span>
-    <h2>Every £1 goes to charity. We never take a cut.</h2>                                    <!-- COPY: charity-heading -->
-    <p class="sub">We make money from Pro subscriptions, never from your slip-ups. Stakes are opt-in, and you can switch them off any time.</p> <!-- COPY: charity-sub -->
-    <div class="causes" aria-label="Choose a cause">
-      <span class="cause on">Mental health</span>
-      <span class="cause">Education</span>
-      <span class="cause">Climate</span>
+    <span class="bigstamp">WEEKLY POT</span>
+    <h2>Less scrolling. A bigger share.</h2>                                    <!-- COPY: charity-heading -->
+    <p class="sub">Everyone pledges the same amount. The pot is divided in proportion to how far each person finishes below the group's highest screen time.</p> <!-- COPY: charity-sub -->
+    <div class="causes" aria-label="Weekly pledge options">
+      <span class="cause on">£5 each</span>
+      <span class="cause">£10 each</span>
+      <span class="cause">£20 each</span>
     </div>
     <div class="pot">
       <div>
-        <p class="label">Stakes mode · Pro</p>
-        <h3>Your limit, your money on it</h3>                                                   <!-- COPY: stakes-title -->
-        <p>£1 per 10 minutes over. Capped daily, so a bad night never becomes a bad month.</p> <!-- COPY: stakes-body -->
+        <p class="label">Friend competition</p>
+        <h3>Your pledge, your group</h3>                                                   <!-- COPY: stakes-title -->
+        <p>Highest screen time gets £0. If everyone ties, pledges are returned. Settings changes start next week.</p> <!-- COPY: stakes-body -->
       </div>
       <div>
-        <p class="label">Friend pots · Pro</p>
-        <h3>Scroll less, together</h3>                                                         <!-- COPY: pots-title -->
-        <p>Set limits as a group. Every slip goes into a shared pot for your group's charity.</p> <!-- COPY: pots-body -->
+        <p class="label">Earlier prototype</p>
+        <h3>Daily limits &amp; charity</h3>                                                         <!-- COPY: pots-title -->
+        <p>Also in the demo: simulated £1 donations for every 10 minutes over an app limit, capped at £5 a day.</p> <!-- COPY: pots-body -->
       </div>
     </div>
   </div>
@@ -404,12 +406,12 @@
 <!-- ============ PRICING ============ -->
 <section id="pricing" style="padding-top:0">
   <div class="wrap">
-    <p class="label">Pricing</p>
-    <h2>Cheaper than one <span class="red">meal deal.</span></h2>                               <!-- COPY: pricing-heading -->
-    <p class="money">Pro pays for Receipts. Your donations never do.</p>                      <!-- COPY: pricing-money -->
+    <p class="label">Draft pricing</p>
+    <h2>A proposal. <span class="red">Still taking shape.</span></h2>                               <!-- COPY: pricing-heading -->
+    <p class="money">£2.99/month is a proposal. Final pricing and plan features are unconfirmed.</p>                      <!-- COPY: pricing-money -->
     <div class="plans">
       <div class="plan">
-        <p class="label">Free</p>
+        <p class="label">Free · proposed</p>
         <p class="price">£0</p>
         <ul>
           <li>The Weekly Receipt</li>
@@ -419,14 +421,13 @@
         <a href="#join" class="btn ghost">Join the waitlist</a>
       </div>
       <div class="plan pro">
-        <span class="tag">STUDENT PRICE</span>
-        <p class="label">Pro</p>
+        <span class="tag">PROPOSED</span>
+        <p class="label">Pro · proposed</p>
         <p class="price">£2.99 <small>/ month</small></p>
         <ul>
-          <li>Everything in Free</li>
-          <li>Stakes mode</li>
-          <li>Friend pots</li>
-          <li>Custom limits per app</li>
+          <li>Subscription proposal</li>
+          <li>Plan features to be confirmed</li>
+          <li>No payments in this demo</li>
         </ul>
         <a href="#join" class="btn">Join the waitlist</a>
       </div>
@@ -440,9 +441,9 @@
     <div class="box">
       <svg viewBox="0 0 44 44" fill="none" stroke="#1A1A1A" stroke-width="2.5" aria-hidden="true"><rect x="11" y="3" width="22" height="38" rx="5"/><path d="M17 15h10M17 21h10M17 27h6" stroke="#E5322D" stroke-linecap="round"/></svg>
       <div>
-        <p class="label">Coming soon</p>
+        <p class="label">Earlier idea</p>
         <h3>The revision feed</h3>                                                              <!-- COPY: soon-title -->
-        <p>A scrollable feed made from your own lecture slides. Scroll it to earn your minutes back.</p> <!-- COPY: soon-body -->
+        <p>A lecture-slide revision feed concept. Not part of the current competition demo.</p> <!-- COPY: soon-body -->
       </div>
     </div>
   </div>
@@ -456,19 +457,19 @@
     <div class="faq-list">
       <details>
         <summary>What if I can't afford it?</summary>                                           <!-- COPY: faq1-q -->
-        <div><p>Stakes are opt-in and capped daily, so one bad night never becomes a bad month. The Free plan has no stakes at all, just the receipt.</p></div> <!-- COPY: faq1-a -->
+        <div><p>Explore this demo free, with no real payment. The competition models pledges of £5, £10 or £20. A return can be £0.</p></div> <!-- COPY: faq1-a -->
       </details>
       <details>
-        <summary>Which charities does the money go to?</summary>                                <!-- COPY: faq2-q -->
-        <div><p>You pick a cause: mental health, education or climate. We'll announce our charity partners at launch, and 100% of every £1 is passed on.</p></div> <!-- COPY: faq2-a -->
+        <summary>Where does the pot go?</summary>                                <!-- COPY: faq2-q -->
+        <div><p>The competition pot is shared among the group according to screen time. Daily-limit donations belong to the separate earlier charity prototype.</p></div> <!-- COPY: faq2-a -->
       </details>
       <details>
         <summary>Can Receipts see what I watch?</summary>                                       <!-- COPY: faq3-q -->
-        <div><p>No. Receipts only sees how long each app was open. Never what you watched, posted or messaged.</p></div> <!-- COPY: faq3-a -->
+        <div><p>This demo uses sample data and tracks nothing. The planned app would use time per app, never what you watched, posted or messaged.</p></div> <!-- COPY: faq3-a -->
       </details>
       <details>
-        <summary>Can't I just delete the app?</summary>                                         <!-- COPY: faq4-q -->
-        <div><p>Sure. But you set the stakes because future you asked present you to. And with a friend pot, your mates will notice.</p></div> <!-- COPY: faq4-a -->
+        <summary>Can I change the group rules?</summary>                                         <!-- COPY: faq4-q -->
+        <div><p>Yes. Changes to the pledge and counted apps take effect next week, so everyone finishes the current week under the same rules.</p></div> <!-- COPY: faq4-a -->
       </details>
     </div>
   </div>
